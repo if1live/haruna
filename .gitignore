@@ -11,3 +11,45 @@
 *.lai
 *.la
 *.a
+
+# visual studio
+*.sdf
+*.opensdf
+ipch
+
+# compiled result
+*.exe
+haruna/Debug/*
+haruna/Release/*
+Debug/*
+Release/*
+
+# glm
+glm/test/*
+glm/doc/*
+glm/util/*
+glm/CMakeLists.txt
+glm/CTestConfig.cmake
+
+# glfw
+glfw/docs
+glfw/lib-mingw
+glfw/lib-msvc90
+glfw/lib-msvc100
+
+# glew
+glew/doc
+
+# soil
+soil/lib
+soil/support
+soil/*.dds
+soil/*.bmp
+soil/*.png
+soil/*.tga
+soil/*.jpg
+soil/projects/codeblocks
+soil/projects/makefile
+soil/projects/VC6
+soil/projects/VC7.1
+soil/projects/VC8
