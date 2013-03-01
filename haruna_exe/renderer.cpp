@@ -5,6 +5,7 @@
 #include <glm/ext.hpp>
 
 #include <GL/glew.h>
+#include <GL/glfw.h>
 
 #include <vector>
 #include <memory>
@@ -15,21 +16,29 @@
 
 #include "haruna/primitive_mesh.h"
 #include "haruna/gl/shader.h"
+#include "haruna/gl/texture.h"
 
 Renderer::Renderer(float width, float height) 
 	: width_(width), height_(height)
 {
+}
+
+/////////////////////
+SimpleRedRenderer::SimpleRedRenderer(float width, float height)
+	: Renderer(width, height),
+	y_rot_(0)
+{
 	Init();
 }
-Renderer::~Renderer() 
+SimpleRedRenderer::~SimpleRedRenderer() 
 {
 	prog_->Deinit();
 
 }
 
-bool Renderer::Init() 
+bool SimpleRedRenderer::Init() 
 {
-	//쉐이더 변수 잡고 인자 넘기기
+	//쉐이더 
 	std::string fs_path = sora::Filesystem::GetAppPath("shader/simple_red.fs");
 	std::string vs_path = sora::Filesystem::GetAppPath("shader/simple_red.vs");
 	sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
@@ -52,30 +61,38 @@ bool Renderer::Init()
 	return true;
 }
 
-void Renderer::Draw()
+bool SimpleRedRenderer::Update(float dt)
+{
+	y_rot_ += 4.0f * dt;
+	float radius = 4;
+	eye_ = glm::vec3(cos(y_rot_) * radius, 0, sin(y_rot_) * radius);
+
+	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
+	return running;
+}
+
+void SimpleRedRenderer::Draw()
 {
 	//sample mesh
 	haruna::SolidCubeFactory cube_factory(1, 1, 1);
 	auto data = cube_factory.CreateNormalMesh();
+	
+	//haruna::SolidSphereFactory sphere_factory(1, 8, 8);
+	//auto data = sphere_factory.CreateNormalMesh();
 
 	prog_->Use();
 	haruna::gl::ShaderLocation pos_loc = prog_->GetAttribLocation("a_position");
 	haruna::gl::ShaderLocation mvp_loc = prog_->GetUniformLocation("u_mvp");
 
 	//projection
-	float aspect = width_ / height_;
+	float aspect = width() / height();
 	glm::mat4 proj_mat = glm::perspective(60.0f, aspect, 0.1f, 100.0f);
 
 	static float y_rot = 0;
-	y_rot += 0.001f;
-	float radius = 4;
 	
-	//view
-	glm::vec3 eye(cos(y_rot) * radius, 0, sin(y_rot) * radius);
 	glm::vec3 center(0, 0, 0);
 	glm::vec3 up(0, 1, 0);
-
-	glm::mat4 view_mat = glm::lookAt(eye, center, up);
+	glm::mat4 view_mat = glm::lookAt(eye_, center, up);
 		
 
 	//model
@@ -84,7 +101,7 @@ void Renderer::Draw()
 	glm::mat4 mvp = proj_mat * view_mat * model_mat;
 
 	//draw
-	glViewport(0, 0, (int)width_, (int)height_);
+	glViewport(0, 0, (int)width(), (int)height());
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUniformMatrix4fv(mvp_loc.handle(), 1, GL_FALSE, glm::value_ptr(mvp));

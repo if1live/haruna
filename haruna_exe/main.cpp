@@ -32,26 +32,23 @@ bool InitWindow(int width, int height)
 	return true;
 }
 
-bool Update(float dt)
-{
-	//update
-	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
-	return running;
-}
-
-
 int main()
 {
 	InitWindow(kWidth, kHeight);
 
-	Renderer *renderer = new Renderer(kWidth, kHeight);
+	Renderer *renderer = new SimpleRedRenderer(kWidth, kHeight);
 	
 	bool running = true;
+	double old_time = glfwGetTime();
 	while(running) {
-		running = Update(0.1f);
+		double current_time = glfwGetTime();
+		
+		float dt = static_cast<float>(current_time - old_time);
+		running = renderer->Update(dt);
 		renderer->Draw();
 
 		glfwSwapBuffers();
+		old_time = current_time;
 	}
 
 	delete(renderer);

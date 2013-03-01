@@ -2,24 +2,43 @@
 #pragma once
 
 #include <memory>
+#include <glm/glm.hpp>
 
 namespace haruna {;
 namespace gl {
 	class ShaderProgram;
-}
-}
+	class Texture;
+}	// namespace haruna
+}	// namespace gl
 
 class Renderer {
 public:
 	Renderer(float width, float height);
-	~Renderer();
+	virtual ~Renderer() {}
 
-	bool Init();
+	virtual bool Init() = 0;
+	virtual bool Update(float dt) = 0;
+	virtual void Draw() = 0;
 
-	void Draw();
+	float width() const { return width_; }
+	float height() const { return height_; }
+private:
+	float width_;
+	float height_;
+};
+
+class SimpleRedRenderer : public Renderer {
+public:
+	SimpleRedRenderer(float width, float height);
+	~SimpleRedRenderer();
+
+	virtual bool Init();
+	virtual bool Update(float dt);
+	virtual void Draw();
 
 private:
 	std::unique_ptr<haruna::gl::ShaderProgram> prog_;
-	float width_;
-	float height_;
+	
+	float y_rot_;
+	glm::vec3 eye_;
 };

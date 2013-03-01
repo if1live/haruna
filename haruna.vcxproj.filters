@@ -36,6 +36,12 @@
     <ClCompile Include="haruna\primitive_mesh.cpp">
       <Filter>haruna</Filter>
     </ClCompile>
+    <ClCompile Include="haruna\gl\texture.cpp">
+      <Filter>haruna\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna\lodepng.cpp">
+      <Filter>haruna</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna\gl\shader.h">
@@ -69,6 +75,12 @@
       <Filter>haruna</Filter>
     </ClInclude>
     <ClInclude Include="haruna\primitive_mesh.h">
+      <Filter>haruna</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna\gl\texture.h">
+      <Filter>haruna\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna\lodepng.h">
       <Filter>haruna</Filter>
     </ClInclude>
   </ItemGroup>
