@@ -4,16 +4,19 @@
     <Filter Include="support">
       <UniqueIdentifier>{cb8187b0-78bc-455e-96ea-4d27602b4931}</UniqueIdentifier>
     </Filter>
-    <Filter Include="gl">
-      <UniqueIdentifier>{2d04f970-5440-4614-8888-cb71afcbaf98}</UniqueIdentifier>
-    </Filter>
     <Filter Include="sora">
       <UniqueIdentifier>{21178454-29f2-4046-a1a5-5c718de4df4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="haruna">
+      <UniqueIdentifier>{5d7af1bb-63e3-48ff-9145-dbfa128b9d90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="haruna\gl">
+      <UniqueIdentifier>{2d04f970-5440-4614-8888-cb71afcbaf98}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="haruna\gl\shader.cpp">
-      <Filter>gl</Filter>
+      <Filter>haruna\gl</Filter>
     </ClCompile>
     <ClCompile Include="sora\filesystem.cpp">
       <Filter>sora</Filter>
@@ -30,10 +33,13 @@
     <ClCompile Include="sora\logger.cpp">
       <Filter>sora</Filter>
     </ClCompile>
+    <ClCompile Include="haruna\primitive_mesh.cpp">
+      <Filter>haruna</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna\gl\shader.h">
-      <Filter>gl</Filter>
+      <Filter>haruna\gl</Filter>
     </ClInclude>
     <ClInclude Include="sora\filesystem.h">
       <Filter>sora</Filter>
@@ -58,6 +64,12 @@
     </ClInclude>
     <ClInclude Include="sora\template_lib.h">
       <Filter>sora</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna\vertex.h">
+      <Filter>haruna</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna\primitive_mesh.h">
+      <Filter>haruna</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
