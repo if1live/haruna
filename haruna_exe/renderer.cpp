@@ -74,7 +74,7 @@ bool SimpleRedRenderer::Init()
 bool SimpleRedRenderer::Update(float dt)
 {
 	y_rot_ += 4.0f * dt;
-	float radius = 4;
+	float radius = 2;
 	eye_ = glm::vec3(cos(y_rot_) * radius, 0, sin(y_rot_) * radius);
 
 	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
@@ -172,7 +172,7 @@ bool TextureRenderer::Init()
 bool TextureRenderer::Update(float dt)
 {
 	y_rot_ += 4.0f * dt;
-	float radius = 4;
+	float radius = 2;
 	eye_ = glm::vec3(cos(y_rot_) * radius, 0, sin(y_rot_) * radius);
 
 	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
@@ -215,6 +215,7 @@ void TextureRenderer::Draw()
 
 	glUniformMatrix4fv(mvp_loc.handle(), 1, GL_FALSE, glm::value_ptr(mvp));
 	glEnableVertexAttribArray(pos_loc.handle());
+	glEnableVertexAttribArray(texcoord_loc.handle());
 
 	//binding texture
 	glActiveTexture(GL_TEXTURE0);
