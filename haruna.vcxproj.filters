@@ -27,6 +27,9 @@
     <ClCompile Include="sora\memory_file.cpp">
       <Filter>sora</Filter>
     </ClCompile>
+    <ClCompile Include="sora\logger.cpp">
+      <Filter>sora</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna\gl\shader.h">
@@ -48,6 +51,12 @@
       <Filter>sora</Filter>
     </ClInclude>
     <ClInclude Include="sora\arch.h">
+      <Filter>sora</Filter>
+    </ClInclude>
+    <ClInclude Include="sora\logger.h">
+      <Filter>sora</Filter>
+    </ClInclude>
+    <ClInclude Include="sora\template_lib.h">
       <Filter>sora</Filter>
     </ClInclude>
   </ItemGroup>

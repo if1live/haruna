@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="haruna\gl\shader.cpp" />
     <ClCompile Include="sora\filesystem.cpp" />
+    <ClCompile Include="sora\logger.cpp" />
     <ClCompile Include="sora\low_level_c_file.cpp" />
     <ClCompile Include="sora\memory_file.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -25,8 +26,10 @@
     <ClInclude Include="sora\arch.h" />
     <ClInclude Include="sora\assert_inc.h" />
     <ClInclude Include="sora\filesystem.h" />
+    <ClInclude Include="sora\logger.h" />
     <ClInclude Include="sora\low_level_c_file.h" />
     <ClInclude Include="sora\memory_file.h" />
+    <ClInclude Include="sora\template_lib.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
