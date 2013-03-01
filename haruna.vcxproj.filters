@@ -24,6 +24,9 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>support</Filter>
     </ClCompile>
+    <ClCompile Include="sora\low_level_c_file.cpp">
+      <Filter>sora</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna\gl\shader.h">
@@ -34,6 +37,9 @@
     </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="sora\low_level_c_file.h">
+      <Filter>sora</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

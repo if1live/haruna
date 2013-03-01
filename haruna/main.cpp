@@ -2,11 +2,15 @@
 #include "stdafx.h"
 
 #include "sora/filesystem.h"
+#include "sora/low_level_c_file.h"
 
 int main()
 {
-	//std::string a = sora::Filesystem::GetAppPath("shader/simple_red.fs");
-	//std::cout << a;
+	std::string path = sora::Filesystem::GetAppPath("shader/simple_red.fs");
+	sora::ReadonlyCFile file = sora::ReadonlyCFile(path);
+	file.Open();
+	const char *buffer = static_cast<const char*>(file.GetBuffer());
+	std::cout << buffer;
 
 	if(!glfwInit())
 	{

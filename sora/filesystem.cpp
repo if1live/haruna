@@ -18,7 +18,8 @@ std::string doc_root_path;
 int InitFileSystem();
 int init_filesystem = InitFileSystem();
 
-int InitFileSystem() {
+int InitFileSystem() 
+{
 	/*
 	// 윈도우에서 실행프로그램이 있는 경로 얻기
 	// 이것을 이용해서 경로 변경후 파일을 열자
@@ -39,7 +40,8 @@ int InitFileSystem() {
 	return 1;
 }
 
-int Filesystem::GetFileSize(int fd) {
+int Filesystem::GetFileSize(int fd) 
+{
 	if (fd == -1) {
 		return -1;
 	}
@@ -53,14 +55,18 @@ int Filesystem::GetFileSize(int fd) {
 	lseek(fd, curr_pos, SEEK_SET);
 	return length;
 }
-int Filesystem::GetFileSize(FILE *file) {
+
+int Filesystem::GetFileSize(FILE *file) 
+{
 	int curr_pos = ftell(file);
 	fseek(file, 0, SEEK_END);
 	int length = ftell(file);
 	fseek(file, curr_pos, SEEK_SET);
 	return length;
 }
-std::string Filesystem::GetExtension(const std::string &str) {
+
+std::string Filesystem::GetExtension(const std::string &str) 
+{
 	using std::string;
 	// 경로 쪼개느거는 2개다 동시 지원할수 있도록함
 	// /. \\를 하나로 합치면 되겠지
@@ -79,10 +85,12 @@ std::string Filesystem::GetExtension(const std::string &str) {
 		//.을 못찾은 경우, 아마도 확장자 없다
 		return string("");
 	}
+
 	if (comma_found != string::npos && separator_found == string::npos) {
 		string name = filename.substr(comma_found+1);
 		return name;
 	}
+
 	if (comma_found > separator_found) {
 		string name = filename.substr(comma_found+1);
 		return name;
@@ -91,7 +99,8 @@ std::string Filesystem::GetExtension(const std::string &str) {
 	}
 }
 
-std::string Filesystem::GetAppPath(const std::string &str) {
+std::string Filesystem::GetAppPath(const std::string &str) 
+{
 	std::string filename = str;
 	for(size_t i = 0 ; i < filename.length() ; ++i) {
 		if(filename[i] == '/') {

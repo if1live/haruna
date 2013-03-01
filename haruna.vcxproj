@@ -14,6 +14,7 @@
     <ClCompile Include="haruna\gl\shader.cpp" />
     <ClCompile Include="haruna\main.cpp" />
     <ClCompile Include="sora\filesystem.cpp" />
+    <ClCompile Include="sora\low_level_c_file.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -22,6 +23,7 @@
   <ItemGroup>
     <ClInclude Include="haruna\gl\shader.h" />
     <ClInclude Include="sora\filesystem.h" />
+    <ClInclude Include="sora\low_level_c_file.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
