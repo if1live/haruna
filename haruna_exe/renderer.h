@@ -72,3 +72,20 @@ private:
 
 	float y_rot_;
 };
+
+class DiffuseSpecularMapRenderer : public Renderer {
+public:
+	DiffuseSpecularMapRenderer(float width, float height);
+	~DiffuseSpecularMapRenderer();
+
+	virtual bool Init();
+	virtual bool Update(float dt);
+	virtual void Draw();
+
+private:
+	std::unique_ptr<haruna::gl::ShaderProgram> prog_;
+	std::unique_ptr<haruna::gl::Texture> diffuse_map_;
+	std::unique_ptr<haruna::gl::Texture> specular_map_;
+
+	float y_rot_;
+};
