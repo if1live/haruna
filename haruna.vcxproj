@@ -11,10 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="haruna\gl\gl_env.cpp" />
     <ClCompile Include="haruna\gl\shader.cpp" />
     <ClCompile Include="haruna\gl\texture.cpp" />
     <ClCompile Include="haruna\lodepng.cpp" />
     <ClCompile Include="haruna\primitive_mesh.cpp" />
+    <ClCompile Include="sora\common_string.cpp" />
     <ClCompile Include="sora\filesystem.cpp" />
     <ClCompile Include="sora\logger.cpp" />
     <ClCompile Include="sora\low_level_c_file.cpp" />
@@ -25,6 +27,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="haruna\gl\gl_env.h" />
     <ClInclude Include="haruna\gl\shader.h" />
     <ClInclude Include="haruna\gl\texture.h" />
     <ClInclude Include="haruna\lodepng.h" />
@@ -32,6 +35,7 @@
     <ClInclude Include="haruna\vertex.h" />
     <ClInclude Include="sora\arch.h" />
     <ClInclude Include="sora\assert_inc.h" />
+    <ClInclude Include="sora\common_string.h" />
     <ClInclude Include="sora\filesystem.h" />
     <ClInclude Include="sora\logger.h" />
     <ClInclude Include="sora\low_level_c_file.h" />

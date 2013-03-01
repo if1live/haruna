@@ -42,3 +42,20 @@ private:
 	float y_rot_;
 	glm::vec3 eye_;
 };
+
+class TextureRenderer : public Renderer {
+public:
+	TextureRenderer(float width, float height);
+	~TextureRenderer();
+
+	virtual bool Init();
+	virtual bool Update(float dt);
+	virtual void Draw();
+
+private:
+	std::unique_ptr<haruna::gl::ShaderProgram> prog_;
+	std::unique_ptr<haruna::gl::Texture> tex_;
+	
+	float y_rot_;
+	glm::vec3 eye_;
+};

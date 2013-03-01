@@ -42,6 +42,12 @@
     <ClCompile Include="haruna\lodepng.cpp">
       <Filter>haruna</Filter>
     </ClCompile>
+    <ClCompile Include="haruna\gl\gl_env.cpp">
+      <Filter>haruna\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="sora\common_string.cpp">
+      <Filter>sora</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna\gl\shader.h">
@@ -82,6 +88,12 @@
     </ClInclude>
     <ClInclude Include="haruna\lodepng.h">
       <Filter>haruna</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna\gl\gl_env.h">
+      <Filter>haruna\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="sora\common_string.h">
+      <Filter>sora</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
