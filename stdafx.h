@@ -5,6 +5,9 @@
 #include <cstdlib>
 #include <cmath>
 
+#include <sstream>
+#include <iostream>
+
 #include <memory>
 
 #include <string>
@@ -12,7 +15,9 @@
 #include <map>
 #include <algorithm>
 
+
 #include <glm/glm.hpp>
 
 #include <GL/glew.h>
 #include <GL/glfw.h>
+

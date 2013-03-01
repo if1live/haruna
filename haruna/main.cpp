@@ -1,8 +1,13 @@
 ﻿// Ŭnicode please 
 #include "stdafx.h"
 
+#include "sora/filesystem.h"
+
 int main()
 {
+	//std::string a = sora::Filesystem::GetAppPath("shader/simple_red.fs");
+	//std::cout << a;
+
 	if(!glfwInit())
 	{
 		exit(EXIT_FAILURE);
@@ -25,6 +30,7 @@ int main()
 	}
 
 	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+
 	
 	bool running = true;
 	while(running)

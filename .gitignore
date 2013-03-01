@@ -14,7 +14,9 @@
 
 # visual studio
 *.sdf
+*.suo
 *.opensdf
+*.vcxproj.user
 ipch
 
 # compiled result
