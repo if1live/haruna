@@ -89,3 +89,18 @@ private:
 
 	float y_rot_;
 };
+
+class ToonRenderer : public Renderer {
+public:
+	ToonRenderer(float width, float height);
+	~ToonRenderer();
+
+	virtual bool Init();
+	virtual bool Update(float dt);
+	virtual void Draw();
+
+private:
+	std::unique_ptr<haruna::gl::ShaderProgram> prog_;
+
+	float y_rot_;
+};

@@ -39,7 +39,8 @@ int main()
 	//Renderer *renderer = new SimpleRedRenderer(kWidth, kHeight);
 	//Renderer *renderer = new TextureRenderer(kWidth, kHeight);
 	//Renderer *renderer = new BasicLightRenderer(kWidth, kHeight);
-	Renderer *renderer = new DiffuseSpecularMapRenderer(kWidth, kHeight);
+	//Renderer *renderer = new DiffuseSpecularMapRenderer(kWidth, kHeight);
+	Renderer *renderer = new ToonRenderer(kWidth, kHeight);
 	
 	bool running = true;
 	double old_time = glfwGetTime();
