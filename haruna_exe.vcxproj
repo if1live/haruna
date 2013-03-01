@@ -68,11 +68,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="haruna_exe\main.cpp" />
+    <ClCompile Include="haruna_exe\renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="haruna.vcxproj">
       <Project>{3aa66b95-edfc-4e14-9da2-f714c4dbe4aa}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="haruna_exe\renderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

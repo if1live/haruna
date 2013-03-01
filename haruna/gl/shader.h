@@ -3,6 +3,17 @@
 
 namespace haruna {;
 namespace gl {
+
+	class ShaderLocation {
+	public:
+		ShaderLocation(GLint loc) : loc_(loc) {}
+		bool IsValid() const { return (loc_ != -1); }
+
+		GLint handle() const { return loc_; }
+	private:
+		GLint loc_;
+	};
+
 	class Shader {
 	public:
 		Shader(const std::string &src);
@@ -40,6 +51,10 @@ namespace gl {
 		bool Deinit();
 
 		GLuint prog() const { return prog_; }
+		bool Use();
+
+		ShaderLocation GetAttribLocation(const std::string &name) const;
+		ShaderLocation GetUniformLocation(const std::string &name) const;
 
 	private:
 		GLuint prog_;

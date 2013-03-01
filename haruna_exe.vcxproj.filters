@@ -2,5 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="haruna_exe\main.cpp" />
+    <ClCompile Include="haruna_exe\renderer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="haruna_exe\renderer.h" />
   </ItemGroup>
 </Project>

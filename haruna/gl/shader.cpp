@@ -121,5 +121,22 @@ namespace gl {
 
 		return true;
 	}
+	bool ShaderProgram::Use()
+	{
+		glUseProgram(prog_);
+		return true;
+	}
+	ShaderLocation ShaderProgram::GetAttribLocation(const std::string &name) const
+	{
+		GLint loc = glGetAttribLocation(prog_, name.data());
+		return ShaderLocation(loc);
+	}
+
+	ShaderLocation ShaderProgram::GetUniformLocation(const std::string &name) const
+	{
+		GLint loc = glGetUniformLocation(prog_, name.data());
+		return ShaderLocation(loc);
+	}
+
 }	//namespace gl
 }	//namespace haruna
