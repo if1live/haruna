@@ -7,9 +7,11 @@ varying vec2 v_texcoord;
 uniform sampler2D s_diffuse;
 uniform sampler2D s_specular;
 
+uniform vec4 u_lightColor;
+
 void main() {
 	vec4 albedo = texture2D(s_diffuse, v_texcoord);
-	vec3 diffuse = clamp(albedo.xyz * v_diffuse, 0.0, 1.0);
+	vec3 diffuse = clamp(albedo.xyz * v_diffuse * u_lightColor.xyz, 0.0, 1.0);
 	
 	vec3 reflection = normalize(v_reflection);
 	vec3 viewDir = normalize(v_viewDir);
@@ -20,9 +22,9 @@ void main() {
 		shininess = pow(shininess, 20.0);
 		
 		vec4 specularIntensity = texture2D(s_specular, v_texcoord);
-		specular = specularIntensity.xyz * vec3(shininess, shininess, shininess);
+		specular = specularIntensity.xyz * vec3(shininess, shininess, shininess) * u_lightColor.xyz;
 	}
-	vec3 ambient = vec3(0.1, 0.1, 0.1) * albedo.xyz;
+	vec3 ambient = vec3(0.1, 0.1, 0.1) * albedo.xyz * u_lightColor.xyz;
 	
 	gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
 }

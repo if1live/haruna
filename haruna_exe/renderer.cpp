@@ -424,6 +424,8 @@ void DiffuseSpecularMapRenderer::Draw()
 	haruna::gl::ShaderLocation diffuse_map_loc = prog_->GetUniformLocation("s_diffuse");
 	haruna::gl::ShaderLocation specular_map_loc = prog_->GetUniformLocation("s_specular");
 
+	haruna::gl::ShaderLocation light_color_loc = prog_->GetUniformLocation("u_lightColor");
+
 	//projection
 	float aspect = width() / height();
 	glm::mat4 proj_mat = glm::perspective(60.0f, aspect, 0.1f, 100.0f);
@@ -465,6 +467,10 @@ void DiffuseSpecularMapRenderer::Draw()
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, specular_map_->tex());
 	glUniform1i(specular_map_loc.handle(), 1);
+
+	//color
+	glm::vec4 color(0.7f, 0.5f, 1.0f, 1.0f);
+	glUniform4fv(light_color_loc.handle(), 1, glm::value_ptr(color));
 
 	for(auto cmd : data) {
 		std::vector<haruna::Vertex_1P1N1UV> &vert_list = cmd.vertex_list;
