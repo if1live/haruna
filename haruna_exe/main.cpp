@@ -37,7 +37,8 @@ int main()
 	InitWindow(kWidth, kHeight);
 
 	//Renderer *renderer = new SimpleRedRenderer(kWidth, kHeight);
-	Renderer *renderer = new TextureRenderer(kWidth, kHeight);
+	//Renderer *renderer = new TextureRenderer(kWidth, kHeight);
+	Renderer *renderer = new BasicLightRenderer(kWidth, kHeight);
 	
 	bool running = true;
 	double old_time = glfwGetTime();

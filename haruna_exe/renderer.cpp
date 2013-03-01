@@ -74,8 +74,6 @@ bool SimpleRedRenderer::Init()
 bool SimpleRedRenderer::Update(float dt)
 {
 	y_rot_ += 4.0f * dt;
-	float radius = 2;
-	eye_ = glm::vec3(cos(y_rot_) * radius, 0, sin(y_rot_) * radius);
 
 	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
 	return running;
@@ -98,9 +96,11 @@ void SimpleRedRenderer::Draw()
 	float aspect = width() / height();
 	glm::mat4 proj_mat = glm::perspective(60.0f, aspect, 0.1f, 100.0f);
 
+	float radius = 2;
+	glm::vec3 eye(cos(y_rot_) * radius, 0, sin(y_rot_) * radius);
 	glm::vec3 center(0, 0, 0);
 	glm::vec3 up(0, 1, 0);
-	glm::mat4 view_mat = glm::lookAt(eye_, center, up);
+	glm::mat4 view_mat = glm::lookAt(eye, center, up);
 		
 
 	//model
@@ -172,9 +172,6 @@ bool TextureRenderer::Init()
 bool TextureRenderer::Update(float dt)
 {
 	y_rot_ += 4.0f * dt;
-	float radius = 2;
-	eye_ = glm::vec3(cos(y_rot_) * radius, 0, sin(y_rot_) * radius);
-
 	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
 	return running;
 }
@@ -198,9 +195,11 @@ void TextureRenderer::Draw()
 	float aspect = width() / height();
 	glm::mat4 proj_mat = glm::perspective(60.0f, aspect, 0.1f, 100.0f);
 
+	float radius = 2;
+	glm::vec3 eye(cos(y_rot_) * radius, 0, sin(y_rot_) * radius);
 	glm::vec3 center(0, 0, 0);
 	glm::vec3 up(0, 1, 0);
-	glm::mat4 view_mat = glm::lookAt(eye_, center, up);
+	glm::mat4 view_mat = glm::lookAt(eye, center, up);
 		
 
 	//model
@@ -233,6 +232,113 @@ void TextureRenderer::Draw()
 		GLenum draw_mode = ToDrawMode(cmd.draw_mode);
 		glDrawElements(draw_mode, index_list.size(), GL_UNSIGNED_SHORT, &index_list[0]);
 	}	
+
+	haruna::gl::GLEnv::CheckError("End Frame");
+}
+
+///////////////////////////////////////////
+BasicLightRenderer::BasicLightRenderer(float width, float height)
+	: Renderer(width, height), y_rot_(0)
+{
+	Init();
+}
+BasicLightRenderer::~BasicLightRenderer()
+{
+	prog_->Deinit();
+}
+
+bool BasicLightRenderer::Init()
+{
+	//쉐이더 
+	std::string fs_path = sora::Filesystem::GetAppPath("shader/basic_light.fs");
+	std::string vs_path = sora::Filesystem::GetAppPath("shader/basic_light.vs");
+	sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
+	sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
+	bool fs_open_result = fs_file.Open();
+	bool vs_open_result = vs_file.Open();
+	SR_ASSERT(fs_open_result == true);
+	SR_ASSERT(vs_open_result == true);
+	
+	std::string fs_src(static_cast<const char*>(fs_file.GetBuffer()));
+	std::string vs_src(static_cast<const char*>(vs_file.GetBuffer()));
+	
+	haruna::gl::VertexShader vs(vs_src);
+	haruna::gl::FragmentShader fs(fs_src);
+
+	prog_.reset(new haruna::gl::ShaderProgram(vs, fs));
+	bool prog_result = prog_->Init();
+	SR_ASSERT(prog_result == true);
+
+	return true;
+}
+bool BasicLightRenderer::Update(float dt)
+{
+	y_rot_ += 4.0f * dt;
+	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
+	return running;
+}
+void BasicLightRenderer::Draw()
+{
+	//sample mesh
+	//haruna::SolidCubeFactory cube_factory(1, 1, 1);
+	//auto data = cube_factory.CreateNormalMesh();
+	haruna::SolidSphereFactory sphere_factory(1, 16, 16);
+	auto data = sphere_factory.CreateNormalMesh();
+
+
+	prog_->Use();
+	haruna::gl::ShaderLocation pos_loc = prog_->GetAttribLocation("a_position");
+	haruna::gl::ShaderLocation normal_loc = prog_->GetAttribLocation("a_normal");
+	
+	haruna::gl::ShaderLocation light_pos_loc = prog_->GetUniformLocation("u_modelLightPos");
+	haruna::gl::ShaderLocation cam_pos_loc = prog_->GetUniformLocation("u_modelCameraPos");
+	haruna::gl::ShaderLocation model_loc = prog_->GetUniformLocation("u_model");
+	haruna::gl::ShaderLocation view_loc = prog_->GetUniformLocation("u_view");
+	haruna::gl::ShaderLocation proj_loc = prog_->GetUniformLocation("u_proj");
+
+	//projection
+	float aspect = width() / height();
+	glm::mat4 proj_mat = glm::perspective(60.0f, aspect, 0.1f, 100.0f);
+
+	float radius = 2;
+	glm::vec3 eye(cos(y_rot_) * radius, 0, sin(y_rot_) * radius);
+	glm::vec3 center(0, 0, 0);
+	glm::vec3 up(0, 1, 0);
+	glm::mat4 view_mat = glm::lookAt(eye, center, up);
+		
+	//model
+	glm::mat4 model_mat = glm::mat4();
+
+	//draw
+	glViewport(0, 0, (int)width(), (int)height());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_CULL_FACE);
+
+	//glUniformMatrix4fv(mvp_loc.handle(), 1, GL_FALSE, glm::value_ptr(mvp));
+	glUniformMatrix4fv(model_loc.handle(), 1, GL_FALSE, glm::value_ptr(model_mat));
+	glUniformMatrix4fv(view_loc.handle(), 1, GL_FALSE, glm::value_ptr(view_mat));
+	glUniformMatrix4fv(proj_loc.handle(), 1, GL_FALSE, glm::value_ptr(proj_mat));
+
+
+	glEnableVertexAttribArray(pos_loc.handle());
+	glEnableVertexAttribArray(normal_loc.handle());
+
+	glm::vec3 light_pos(10, 10, 10);
+	glUniform3fv(light_pos_loc.handle(), 1, glm::value_ptr(light_pos));
+
+	glUniform3fv(cam_pos_loc.handle(), 1, glm::value_ptr(eye));
+
+	for(auto cmd : data) {
+		std::vector<haruna::Vertex_1P1N1UV> &vert_list = cmd.vertex_list;
+		std::vector<unsigned short> &index_list = cmd.index_list;
+
+		int stride = sizeof(haruna::Vertex_1P1N1UV);
+		glVertexAttribPointer(pos_loc.handle(), 3, GL_FLOAT, GL_FALSE, stride, &vert_list[0].p);
+		glVertexAttribPointer(normal_loc.handle(), 3, GL_FLOAT, GL_FALSE, stride, &vert_list[0].n);
+
+		GLenum draw_mode = ToDrawMode(cmd.draw_mode);
+		glDrawElements(draw_mode, index_list.size(), GL_UNSIGNED_SHORT, &index_list[0]);
+	}
 
 	haruna::gl::GLEnv::CheckError("End Frame");
 }
