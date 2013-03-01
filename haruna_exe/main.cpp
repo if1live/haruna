@@ -1,5 +1,8 @@
 ﻿// Ŭnicode please 
-#include "stdafx.h"
+#include <GL/glew.h>
+#include <GL/glfw.h>
+
+#include <iostream>
 
 #include "sora/filesystem.h"
 #include "sora/low_level_c_file.h"
@@ -8,24 +11,23 @@ int main()
 {
 	std::string path = sora::Filesystem::GetAppPath("shader/simple_red.fs");
 	sora::ReadonlyCFile file = sora::ReadonlyCFile(path);
-	file.Open();
-	const char *buffer = static_cast<const char*>(file.GetBuffer());
-	std::cout << buffer;
+	bool open_result = file.Open();
+	if(open_result) {
+		const char *buffer = static_cast<const char*>(file.GetBuffer());
+		std::cout << buffer;
+	}
 
-	if(!glfwInit())
-	{
+	if(!glfwInit()) {
 		exit(EXIT_FAILURE);
 	}
 
-	if(!glfwOpenWindow(640, 480, 0, 0, 0, 0, 0, 0, GLFW_WINDOW))
-	{
+	if(!glfwOpenWindow(640, 480, 0, 0, 0, 0, 0, 0, GLFW_WINDOW)) {
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
 
 	GLenum err = glewInit();
-	if(GLEW_OK != err) 
-	{
+	if(GLEW_OK != err) {
 		/* Problem: glewInit failed, something is seriously wrong. */
 		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
 		
@@ -37,8 +39,7 @@ int main()
 
 	
 	bool running = true;
-	while(running)
-	{
+	while(running) {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);

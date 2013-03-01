@@ -3,6 +3,8 @@
 
 #define PATH_SEPARATOR  '\\'
 
+#include <cstdio>
+#include <string>
 
 namespace sora {;
 
