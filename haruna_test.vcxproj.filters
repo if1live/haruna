@@ -1,7 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="haruna_test\low_level_c_file_test.cpp" />
     <ClCompile Include="haruna_test\test_main.cpp" />
+    <ClCompile Include="haruna_test\sora\low_level_c_file_test.cpp">
+      <Filter>sora</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_test\sora\filesystem_test.cpp">
+      <Filter>sora</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="sora">
+      <UniqueIdentifier>{ddc63c69-66cc-493d-9dd7-3db32f3140ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
