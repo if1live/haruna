@@ -44,11 +44,7 @@ int main()
 {
 	InitWindow(kWidth, kHeight);
 
-	//haruna::SolidCubeFactory cube_factory(1, 1, 1);
-	//auto data = cube_factory.CreateNormalMesh();
-
 	Renderer *renderer = new Renderer(kWidth, kHeight);
-	
 	
 	bool running = true;
 	while(running) {
