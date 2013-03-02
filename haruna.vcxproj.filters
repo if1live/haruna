@@ -48,6 +48,12 @@
     <ClCompile Include="sora\common_string.cpp">
       <Filter>sora</Filter>
     </ClCompile>
+    <ClCompile Include="haruna\parametric_surface.cpp">
+      <Filter>haruna</Filter>
+    </ClCompile>
+    <ClCompile Include="sora\math_helper.cpp">
+      <Filter>sora</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna\gl\shader.h">
@@ -93,6 +99,15 @@
       <Filter>haruna\gl</Filter>
     </ClInclude>
     <ClInclude Include="sora\common_string.h">
+      <Filter>sora</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna\parametric_surface.h">
+      <Filter>haruna</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna\parametric_equations.h">
+      <Filter>haruna</Filter>
+    </ClInclude>
+    <ClInclude Include="sora\math_helper.h">
       <Filter>sora</Filter>
     </ClInclude>
   </ItemGroup>

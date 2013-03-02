@@ -15,11 +15,13 @@
     <ClCompile Include="haruna\gl\shader.cpp" />
     <ClCompile Include="haruna\gl\texture.cpp" />
     <ClCompile Include="haruna\lodepng.cpp" />
+    <ClCompile Include="haruna\parametric_surface.cpp" />
     <ClCompile Include="haruna\primitive_mesh.cpp" />
     <ClCompile Include="sora\common_string.cpp" />
     <ClCompile Include="sora\filesystem.cpp" />
     <ClCompile Include="sora\logger.cpp" />
     <ClCompile Include="sora\low_level_c_file.cpp" />
+    <ClCompile Include="sora\math_helper.cpp" />
     <ClCompile Include="sora\memory_file.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -31,6 +33,8 @@
     <ClInclude Include="haruna\gl\shader.h" />
     <ClInclude Include="haruna\gl\texture.h" />
     <ClInclude Include="haruna\lodepng.h" />
+    <ClInclude Include="haruna\parametric_equations.h" />
+    <ClInclude Include="haruna\parametric_surface.h" />
     <ClInclude Include="haruna\primitive_mesh.h" />
     <ClInclude Include="haruna\vertex.h" />
     <ClInclude Include="sora\arch.h" />
@@ -39,6 +43,7 @@
     <ClInclude Include="sora\filesystem.h" />
     <ClInclude Include="sora\logger.h" />
     <ClInclude Include="sora\low_level_c_file.h" />
+    <ClInclude Include="sora\math_helper.h" />
     <ClInclude Include="sora\memory_file.h" />
     <ClInclude Include="sora\template_lib.h" />
     <ClInclude Include="stdafx.h" />
