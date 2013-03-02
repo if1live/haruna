@@ -1,5 +1,6 @@
 ﻿// Ŭnicode please 
-
+#pragma once
+#include <vector>
 #include "vertex.h"
 
 namespace haruna {;

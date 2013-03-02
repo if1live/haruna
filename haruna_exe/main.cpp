@@ -5,6 +5,12 @@
 #include <iostream>
 #include "renderer.h"
 
+#include "color_shader.h"
+#include "texture_mapping.h"
+#include "lighting.h"
+#include "diffuse_specular_mapping.h"
+#include "toon_shader.h"
+
 const float kWidth = 640;
 const float kHeight = 480;
 
@@ -36,11 +42,11 @@ int main()
 {
 	InitWindow(kWidth, kHeight);
 
-	//Renderer *renderer = new SimpleRedRenderer(kWidth, kHeight);
-	//Renderer *renderer = new TextureRenderer(kWidth, kHeight);
-	//Renderer *renderer = new BasicLightRenderer(kWidth, kHeight);
-	//Renderer *renderer = new DiffuseSpecularMapRenderer(kWidth, kHeight);
-	Renderer *renderer = new ToonRenderer(kWidth, kHeight);
+	//AbstractLogic *logic = new ColorShader(kWidth, kHeight);
+	//AbstractLogic *logic = new TextureMapping(kWidth, kHeight);
+	//AbstractLogic *logic = new Lighting(kWidth, kHeight);
+	//AbstractLogic *logic = new DiffuseSpecularMapping(kWidth, kHeight);
+	AbstractLogic *logic = new ToonShader(kWidth, kHeight);
 	
 	bool running = true;
 	double old_time = glfwGetTime();
@@ -48,14 +54,14 @@ int main()
 		double current_time = glfwGetTime();
 		
 		float dt = static_cast<float>(current_time - old_time);
-		running = renderer->Update(dt);
-		renderer->Draw();
+		running = logic->Update(dt);
+		logic->Draw();
 
 		glfwSwapBuffers();
 		old_time = current_time;
 	}
 
-	delete(renderer);
+	delete(logic);
 
 	glfwTerminate();
 	return 0;	

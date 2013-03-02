@@ -1,8 +1,9 @@
 ﻿// Ŭnicode please 
 #pragma once
 
+#include <GL/glew.h>
 #include <memory>
-#include <glm/glm.hpp>
+#include "haruna/primitive_mesh.h"
 
 namespace haruna {;
 namespace gl {
@@ -11,10 +12,10 @@ namespace gl {
 }	// namespace haruna
 }	// namespace gl
 
-class Renderer {
+class AbstractLogic {
 public:
-	Renderer(float width, float height);
-	virtual ~Renderer() {}
+	AbstractLogic(float width, float height) : width_(width), height_(height) {}
+	virtual ~AbstractLogic() {}
 
 	virtual bool Init() = 0;
 	virtual bool Update(float dt) = 0;
@@ -22,85 +23,10 @@ public:
 
 	float width() const { return width_; }
 	float height() const { return height_; }
+
 private:
 	float width_;
 	float height_;
 };
 
-class SimpleRedRenderer : public Renderer {
-public:
-	SimpleRedRenderer(float width, float height);
-	~SimpleRedRenderer();
-
-	virtual bool Init();
-	virtual bool Update(float dt);
-	virtual void Draw();
-
-private:
-	std::unique_ptr<haruna::gl::ShaderProgram> prog_;
-	
-	float y_rot_;
-};
-
-class TextureRenderer : public Renderer {
-public:
-	TextureRenderer(float width, float height);
-	~TextureRenderer();
-
-	virtual bool Init();
-	virtual bool Update(float dt);
-	virtual void Draw();
-
-private:
-	std::unique_ptr<haruna::gl::ShaderProgram> prog_;
-	std::unique_ptr<haruna::gl::Texture> tex_;
-	
-	float y_rot_;
-};
-
-class BasicLightRenderer : public Renderer {
-public:
-	BasicLightRenderer(float width, float height);
-	~BasicLightRenderer();
-
-	virtual bool Init();
-	virtual bool Update(float dt);
-	virtual void Draw();
-
-private:
-	std::unique_ptr<haruna::gl::ShaderProgram> prog_;
-
-	float y_rot_;
-};
-
-class DiffuseSpecularMapRenderer : public Renderer {
-public:
-	DiffuseSpecularMapRenderer(float width, float height);
-	~DiffuseSpecularMapRenderer();
-
-	virtual bool Init();
-	virtual bool Update(float dt);
-	virtual void Draw();
-
-private:
-	std::unique_ptr<haruna::gl::ShaderProgram> prog_;
-	std::unique_ptr<haruna::gl::Texture> diffuse_map_;
-	std::unique_ptr<haruna::gl::Texture> specular_map_;
-
-	float y_rot_;
-};
-
-class ToonRenderer : public Renderer {
-public:
-	ToonRenderer(float width, float height);
-	~ToonRenderer();
-
-	virtual bool Init();
-	virtual bool Update(float dt);
-	virtual void Draw();
-
-private:
-	std::unique_ptr<haruna::gl::ShaderProgram> prog_;
-
-	float y_rot_;
-};
+GLenum ToDrawMode(haruna::DrawType type);

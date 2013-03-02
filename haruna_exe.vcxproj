@@ -67,8 +67,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="haruna_exe\color_shader.cpp" />
+    <ClCompile Include="haruna_exe\diffuse_specular_mapping.cpp" />
+    <ClCompile Include="haruna_exe\lighting.cpp" />
     <ClCompile Include="haruna_exe\main.cpp" />
     <ClCompile Include="haruna_exe\renderer.cpp" />
+    <ClCompile Include="haruna_exe\texture_mapping.cpp" />
+    <ClCompile Include="haruna_exe\toon_shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="haruna.vcxproj">
@@ -76,7 +81,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="haruna_exe\color_shader.h" />
+    <ClInclude Include="haruna_exe\diffuse_specular_mapping.h" />
+    <ClInclude Include="haruna_exe\lighting.h" />
     <ClInclude Include="haruna_exe\renderer.h" />
+    <ClInclude Include="haruna_exe\texture_mapping.h" />
+    <ClInclude Include="haruna_exe\toon_shader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
