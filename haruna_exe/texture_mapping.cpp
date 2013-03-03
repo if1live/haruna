@@ -20,7 +20,6 @@
 TextureMapping::TextureMapping(float width, float height)
 	: AbstractLogic(width, height), y_rot_(0)
 {
-	Init();
 }
 
 TextureMapping::~TextureMapping()
@@ -38,8 +37,12 @@ bool TextureMapping::Init()
 	sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
 	bool fs_open_result = fs_file.Open();
 	bool vs_open_result = vs_file.Open();
-	SR_ASSERT(fs_open_result == true);
-	SR_ASSERT(vs_open_result == true);
+	if(!fs_open_result) {
+		return false; 
+	}
+	if(!vs_open_result) {
+		return false;
+	}
 	
 	std::string fs_src(static_cast<const char*>(fs_file.GetBuffer()));
 	std::string vs_src(static_cast<const char*>(vs_file.GetBuffer()));
@@ -49,13 +52,18 @@ bool TextureMapping::Init()
 
 	prog_.reset(new haruna::gl::ShaderProgram(vs, fs));
 	bool prog_result = prog_->Init();
-	SR_ASSERT(prog_result == true);
+	if(!prog_result) {
+		return false;
+	}
+
 
 	//create texture
 	std::string tex_path = sora::Filesystem::GetAppPath("texture/sora2.png");
 	tex_.reset(new haruna::gl::Texture(tex_path));
 	bool tex_init_result = tex_->Init();
-	SR_ASSERT(tex_init_result == true);
+	if(!tex_init_result) {
+		return false;
+	}
 
 	return true;
 }

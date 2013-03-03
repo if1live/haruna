@@ -1,5 +1,5 @@
 ﻿// Ŭnicode please 
-#include "diffuse_specular_mapping.h"
+#include "normal_mapping.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
@@ -15,25 +15,27 @@
 #include "haruna/gl/shader.h"
 #include "haruna/gl/texture.h"
 #include "haruna/gl/gl_env.h"
+
+#include "haruna/parametric_equations.h"
 #include "haruna/primitive_mesh.h"
 
-DiffuseSpecularMapping::DiffuseSpecularMapping(float width, float height)
+NormalMapping::NormalMapping(float width, float height)
 	: AbstractLogic(width, height), y_rot_(0)
 {
 }
 
-DiffuseSpecularMapping::~DiffuseSpecularMapping()
+NormalMapping::~NormalMapping()
 {
 	diffuse_map_->Deinit();
 	specular_map_->Deinit();
 	prog_->Deinit();
 }
 
-bool DiffuseSpecularMapping::Init()
+bool NormalMapping::Init()
 {
 	//쉐이더 
-	std::string fs_path = sora::Filesystem::GetAppPath("shader/diffuse_specular_map.fs");
-	std::string vs_path = sora::Filesystem::GetAppPath("shader/diffuse_specular_map.vs");
+	std::string fs_path = sora::Filesystem::GetAppPath("shader/normal_mapping.fs");
+	std::string vs_path = sora::Filesystem::GetAppPath("shader/normal_mapping.vs");
 	sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
 	sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
 	bool fs_open_result = fs_file.Open();
@@ -58,7 +60,7 @@ bool DiffuseSpecularMapping::Init()
 	}
 
 	//create texture
-	std::string diffuse_map_path = sora::Filesystem::GetAppPath("texture/glazed_brick_D.png");
+	std::string diffuse_map_path = sora::Filesystem::GetAppPath("texture/fieldstone_DM.png");
 	diffuse_map_.reset(new haruna::gl::Texture(diffuse_map_path));
 	bool diffuse_map_init_result = diffuse_map_->Init();
 	if(!diffuse_map_init_result) {
@@ -66,31 +68,41 @@ bool DiffuseSpecularMapping::Init()
 	}
 
 	//create texture
-	std::string specular_map_path = sora::Filesystem::GetAppPath("texture/glazed_brick_S.png");
+	std::string specular_map_path = sora::Filesystem::GetAppPath("texture/fieldstone_SM.png");
 	specular_map_.reset(new haruna::gl::Texture(specular_map_path));
 	bool specular_map_init_result = specular_map_->Init();
 	if(!specular_map_init_result) {
 		return false;
 	}
 
+	std::string normal_map_path = sora::Filesystem::GetAppPath("texture/fieldstone_NM.png");
+	normal_map_.reset(new haruna::gl::Texture(normal_map_path));
+	bool normal_map_init_result = normal_map_->Init();
+	if(!normal_map_init_result) {
+		return false;
+	}
+	
+	// create mesh
+	//mesh_.reset(new haruna::Torus(2, 1));
+	mesh_.reset(new haruna::TrefoilKnot(2));
+
 	return true;
 }
 
-bool DiffuseSpecularMapping::Update(float dt)
+bool NormalMapping::Update(float dt)
 {
-	y_rot_ += 2.0f * dt;
+	y_rot_ += 0.0f * dt;
 	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
 	return running;
 }
 
-void DiffuseSpecularMapping::Draw()
+void NormalMapping::Draw()
 {
 	//sample mesh
 	//haruna::SolidCubeFactory cube_factory(1, 1, 1);
 	//auto data = cube_factory.CreateNormalMesh();
-	haruna::SolidSphereFactory sphere_factory(1, 16, 16);
-	auto data = sphere_factory.CreateNormalMesh();
-
+	//haruna::SolidSphereFactory sphere_factory(1, 16, 16);
+	//auto data = sphere_factory.CreateNormalMesh();
 
 	prog_->Use();
 	haruna::gl::ShaderLocation pos_loc = prog_->GetAttribLocation("a_position");
@@ -112,7 +124,7 @@ void DiffuseSpecularMapping::Draw()
 	float aspect = width() / height();
 	glm::mat4 proj_mat = glm::perspective(60.0f, aspect, 0.1f, 100.0f);
 
-	float radius = 2;
+	float radius = 3;
 	glm::vec3 eye(cos(y_rot_) * radius, 0, sin(y_rot_) * radius);
 	glm::vec3 center(0, 0, 0);
 	glm::vec3 up(0, 1, 0);
@@ -125,6 +137,7 @@ void DiffuseSpecularMapping::Draw()
 	glViewport(0, 0, (int)width(), (int)height());
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 
 	//glUniformMatrix4fv(mvp_loc.handle(), 1, GL_FALSE, glm::value_ptr(mvp));
 	glUniformMatrix4fv(model_loc.handle(), 1, GL_FALSE, glm::value_ptr(model_mat));
@@ -151,21 +164,21 @@ void DiffuseSpecularMapping::Draw()
 	glUniform1i(specular_map_loc.handle(), 1);
 
 	//color
-	glm::vec4 color(0.7f, 0.5f, 1.0f, 1.0f);
+	glm::vec4 color(1.0f, 1.0f, 1.0f, 1.0f);
 	glUniform4fv(light_color_loc.handle(), 1, glm::value_ptr(color));
 
-	for(auto cmd : data) {
-		std::vector<haruna::Vertex_1P1N1UV> &vert_list = cmd.vertex_list;
-		std::vector<unsigned short> &index_list = cmd.index_list;
 
-		int stride = sizeof(haruna::Vertex_1P1N1UV);
-		glVertexAttribPointer(pos_loc.handle(), 3, GL_FLOAT, GL_FALSE, stride, &vert_list[0].p);
-		glVertexAttribPointer(normal_loc.handle(), 3, GL_FLOAT, GL_FALSE, stride, &vert_list[0].n);
-		glVertexAttribPointer(texcoord_loc.handle(), 2, GL_FLOAT, GL_FALSE, stride, &vert_list[0].uv);
+	std::vector<haruna::Vertex_1P1N1UV1T> vert_list;
+	std::vector<unsigned short> index_list;
+	mesh_->GenerateTriangleIndices(index_list);
+	mesh_->GenerateVertices(vert_list);
 
-		GLenum draw_mode = ToDrawMode(cmd.draw_mode);
-		glDrawElements(draw_mode, index_list.size(), GL_UNSIGNED_SHORT, &index_list[0]);
-	}
+	int stride = sizeof(haruna::Vertex_1P1N1UV1T);
+	glVertexAttribPointer(pos_loc.handle(), 3, GL_FLOAT, GL_FALSE, stride, &vert_list[0].p);
+	glVertexAttribPointer(normal_loc.handle(), 3, GL_FLOAT, GL_FALSE, stride, &vert_list[0].n);
+	glVertexAttribPointer(texcoord_loc.handle(), 2, GL_FLOAT, GL_FALSE, stride, &vert_list[0].uv);
+
+	glDrawElements(GL_TRIANGLES, index_list.size(), GL_UNSIGNED_SHORT, &index_list[0]);
 
 	haruna::gl::GLEnv::CheckError("End Frame");
 }

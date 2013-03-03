@@ -19,7 +19,6 @@ ColorShader::ColorShader(float width, float height)
 	: AbstractLogic(width, height),
 	y_rot_(0)
 {
-	Init();
 }
 ColorShader::~ColorShader() 
 {
@@ -35,8 +34,12 @@ bool ColorShader::Init()
 	sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
 	bool fs_open_result = fs_file.Open();
 	bool vs_open_result = vs_file.Open();
-	SR_ASSERT(fs_open_result == true);
-	SR_ASSERT(vs_open_result == true);
+	if(!fs_open_result) {
+		return false;
+	}
+	if(!vs_open_result) {
+		return false;
+	}
 	
 	std::string fs_src(static_cast<const char*>(fs_file.GetBuffer()));
 	std::string vs_src(static_cast<const char*>(vs_file.GetBuffer()));
@@ -46,7 +49,9 @@ bool ColorShader::Init()
 
 	prog_.reset(new haruna::gl::ShaderProgram(vs, fs));
 	bool prog_result = prog_->Init();
-	SR_ASSERT(prog_result == true);
+	if(!prog_result) {
+		return false;
+	}
 
 	return true;
 }
