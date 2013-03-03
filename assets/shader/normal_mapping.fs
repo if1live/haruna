@@ -1,30 +1,44 @@
 precision mediump float;
-varying vec3 v_diffuse;
-varying vec3 v_reflection;
+
 varying vec3 v_viewDir;
 varying vec2 v_texcoord;
+varying vec3 v_lightDir;
+
+varying vec3 v_T;
+varying vec3 v_B;
+varying vec3 v_N;
 
 uniform sampler2D s_diffuse;
 uniform sampler2D s_specular;
+uniform sampler2D s_normal;
 
 uniform vec4 u_lightColor;
 
 void main() {
-	vec4 albedo = texture2D(s_diffuse, v_texcoord);
-	vec3 diffuse = clamp(albedo.xyz * v_diffuse * u_lightColor.xyz, 0.0, 1.0);
+	vec3 tangentNormal = texture2D(s_normal, v_texcoord).xyz;
+	tangentNormal = normalize(tangentNormal * 2 - 1.0);
+	tangentNormal.y = -tangentNormal.y;
+	mat3 basis = mat3(v_N, v_T, v_B);
+	vec3 modelNormal = basis * tangentNormal;
 	
-	vec3 reflection = normalize(v_reflection);
-	vec3 viewDir = normalize(v_viewDir);
+	vec4 albedo = texture2D(s_diffuse, v_texcoord);
+	vec3 lightDir = normalize(v_lightDir);
+	vec3 diffuse = clamp(dot(-lightDir, modelNormal), 0.0, 1.0);
+	diffuse *= albedo.xyz * u_lightColor.xyz;
+	
 	vec3 specular = vec3(0.0, 0.0, 0.0);
 	if(diffuse.x > 0.0) {
-		float shininess = 0;
-		shininess = clamp(dot(reflection, -viewDir), 0.0, 1.0);
-		shininess = pow(shininess, 20.0);
+		vec3 viewDir = normalize(v_viewDir);
+		vec3 reflection = reflect(lightDir, modelNormal);
+		
+		float specularValue = clamp(dot(reflection, -viewDir), 0.0, 1.0);
+		specularValue = pow(specularValue, 20.0);
+		specular = vec3(specularValue);
 		
 		vec4 specularIntensity = texture2D(s_specular, v_texcoord);
-		specular = specularIntensity.xyz * vec3(shininess, shininess, shininess) * u_lightColor.xyz;
+		specular *= specularIntensity.xyz * u_lightColor.xyz;
 	}
-	vec3 ambient = vec3(0.1, 0.1, 0.1) * albedo.xyz * u_lightColor.xyz;
+	vec3 ambient = vec3(0.1, 0.1, 0.1) * albedo.xyz;
 	
 	gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
 }

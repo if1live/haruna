@@ -10,11 +10,11 @@ void main() {
 	vec3 viewDir = normalize(v_viewDir);
 	vec3 specular = vec3(0.0, 0.0, 0.0);
 	if(diffuse.x > 0.0) {
-		float shininess = 0;
-		shininess = clamp(dot(reflection, -viewDir), 0.0, 1.0);
-		shininess = pow(shininess, 20.0);
+		float specularValue = 0;
+		specularValue = clamp(dot(reflection, -viewDir), 0.0, 1.0);
+		specularValue = pow(specularValue, 20.0);
 		
-		specular = vec3(shininess, shininess, shininess);
+		specular = vec3(specularValue);
 	}
 	vec3 ambient = vec3(0.1, 0.1, 0.1);
 	

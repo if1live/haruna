@@ -12,6 +12,7 @@ namespace gl {
 		bool Deinit();
 
 		GLuint tex() const { return tex_; }
+		operator GLuint() const { return tex_; }
 	private:
 		GLuint tex_;
 		std::string filename_;

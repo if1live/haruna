@@ -95,8 +95,15 @@ namespace gl {
 			return false;
 		}
 
-		vert_shader_.Init();
-		frag_shader_.Init();
+		bool vs_result = vert_shader_.Init();
+		if(!vs_result) {
+			return false;
+		}
+
+		bool fs_result = frag_shader_.Init();
+		if(!fs_result) {
+			return false;
+		}
 		glAttachShader(prog_, vert_shader_.handle());
 		glAttachShader(prog_, frag_shader_.handle());
 

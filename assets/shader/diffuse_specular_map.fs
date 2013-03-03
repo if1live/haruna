@@ -17,14 +17,14 @@ void main() {
 	vec3 viewDir = normalize(v_viewDir);
 	vec3 specular = vec3(0.0, 0.0, 0.0);
 	if(diffuse.x > 0.0) {
-		float shininess = 0;
-		shininess = clamp(dot(reflection, -viewDir), 0.0, 1.0);
-		shininess = pow(shininess, 20.0);
+		float specularValue = 0;
+		specularValue = clamp(dot(reflection, -viewDir), 0.0, 1.0);
+		specularValue = pow(specularValue, 20.0);
 		
 		vec4 specularIntensity = texture2D(s_specular, v_texcoord);
-		specular = specularIntensity.xyz * vec3(shininess, shininess, shininess) * u_lightColor.xyz;
+		specular = specularIntensity.xyz * vec3(specularValue) * u_lightColor.xyz;
 	}
-	vec3 ambient = vec3(0.1, 0.1, 0.1) * albedo.xyz * u_lightColor.xyz;
+	vec3 ambient = vec3(0.1, 0.1, 0.1) * albedo.xyz;
 	
 	gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
 }

@@ -83,14 +83,15 @@ std::unique_ptr<AbstractLogic> CreateLogicByMenu()
 
 int main()
 {
-	//std::unique_ptr<AbstractLogic> logic = CreateLogicByMenu();
-	std::unique_ptr<AbstractLogic> logic(new NormalMapping(kWidth, kHeight));
+	std::unique_ptr<AbstractLogic> logic = CreateLogicByMenu();
+	//std::unique_ptr<AbstractLogic> logic(new NormalMapping(kWidth, kHeight));
 
 	InitWindow(static_cast<int>(kWidth), static_cast<int>(kHeight));
 
 	bool running = true;
 	bool init_result = logic->Init();
 	if(init_result == false) {
+		getchar();
 		running = false;
 	}
 

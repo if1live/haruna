@@ -5,11 +5,11 @@
 namespace sora {;
 float DegToRad(float degree)
 {
-	return degree * M_PI / 180.0f;
+	return static_cast<float>(degree * M_PI / 180.0f);
 }
 float RadToDeg(float radian)
 {
-	return radian * 180.0f / M_PI;
+	return static_cast<float>(radian * 180.0f / M_PI);
 }
 
 bool EqualAbsError(float a, float b, float maxError)

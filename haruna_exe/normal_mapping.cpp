@@ -26,9 +26,18 @@ NormalMapping::NormalMapping(float width, float height)
 
 NormalMapping::~NormalMapping()
 {
-	diffuse_map_->Deinit();
-	specular_map_->Deinit();
-	prog_->Deinit();
+	if(diffuse_map_.get() != nullptr) {
+		diffuse_map_->Deinit();
+	}
+	if(specular_map_.get() != nullptr) {
+		specular_map_->Deinit();
+	}
+	if(normal_map_.get() != nullptr) {
+		normal_map_->Deinit();
+	}
+	if(prog_.get() != nullptr) {
+		prog_->Deinit();	
+	}
 }
 
 bool NormalMapping::Init()
@@ -83,15 +92,17 @@ bool NormalMapping::Init()
 	}
 	
 	// create mesh
-	//mesh_.reset(new haruna::Torus(2, 1));
-	mesh_.reset(new haruna::TrefoilKnot(2));
+	//mesh_.reset(new haruna::Torus(1, 0.6));
+	//mesh_.reset(new haruna::TrefoilKnot(2));
+	mesh_.reset(new haruna::Sphere(1.8));
 
 	return true;
 }
 
 bool NormalMapping::Update(float dt)
 {
-	y_rot_ += 0.0f * dt;
+	//y_rot_ += 1.0f * dt;
+	y_rot_ += 0.5f * dt;
 	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
 	return running;
 }
@@ -108,15 +119,17 @@ void NormalMapping::Draw()
 	haruna::gl::ShaderLocation pos_loc = prog_->GetAttribLocation("a_position");
 	haruna::gl::ShaderLocation normal_loc = prog_->GetAttribLocation("a_normal");
 	haruna::gl::ShaderLocation texcoord_loc = prog_->GetAttribLocation("a_texcoord");
+	haruna::gl::ShaderLocation tangent_loc = prog_->GetAttribLocation("a_tangent");
 	
 	haruna::gl::ShaderLocation light_pos_loc = prog_->GetUniformLocation("u_modelLightPos");
 	haruna::gl::ShaderLocation cam_pos_loc = prog_->GetUniformLocation("u_modelCameraPos");
+
+	haruna::gl::ShaderLocation mvp_loc = prog_->GetUniformLocation("u_mvp");
 	haruna::gl::ShaderLocation model_loc = prog_->GetUniformLocation("u_model");
-	haruna::gl::ShaderLocation view_loc = prog_->GetUniformLocation("u_view");
-	haruna::gl::ShaderLocation proj_loc = prog_->GetUniformLocation("u_proj");
 
 	haruna::gl::ShaderLocation diffuse_map_loc = prog_->GetUniformLocation("s_diffuse");
 	haruna::gl::ShaderLocation specular_map_loc = prog_->GetUniformLocation("s_specular");
+	haruna::gl::ShaderLocation normal_map_loc = prog_->GetUniformLocation("s_normal");
 
 	haruna::gl::ShaderLocation light_color_loc = prog_->GetUniformLocation("u_lightColor");
 
@@ -139,33 +152,37 @@ void NormalMapping::Draw()
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
-	//glUniformMatrix4fv(mvp_loc.handle(), 1, GL_FALSE, glm::value_ptr(mvp));
-	glUniformMatrix4fv(model_loc.handle(), 1, GL_FALSE, glm::value_ptr(model_mat));
-	glUniformMatrix4fv(view_loc.handle(), 1, GL_FALSE, glm::value_ptr(view_mat));
-	glUniformMatrix4fv(proj_loc.handle(), 1, GL_FALSE, glm::value_ptr(proj_mat));
+	glm::mat4 mvp_mat = proj_mat * view_mat * model_mat;
+	glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, glm::value_ptr(mvp_mat));
+	glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model_mat));
 
 
-	glEnableVertexAttribArray(pos_loc.handle());
-	glEnableVertexAttribArray(normal_loc.handle());
-	glEnableVertexAttribArray(texcoord_loc.handle());
+	glEnableVertexAttribArray(pos_loc);
+	glEnableVertexAttribArray(normal_loc);
+	glEnableVertexAttribArray(texcoord_loc);
+	glEnableVertexAttribArray(tangent_loc);
 
 	glm::vec3 light_pos(10, 10, 10);
-	glUniform3fv(light_pos_loc.handle(), 1, glm::value_ptr(light_pos));
+	glUniform3fv(light_pos_loc, 1, glm::value_ptr(light_pos));
 
-	glUniform3fv(cam_pos_loc.handle(), 1, glm::value_ptr(eye));
+	glUniform3fv(cam_pos_loc, 1, glm::value_ptr(eye));
 
 	// bind texture
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, diffuse_map_->tex());
+	glBindTexture(GL_TEXTURE_2D, *diffuse_map_);
 	glUniform1i(diffuse_map_loc.handle(), 0);
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, specular_map_->tex());
-	glUniform1i(specular_map_loc.handle(), 1);
+	glBindTexture(GL_TEXTURE_2D, *specular_map_);
+	glUniform1i(specular_map_loc, 1);
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, *normal_map_);
+	glUniform1i(normal_map_loc, 2);
 
 	//color
 	glm::vec4 color(1.0f, 1.0f, 1.0f, 1.0f);
-	glUniform4fv(light_color_loc.handle(), 1, glm::value_ptr(color));
+	glUniform4fv(light_color_loc, 1, glm::value_ptr(color));
 
 
 	std::vector<haruna::Vertex_1P1N1UV1T> vert_list;
@@ -174,9 +191,10 @@ void NormalMapping::Draw()
 	mesh_->GenerateVertices(vert_list);
 
 	int stride = sizeof(haruna::Vertex_1P1N1UV1T);
-	glVertexAttribPointer(pos_loc.handle(), 3, GL_FLOAT, GL_FALSE, stride, &vert_list[0].p);
-	glVertexAttribPointer(normal_loc.handle(), 3, GL_FLOAT, GL_FALSE, stride, &vert_list[0].n);
-	glVertexAttribPointer(texcoord_loc.handle(), 2, GL_FLOAT, GL_FALSE, stride, &vert_list[0].uv);
+	glVertexAttribPointer(pos_loc, 3, GL_FLOAT, GL_FALSE, stride, &vert_list[0].p);
+	glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, stride, &vert_list[0].uv);
+	glVertexAttribPointer(normal_loc, 3, GL_FLOAT, GL_TRUE, stride, &vert_list[0].n);
+	glVertexAttribPointer(tangent_loc, 3, GL_FLOAT, GL_TRUE, stride, &vert_list[0].t);
 
 	glDrawElements(GL_TRIANGLES, index_list.size(), GL_UNSIGNED_SHORT, &index_list[0]);
 

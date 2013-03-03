@@ -10,6 +10,7 @@ namespace gl {
 		bool IsValid() const { return (loc_ != -1); }
 
 		GLint handle() const { return loc_; }
+		operator GLint() const { return loc_; }
 	private:
 		GLint loc_;
 	};
