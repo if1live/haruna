@@ -44,6 +44,6 @@ void main() {
 	
 	vec3 viewReflect = reflect(viewDir, modelNormal);
 	vec3 environment = textureCube(s_environment, viewReflect).xyz;
-	gl_FragColor = vec4(ambient + diffuse + specular + environment, 1.0);
+	gl_FragColor = vec4(ambient + diffuse + specular + environment * 0.5, 1.0);
 	//gl_FragColor = vec4(environment, 1.0);
 }

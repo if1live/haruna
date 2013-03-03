@@ -54,6 +54,9 @@
     <ClCompile Include="sora\math_helper.cpp">
       <Filter>sora</Filter>
     </ClCompile>
+    <ClCompile Include="haruna\gl\frame_buffer.cpp">
+      <Filter>haruna\gl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna\gl\shader.h">
@@ -109,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="sora\math_helper.h">
       <Filter>sora</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna\gl\frame_buffer.h">
+      <Filter>haruna\gl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

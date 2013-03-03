@@ -16,10 +16,12 @@ namespace gl {
 
 	class Texture2D {
 	public:
+		Texture2D();
 		Texture2D(const std::string &filename);
 		~Texture2D();
 
 		bool Init();
+		bool Init(GLuint tex_id, int w, int h);
 		bool Deinit();
 
 		GLuint tex() const { return tex_; }
@@ -27,6 +29,8 @@ namespace gl {
 	private:
 		GLuint tex_;
 		std::string filename_;
+		int width_;
+		int height_;
 	};
 
 	class TextureCube {

@@ -67,6 +67,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="haruna_exe\color_conversion.cpp" />
     <ClCompile Include="haruna_exe\color_shader.cpp" />
     <ClCompile Include="haruna_exe\diffuse_specular_mapping.cpp" />
     <ClCompile Include="haruna_exe\environment_mapping.cpp" />
@@ -84,6 +85,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="haruna_exe\color_conversion.h" />
     <ClInclude Include="haruna_exe\color_shader.h" />
     <ClInclude Include="haruna_exe\diffuse_specular_mapping.h" />
     <ClInclude Include="haruna_exe\environment_mapping.h" />

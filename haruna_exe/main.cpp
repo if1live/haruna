@@ -14,6 +14,7 @@
 #include "normal_mapping.h"
 #include "environment_mapping.h"
 #include "uv_animation.h"
+#include "color_conversion.h"
 
 const float kWidth = 640;
 const float kHeight = 480;
@@ -53,7 +54,9 @@ std::unique_ptr<AbstractLogic> CreateLogicByMenu()
 	printf("6. Normal Mapping\n");
 	printf("7. Environment Mapping\n");
 	printf("8. UV Animation\n");
-
+	printf("9. Shadow Mapping\n");
+	printf("10. Color Conversion\n");
+	printf("11. Edge Detection\n");
 	int select = 0;
 	scanf("%d", &select);
 
@@ -83,6 +86,18 @@ std::unique_ptr<AbstractLogic> CreateLogicByMenu()
 	case 8:
 		logic.reset(new UVAnimation(kWidth, kHeight));
 		break;
+	case 9:
+		printf("Not support yet");
+		getchar();
+		exit(EXIT_FAILURE);
+	case 10:
+		logic.reset(new ColorConversion(kWidth, kHeight));
+		break;
+	case 11:
+		printf("Not support yet");
+		getchar();
+		exit(EXIT_FAILURE);
+
 	default:
 		printf("Not support : %d\n", select);
 		getchar();
@@ -96,7 +111,8 @@ int main()
 	//std::unique_ptr<AbstractLogic> logic = CreateLogicByMenu();
 	//std::unique_ptr<AbstractLogic> logic(new NormalMapping(kWidth, kHeight));
 	//std::unique_ptr<AbstractLogic> logic(new EnvironmentMapping(kWidth, kHeight));
-	std::unique_ptr<AbstractLogic> logic(new UVAnimation(kWidth, kHeight));
+	//std::unique_ptr<AbstractLogic> logic(new UVAnimation(kWidth, kHeight));
+	std::unique_ptr<AbstractLogic> logic(new ColorConversion(kWidth, kHeight));
 
 	InitWindow(static_cast<int>(kWidth), static_cast<int>(kHeight));
 

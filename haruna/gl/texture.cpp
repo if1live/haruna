@@ -67,13 +67,27 @@ namespace gl {
 
 
 	Texture2D::Texture2D(const std::string &filename)
-		: filename_(filename), tex_(0)
+		: filename_(filename), tex_(0), width_(0), height_(0)
+	{
+	}
+	Texture2D::Texture2D()
+		: tex_(0), width_(0), height_(0)
 	{
 	}
 	Texture2D::~Texture2D()
 	{
 	}
 
+	bool Texture2D::Init(GLuint tex_id, int w, int h)
+	{
+		if(tex_ != 0) {
+			return false;
+		}
+		tex_ = tex_id;
+		width_ = w;
+		height_ = h;
+		return true;
+	}
 	bool Texture2D::Init()
 	{
 		/* reference
@@ -109,6 +123,8 @@ namespace gl {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		
+		width_ = w;
+		height_ = h;
 
 		return true;
 	}
@@ -120,6 +136,8 @@ namespace gl {
 
 		glDeleteTextures(1, &tex_);
 		tex_ = 0;
+		width_ = 0;
+		height_ = 0;
 		return true;
 	}
 
