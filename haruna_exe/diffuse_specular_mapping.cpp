@@ -78,7 +78,7 @@ bool DiffuseSpecularMapping::Init()
 
 bool DiffuseSpecularMapping::Update(float dt)
 {
-	y_rot_ += 2.0f * dt;
+	//y_rot_ += 2.0f * dt;
 	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
 	return running;
 }

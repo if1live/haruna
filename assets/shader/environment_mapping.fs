@@ -20,7 +20,7 @@ void main() {
 	vec3 tangentNormal = texture2D(s_normal, v_texcoord).xyz;
 	tangentNormal = normalize(tangentNormal * 2 - 1.0);
 	tangentNormal.y = -tangentNormal.y;
-	mat3 basis = mat3(v_N, v_T, v_B);
+	mat3 basis = mat3(v_T, v_B, v_N);
 	vec3 modelNormal = basis * tangentNormal;
 	
 	vec4 albedo = texture2D(s_diffuse, v_texcoord);
