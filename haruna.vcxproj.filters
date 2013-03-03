@@ -57,6 +57,9 @@
     <ClCompile Include="haruna\gl\frame_buffer.cpp">
       <Filter>haruna\gl</Filter>
     </ClCompile>
+    <ClCompile Include="haruna\gl\buffer_object.cpp">
+      <Filter>haruna\gl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna\gl\shader.h">
@@ -114,6 +117,9 @@
       <Filter>sora</Filter>
     </ClInclude>
     <ClInclude Include="haruna\gl\frame_buffer.h">
+      <Filter>haruna\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna\gl\buffer_object.h">
       <Filter>haruna\gl</Filter>
     </ClInclude>
   </ItemGroup>

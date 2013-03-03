@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="haruna\gl\buffer_object.cpp" />
     <ClCompile Include="haruna\gl\frame_buffer.cpp" />
     <ClCompile Include="haruna\gl\gl_env.cpp" />
     <ClCompile Include="haruna\gl\shader.cpp" />
@@ -30,6 +31,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="haruna\gl\buffer_object.h" />
     <ClInclude Include="haruna\gl\frame_buffer.h" />
     <ClInclude Include="haruna\gl\gl_env.h" />
     <ClInclude Include="haruna\gl\shader.h" />

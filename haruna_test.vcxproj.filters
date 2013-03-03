@@ -8,10 +8,19 @@
     <ClCompile Include="haruna_test\sora\filesystem_test.cpp">
       <Filter>sora</Filter>
     </ClCompile>
+    <ClCompile Include="haruna_test\haruna\gl\buffer_object_test.cpp">
+      <Filter>haruna\gl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sora">
       <UniqueIdentifier>{ddc63c69-66cc-493d-9dd7-3db32f3140ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="haruna">
+      <UniqueIdentifier>{e8377b80-0aee-467d-8075-1f8954c6606b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="haruna\gl">
+      <UniqueIdentifier>{4bbfe20a-7154-44db-85ba-5f163de3772f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
