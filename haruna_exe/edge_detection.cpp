@@ -1,5 +1,5 @@
 ﻿// Ŭnicode please 
-#include "color_conversion.h"
+#include "edge_detection.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
@@ -21,16 +21,17 @@
 
 typedef enum {
 	kEffectNo,
-	kEffectGray,
-	kEffectSepia
+	kEffectEmboss,
+	kEffectEdgeDetection,
 } EffectType;
 
-ColorConversion::ColorConversion(float width, float height)
+
+EdgeDetection::EdgeDetection(float width, float height)
 	: AbstractLogic(width, height), y_rot_(0), effect_type_(kEffectNo)
 {
 }
 
-ColorConversion::~ColorConversion()
+EdgeDetection::~EdgeDetection()
 {
 	if(diffuse_map_.get() != nullptr) {
 		diffuse_map_->Deinit();
@@ -54,15 +55,15 @@ ColorConversion::~ColorConversion()
 	if(no_effect_prog_.get() != nullptr) {
 		no_effect_prog_->Deinit();
 	}
-	if(gray_scale_prog_.get() != nullptr) {
-		gray_scale_prog_->Deinit();
+	if(emboss_prog_.get() != nullptr) {
+		emboss_prog_->Deinit();
 	}
-	if(sepia_prog_.get() != nullptr) {
-		sepia_prog_->Deinit();
+	if(edge_detection_prog_.get() != nullptr) {
+		edge_detection_prog_->Deinit();
 	}
 }
 
-bool ColorConversion::Init()
+bool EdgeDetection::Init()
 {
 	//쉐이더 
 	std::string fs_path = sora::Filesystem::GetAppPath("shader/environment_mapping.fs");
@@ -142,17 +143,17 @@ bool ColorConversion::Init()
 	if(!InitNoEffect()) {
 		return false;
 	}
-	if(!InitGrayScale()) {
+	if(!InitEdgeDetection()) {
 		return false;
 	}
-	if(!InitSepia()) {
+	if(!InitEmboss()) {
 		return false;
 	}
 
 	return true;
 }
 
-bool ColorConversion::InitNoEffect()
+bool EdgeDetection::InitNoEffect()
 {
 	std::string no_effect_fs_path = sora::Filesystem::GetAppPath("shader/no_effect.fs");
 	std::string no_effect_vs_path = sora::Filesystem::GetAppPath("shader/no_effect.vs");
@@ -178,10 +179,10 @@ bool ColorConversion::InitNoEffect()
 
 	return true;
 }
-bool ColorConversion::InitGrayScale()
+bool EdgeDetection::InitEmboss()
 {
-	std::string fs_path = sora::Filesystem::GetAppPath("shader/gray_scale.fs");
-	std::string vs_path = sora::Filesystem::GetAppPath("shader/gray_scale.vs");
+	std::string fs_path = sora::Filesystem::GetAppPath("shader/emboss.fs");
+	std::string vs_path = sora::Filesystem::GetAppPath("shader/emboss.vs");
 	sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
 	sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
 	if(!fs_file.Open()) {
@@ -196,18 +197,17 @@ bool ColorConversion::InitGrayScale()
 	haruna::gl::VertexShader vs(vs_src);
 	haruna::gl::FragmentShader fs(fs_src);
 
-	gray_scale_prog_.reset(new haruna::gl::ShaderProgram(vs, fs));
-	bool prog_result = gray_scale_prog_->Init();
+	emboss_prog_.reset(new haruna::gl::ShaderProgram(vs, fs));
+	bool prog_result = emboss_prog_->Init();
 	if(!prog_result) {
 		return false;
 	}
-
 	return true;
 }
-bool ColorConversion::InitSepia()
+bool EdgeDetection::InitEdgeDetection()
 {
-	std::string fs_path = sora::Filesystem::GetAppPath("shader/sepia.fs");
-	std::string vs_path = sora::Filesystem::GetAppPath("shader/sepia.vs");
+	std::string fs_path = sora::Filesystem::GetAppPath("shader/edge_detection.fs");
+	std::string vs_path = sora::Filesystem::GetAppPath("shader/edge_detection.vs");
 	sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
 	sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
 	if(!fs_file.Open()) {
@@ -222,8 +222,8 @@ bool ColorConversion::InitSepia()
 	haruna::gl::VertexShader vs(vs_src);
 	haruna::gl::FragmentShader fs(fs_src);
 
-	sepia_prog_.reset(new haruna::gl::ShaderProgram(vs, fs));
-	bool prog_result = sepia_prog_->Init();
+	edge_detection_prog_.reset(new haruna::gl::ShaderProgram(vs, fs));
+	bool prog_result = edge_detection_prog_->Init();
 	if(!prog_result) {
 		return false;
 	}
@@ -231,26 +231,26 @@ bool ColorConversion::InitSepia()
 	return true;
 }
 
-bool ColorConversion::Update(float dt)
+bool EdgeDetection::Update(float dt)
 {
 	if(glfwGetKey('1') == GLFW_PRESS) {
 		effect_type_ = kEffectNo;
 		printf("Current : No Effect\n");
 	}
 	if(glfwGetKey('2') == GLFW_PRESS) {
-		effect_type_ = kEffectGray;
-		printf("Current : Gray Scale\n");
+		effect_type_ = kEffectEdgeDetection;
+		printf("Current : Gray Edge Detection\n");
 	}
 	if(glfwGetKey('3') == GLFW_PRESS) {
-		effect_type_ = kEffectSepia;
-		printf("Current : Sepia\n");
+		effect_type_ = kEffectEmboss;
+		printf("Current : Emboss\n");
 	}
 
 	y_rot_ += 0.5f * dt;
 	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
 	return running;
 }
-void ColorConversion::Draw()
+void EdgeDetection::Draw()
 {
 	fb_->Bind();
 	{
@@ -355,11 +355,11 @@ void ColorConversion::Draw()
 	case kEffectNo:
 		DrawPostEffect(*no_effect_prog_);
 		break;
-	case kEffectGray:
-		DrawPostEffect(*gray_scale_prog_);
+	case kEffectEmboss:
+		DrawPostEffect(*emboss_prog_);
 		break;
-	case kEffectSepia:
-		DrawPostEffect(*sepia_prog_);
+	case kEffectEdgeDetection:
+		DrawPostEffect(*edge_detection_prog_);
 		break;
 	}
 
@@ -368,7 +368,7 @@ void ColorConversion::Draw()
 	}
 }
 
-bool ColorConversion::DrawPostEffect(haruna::gl::ShaderProgram &prog)
+bool EdgeDetection::DrawPostEffect(haruna::gl::ShaderProgram &prog)
 {
 	prog.Use();
 
@@ -380,10 +380,14 @@ bool ColorConversion::DrawPostEffect(haruna::gl::ShaderProgram &prog)
 	haruna::gl::ShaderLocation pos_loc = prog.GetAttribLocation("a_position");
 	haruna::gl::ShaderLocation texcoord_los = prog.GetAttribLocation("a_texcoord");
 	haruna::gl::ShaderLocation scene_los = prog.GetUniformLocation("s_scene");
+	haruna::gl::ShaderLocation pixel_offset_loc = prog.GetUniformLocation("u_pixelOffset");
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, fb_->color_tex());
 	glUniform1i(scene_los, 0);
+
+	glm::vec2 pixel_offset(1.0f / width(), 1.0f / height());
+	glUniform2fv(pixel_offset_loc, 1, glm::value_ptr(pixel_offset));
 
 	glEnableVertexAttribArray(pos_loc);
 	glEnableVertexAttribArray(texcoord_los);

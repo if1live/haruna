@@ -10,11 +10,10 @@ namespace gl {
 }
 }
 
-
-class ColorConversion : public AbstractLogic {
+class EdgeDetection : public AbstractLogic {
 public:
-	ColorConversion(float width, float height);
-	virtual ~ColorConversion();
+	EdgeDetection(float width, float height);
+	virtual ~EdgeDetection();
 
 	virtual bool Init();
 	virtual bool Update(float dt);
@@ -24,8 +23,8 @@ public:
 
 private:
 	bool InitNoEffect();
-	bool InitGrayScale();
-	bool InitSepia();
+	bool InitEdgeDetection();
+	bool InitEmboss();
 
 private:
 	std::unique_ptr<haruna::gl::ShaderProgram> prog_;
@@ -40,10 +39,9 @@ private:
 
 	std::unique_ptr<haruna::gl::FrameBuffer> fb_;
 
-	//effect
 	std::unique_ptr<haruna::gl::ShaderProgram> no_effect_prog_;
-	std::unique_ptr<haruna::gl::ShaderProgram> gray_scale_prog_;
-	std::unique_ptr<haruna::gl::ShaderProgram> sepia_prog_;
+	std::unique_ptr<haruna::gl::ShaderProgram> emboss_prog_;
+	std::unique_ptr<haruna::gl::ShaderProgram> edge_detection_prog_;
 
 	int effect_type_;
 
