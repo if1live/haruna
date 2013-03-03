@@ -10,6 +10,7 @@
     <ClCompile Include="haruna_exe\toon_shader.cpp" />
     <ClCompile Include="haruna_exe\normal_mapping.cpp" />
     <ClCompile Include="haruna_exe\environment_mapping.cpp" />
+    <ClCompile Include="haruna_exe\uv_animation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna_exe\renderer.h" />
@@ -20,5 +21,6 @@
     <ClInclude Include="haruna_exe\toon_shader.h" />
     <ClInclude Include="haruna_exe\normal_mapping.h" />
     <ClInclude Include="haruna_exe\environment_mapping.h" />
+    <ClInclude Include="haruna_exe\uv_animation.h" />
   </ItemGroup>
 </Project>

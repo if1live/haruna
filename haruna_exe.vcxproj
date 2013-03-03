@@ -76,6 +76,7 @@
     <ClCompile Include="haruna_exe\renderer.cpp" />
     <ClCompile Include="haruna_exe\texture_mapping.cpp" />
     <ClCompile Include="haruna_exe\toon_shader.cpp" />
+    <ClCompile Include="haruna_exe\uv_animation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="haruna.vcxproj">
@@ -91,6 +92,7 @@
     <ClInclude Include="haruna_exe\renderer.h" />
     <ClInclude Include="haruna_exe\texture_mapping.h" />
     <ClInclude Include="haruna_exe\toon_shader.h" />
+    <ClInclude Include="haruna_exe\uv_animation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

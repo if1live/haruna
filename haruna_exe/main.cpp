@@ -13,6 +13,7 @@
 #include "toon_shader.h"
 #include "normal_mapping.h"
 #include "environment_mapping.h"
+#include "uv_animation.h"
 
 const float kWidth = 640;
 const float kHeight = 480;
@@ -51,6 +52,7 @@ std::unique_ptr<AbstractLogic> CreateLogicByMenu()
 	printf("5. ToonShader\n");
 	printf("6. Normal Mapping\n");
 	printf("7. Environment Mapping\n");
+	printf("8. UV Animation\n");
 
 	int select = 0;
 	scanf("%d", &select);
@@ -78,6 +80,9 @@ std::unique_ptr<AbstractLogic> CreateLogicByMenu()
 	case 7:
 		logic.reset(new EnvironmentMapping(kWidth, kHeight));
 		break;
+	case 8:
+		logic.reset(new UVAnimation(kWidth, kHeight));
+		break;
 	default:
 		printf("Not support : %d\n", select);
 		getchar();
@@ -90,7 +95,8 @@ int main()
 {
 	//std::unique_ptr<AbstractLogic> logic = CreateLogicByMenu();
 	//std::unique_ptr<AbstractLogic> logic(new NormalMapping(kWidth, kHeight));
-	std::unique_ptr<AbstractLogic> logic(new EnvironmentMapping(kWidth, kHeight));
+	//std::unique_ptr<AbstractLogic> logic(new EnvironmentMapping(kWidth, kHeight));
+	std::unique_ptr<AbstractLogic> logic(new UVAnimation(kWidth, kHeight));
 
 	InitWindow(static_cast<int>(kWidth), static_cast<int>(kHeight));
 
