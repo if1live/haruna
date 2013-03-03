@@ -1,14 +1,16 @@
 ﻿// Ŭnicode please 
+#pragma once
+
 #include "renderer.h"
 
 namespace haruna {;
 class ParametricSurface;
 }
 
-class NormalMapping : public AbstractLogic {
+class EnvironmentMapping : public AbstractLogic {
 public:
-	NormalMapping(float width, float height);
-	virtual ~NormalMapping();
+	EnvironmentMapping(float width, float height);
+	virtual ~EnvironmentMapping();
 
 	virtual bool Init();
 	virtual bool Update(float dt);
@@ -21,7 +23,9 @@ private:
 	std::unique_ptr<haruna::gl::Texture2D> specular_map_;
 	std::unique_ptr<haruna::gl::Texture2D> normal_map_;
 
-	float y_rot_;
+	std::unique_ptr<haruna::gl::TextureCube> environment_map_;
 
 	std::unique_ptr<haruna::ParametricSurface> mesh_;
+
+	float y_rot_;
 };

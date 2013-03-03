@@ -1,5 +1,5 @@
 ﻿// Ŭnicode please 
-#include "normal_mapping.h"
+#include "environment_mapping.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
@@ -15,16 +15,15 @@
 #include "haruna/gl/shader.h"
 #include "haruna/gl/texture.h"
 #include "haruna/gl/gl_env.h"
-
 #include "haruna/parametric_equations.h"
 #include "haruna/primitive_mesh.h"
 
-NormalMapping::NormalMapping(float width, float height)
+EnvironmentMapping::EnvironmentMapping(float width, float height)
 	: AbstractLogic(width, height), y_rot_(0)
 {
 }
 
-NormalMapping::~NormalMapping()
+EnvironmentMapping::~EnvironmentMapping()
 {
 	if(diffuse_map_.get() != nullptr) {
 		diffuse_map_->Deinit();
@@ -35,16 +34,19 @@ NormalMapping::~NormalMapping()
 	if(normal_map_.get() != nullptr) {
 		normal_map_->Deinit();
 	}
+	if(environment_map_.get() != nullptr) {
+		environment_map_->Deinit();
+	}
 	if(prog_.get() != nullptr) {
-		prog_->Deinit();	
+		prog_->Deinit();
 	}
 }
 
-bool NormalMapping::Init()
+bool EnvironmentMapping::Init()
 {
 	//쉐이더 
-	std::string fs_path = sora::Filesystem::GetAppPath("shader/normal_mapping.fs");
-	std::string vs_path = sora::Filesystem::GetAppPath("shader/normal_mapping.vs");
+	std::string fs_path = sora::Filesystem::GetAppPath("shader/environment_mapping.fs");
+	std::string vs_path = sora::Filesystem::GetAppPath("shader/environment_mapping.vs");
 	sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
 	sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
 	bool fs_open_result = fs_file.Open();
@@ -90,7 +92,21 @@ bool NormalMapping::Init()
 	if(!normal_map_init_result) {
 		return false;
 	}
-	
+
+	//cube map
+	environment_map_.reset(new haruna::gl::TextureCube(
+		sora::Filesystem::GetAppPath("texture/cubemap_left.png"),
+		sora::Filesystem::GetAppPath("texture/cubemap_right.png"),
+		sora::Filesystem::GetAppPath("texture/cubemap_bottom.png"),
+		sora::Filesystem::GetAppPath("texture/cubemap_top.png"),
+		sora::Filesystem::GetAppPath("texture/cubemap_back.png"),
+		sora::Filesystem::GetAppPath("texture/cubemap_front.png")
+	));
+	bool env_map_init_result = environment_map_->Init();
+	if(!env_map_init_result) {
+		return false;
+	}
+
 	// create mesh
 	//mesh_.reset(new haruna::Torus(1, 0.6));
 	//mesh_.reset(new haruna::TrefoilKnot(2));
@@ -98,18 +114,15 @@ bool NormalMapping::Init()
 
 	return true;
 }
-
-bool NormalMapping::Update(float dt)
+bool EnvironmentMapping::Update(float dt)
 {
-	//y_rot_ += 1.0f * dt;
 	y_rot_ += 0.5f * dt;
 	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
 	return running;
 }
-
-void NormalMapping::Draw()
+void EnvironmentMapping::Draw()
 {
-	//sample mesh
+		//sample mesh
 	//haruna::SolidCubeFactory cube_factory(1, 1, 1);
 	//auto data = cube_factory.CreateNormalMesh();
 	//haruna::SolidSphereFactory sphere_factory(1, 16, 16);
@@ -130,6 +143,8 @@ void NormalMapping::Draw()
 	haruna::gl::ShaderLocation diffuse_map_loc = prog_->GetUniformLocation("s_diffuse");
 	haruna::gl::ShaderLocation specular_map_loc = prog_->GetUniformLocation("s_specular");
 	haruna::gl::ShaderLocation normal_map_loc = prog_->GetUniformLocation("s_normal");
+	haruna::gl::ShaderLocation environment_map_loc = prog_->GetUniformLocation("s_environment");
+
 
 	haruna::gl::ShaderLocation light_color_loc = prog_->GetUniformLocation("u_lightColor");
 
@@ -180,6 +195,10 @@ void NormalMapping::Draw()
 	glBindTexture(GL_TEXTURE_2D, *normal_map_);
 	glUniform1i(normal_map_loc, 2);
 
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, *environment_map_);
+	glUniform1i(environment_map_loc, 3);
+
 	//color
 	glm::vec4 color(1.0f, 1.0f, 1.0f, 1.0f);
 	glUniform4fv(light_color_loc, 1, glm::value_ptr(color));
@@ -198,5 +217,7 @@ void NormalMapping::Draw()
 
 	glDrawElements(GL_TRIANGLES, index_list.size(), GL_UNSIGNED_SHORT, &index_list[0]);
 
-	haruna::gl::GLEnv::CheckError("End Frame");
+	if(!haruna::gl::GLEnv::CheckError("End Frame")) {
+		getchar();
+	}
 }

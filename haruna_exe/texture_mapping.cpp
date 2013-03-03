@@ -17,18 +17,18 @@
 #include "haruna/gl/gl_env.h"
 #include "haruna/primitive_mesh.h"
 
-TextureMapping::TextureMapping(float width, float height)
+Texture2DMapping::Texture2DMapping(float width, float height)
 	: AbstractLogic(width, height), y_rot_(0)
 {
 }
 
-TextureMapping::~TextureMapping()
+Texture2DMapping::~Texture2DMapping()
 {
 	tex_->Deinit();
 	prog_->Deinit();
 }
 
-bool TextureMapping::Init()
+bool Texture2DMapping::Init()
 {
 	//쉐이더 
 	std::string fs_path = sora::Filesystem::GetAppPath("shader/simple_tex.fs");
@@ -59,7 +59,7 @@ bool TextureMapping::Init()
 
 	//create texture
 	std::string tex_path = sora::Filesystem::GetAppPath("texture/sora2.png");
-	tex_.reset(new haruna::gl::Texture(tex_path));
+	tex_.reset(new haruna::gl::Texture2D(tex_path));
 	bool tex_init_result = tex_->Init();
 	if(!tex_init_result) {
 		return false;
@@ -67,13 +67,13 @@ bool TextureMapping::Init()
 
 	return true;
 }
-bool TextureMapping::Update(float dt)
+bool Texture2DMapping::Update(float dt)
 {
 	y_rot_ += 4.0f * dt;
 	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
 	return running;
 }
-void TextureMapping::Draw()
+void Texture2DMapping::Draw()
 {
 	//sample mesh
 	haruna::SolidCubeFactory cube_factory(1, 1, 1);

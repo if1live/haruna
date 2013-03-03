@@ -4,7 +4,7 @@
 class Lighting : public AbstractLogic {
 public:
 	Lighting(float width, float height);
-	~Lighting();
+	virtual ~Lighting();
 
 	virtual bool Init();
 	virtual bool Update(float dt);

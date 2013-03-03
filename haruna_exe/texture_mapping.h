@@ -1,10 +1,10 @@
 ﻿// Ŭnicode please 
 #include "renderer.h"
 
-class TextureMapping : public AbstractLogic {
+class Texture2DMapping : public AbstractLogic {
 public:
-	TextureMapping(float width, float height);
-	~TextureMapping();
+	Texture2DMapping(float width, float height);
+	virtual ~Texture2DMapping();
 
 	virtual bool Init();
 	virtual bool Update(float dt);
@@ -12,7 +12,7 @@ public:
 
 private:
 	std::unique_ptr<haruna::gl::ShaderProgram> prog_;
-	std::unique_ptr<haruna::gl::Texture> tex_;
+	std::unique_ptr<haruna::gl::Texture2D> tex_;
 	
 	float y_rot_;
 };

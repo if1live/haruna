@@ -88,7 +88,7 @@ void ParametricSurface::GenerateVertices(std::vector<float>& vertices, unsigned 
 				attribute = (float*)(((unsigned char*)attribute) + sizeof(normal));
 			}
 
-			// Compute Texture Coordinates
+			// Compute Texture2D2D Coordinates
 			if (flags & kVertexFlagsTexCoords) {
 				float s = m_textureCount.x * i / m_slices.x;
 				float t = m_textureCount.y * j / m_slices.y;

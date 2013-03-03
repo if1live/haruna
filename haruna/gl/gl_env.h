@@ -9,7 +9,7 @@ namespace haruna {;
 namespace gl {
 	typedef GLint ShaderVariableHandleType;
 	typedef GLuint ShaderHandleType;
-	typedef GLuint TextureHandleType;
+	typedef GLuint Texture2D2DHandleType;
 
 	class GLEnv {
 	public:

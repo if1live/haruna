@@ -4,7 +4,7 @@
 class ToonShader : public AbstractLogic {
 public:
 	ToonShader(float width, float height);
-	~ToonShader();
+	virtual ~ToonShader();
 
 	virtual bool Init();
 	virtual bool Update(float dt);

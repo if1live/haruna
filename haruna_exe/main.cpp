@@ -12,6 +12,7 @@
 #include "diffuse_specular_mapping.h"
 #include "toon_shader.h"
 #include "normal_mapping.h"
+#include "environment_mapping.h"
 
 const float kWidth = 640;
 const float kHeight = 480;
@@ -44,11 +45,12 @@ std::unique_ptr<AbstractLogic> CreateLogicByMenu()
 {
 	printf("Select Example\n");
 	printf("1. Color Shader\n");
-	printf("2. Texture Mapping\n");
+	printf("2. Texture2D Mapping\n");
 	printf("3. Lighting\n");
 	printf("4. Diffuse Specular Mapping\n");
 	printf("5. ToonShader\n");
 	printf("6. Normal Mapping\n");
+	printf("7. Environment Mapping\n");
 
 	int select = 0;
 	scanf("%d", &select);
@@ -59,7 +61,7 @@ std::unique_ptr<AbstractLogic> CreateLogicByMenu()
 		logic.reset(new ColorShader(kWidth, kHeight));
 		break;
 	case 2:
-		logic.reset(new TextureMapping(kWidth, kHeight));
+		logic.reset(new Texture2DMapping(kWidth, kHeight));
 		break;
 	case 3:
 		logic.reset(new Lighting(kWidth, kHeight));
@@ -73,6 +75,9 @@ std::unique_ptr<AbstractLogic> CreateLogicByMenu()
 	case 6:
 		logic.reset(new NormalMapping(kWidth, kHeight));
 		break;
+	case 7:
+		logic.reset(new EnvironmentMapping(kWidth, kHeight));
+		break;
 	default:
 		printf("Not support : %d\n", select);
 		getchar();
@@ -83,8 +88,9 @@ std::unique_ptr<AbstractLogic> CreateLogicByMenu()
 
 int main()
 {
-	std::unique_ptr<AbstractLogic> logic = CreateLogicByMenu();
+	//std::unique_ptr<AbstractLogic> logic = CreateLogicByMenu();
 	//std::unique_ptr<AbstractLogic> logic(new NormalMapping(kWidth, kHeight));
+	std::unique_ptr<AbstractLogic> logic(new EnvironmentMapping(kWidth, kHeight));
 
 	InitWindow(static_cast<int>(kWidth), static_cast<int>(kHeight));
 

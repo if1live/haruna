@@ -59,7 +59,7 @@ bool DiffuseSpecularMapping::Init()
 
 	//create texture
 	std::string diffuse_map_path = sora::Filesystem::GetAppPath("texture/glazed_brick_D.png");
-	diffuse_map_.reset(new haruna::gl::Texture(diffuse_map_path));
+	diffuse_map_.reset(new haruna::gl::Texture2D(diffuse_map_path));
 	bool diffuse_map_init_result = diffuse_map_->Init();
 	if(!diffuse_map_init_result) {
 		return false;
@@ -67,7 +67,7 @@ bool DiffuseSpecularMapping::Init()
 
 	//create texture
 	std::string specular_map_path = sora::Filesystem::GetAppPath("texture/glazed_brick_S.png");
-	specular_map_.reset(new haruna::gl::Texture(specular_map_path));
+	specular_map_.reset(new haruna::gl::Texture2D(specular_map_path));
 	bool specular_map_init_result = specular_map_->Init();
 	if(!specular_map_init_result) {
 		return false;

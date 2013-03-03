@@ -8,7 +8,8 @@
 namespace haruna {;
 namespace gl {
 	class ShaderProgram;
-	class Texture;
+	class Texture2D;
+	class TextureCube;
 }	// namespace haruna
 }	// namespace gl
 

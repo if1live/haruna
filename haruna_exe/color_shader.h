@@ -4,7 +4,7 @@
 class ColorShader : public AbstractLogic {
 public:
 	ColorShader(float width, float height);
-	~ColorShader();
+	virtual ~ColorShader();
 
 	virtual bool Init();
 	virtual bool Update(float dt);
