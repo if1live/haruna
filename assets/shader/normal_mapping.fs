@@ -18,7 +18,12 @@ void main() {
 	vec3 tangentNormal = texture2D(s_normal, v_texcoord).xyz;
 	tangentNormal = normalize(tangentNormal * 2.0 - 1.0);
 	mat3 basis = mat3(normalize(v_T), normalize(v_B), normalize(v_N));
-	vec3 modelNormal = basis * tangentNormal;
+	basis = mat3(
+		basis[0][0], basis[1][0], basis[2][0],
+		basis[0][1], basis[1][1], basis[2][1],
+		basis[0][2], basis[1][2], basis[2][2]
+	);
+	vec3 modelNormal = tangentNormal * basis;
 	//vec3 modelNormal = v_N;
 	
 	vec4 albedo = texture2D(s_diffuse, v_texcoord);
@@ -27,7 +32,7 @@ void main() {
 	diffuse *= albedo.xyz * u_lightColor.xyz;
 	
 	vec3 specular = vec3(0.0, 0.0, 0.0);
-	if(diffuse.x > 0.0) {
+	if(diffuse.x >= 0.0) {
 		vec3 viewDir = normalize(v_viewDir);
 		vec3 reflection = reflect(lightDir, modelNormal);
 		
@@ -40,6 +45,7 @@ void main() {
 	}
 	vec3 ambient = vec3(0.1, 0.1, 0.1) * albedo.xyz;
 	
+	//gl_FragColor = vec4(diffuse, 1.0);
 	gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
 	//gl_FragColor = vec4(modelNormal, 1.0);
 }

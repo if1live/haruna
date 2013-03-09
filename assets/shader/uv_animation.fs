@@ -16,7 +16,7 @@ void main() {
 	vec3 reflection = normalize(v_reflection);
 	vec3 viewDir = normalize(v_viewDir);
 	vec3 specular = vec3(0.0, 0.0, 0.0);
-	if(diffuse.x > 0.0) {
+	if(diffuse.x >= 0.0) {
 		float specularValue = 0;
 		specularValue = clamp(dot(reflection, -viewDir), 0.0, 1.0);
 		specularValue = pow(specularValue, 20.0);

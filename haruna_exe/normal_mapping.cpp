@@ -103,7 +103,7 @@ bool NormalMapping::Init()
 bool NormalMapping::Update(float dt)
 {
 	//y_rot_ += 1.0f * dt;
-	y_rot_ += 10.0f * dt;
+	y_rot_ += 0.5f * dt;
 	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
 	return running;
 }
@@ -138,14 +138,16 @@ void NormalMapping::Draw()
 	float aspect = width() / height();
 	glm::mat4 proj_mat = glm::perspective(60.0f, aspect, 0.1f, 100.0f);
 
-	glm::vec3 eye(3, 0, 0);
+	float radius = 3;
+	glm::vec3 eye(cos(y_rot_) * radius, 0, sin(y_rot_) * radius);
+	//glm::vec3 eye(3, 0, 0);
 	glm::vec3 center(0, 0, 0);
 	glm::vec3 up(0, 1, 0);
 	glm::mat4 view_mat = glm::lookAt(eye, center, up);
 		
 	//model
 	glm::mat4 model_mat = glm::mat4();
-	model_mat = glm::rotate(model_mat, y_rot_, glm::vec3(0, 1, 0));
+	//model_mat = glm::rotate(model_mat, y_rot_, glm::vec3(0, 1, 0));
 
 	//draw
 	glViewport(0, 0, (int)width(), (int)height());

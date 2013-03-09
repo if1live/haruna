@@ -959,14 +959,14 @@
 Fragment Program]]></RmTextDataBlock></RmStringVariable>
        <RmStringVariable NAME="Editing Pass" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC=""><RmTextDataBlock TYPE="TEXT"><![CDATA[
 Pass 0]]></RmTextDataBlock></RmStringVariable>
-       <RmIntegerVariable NAME="Y" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="0" MIN="-10" MAX="10" CLAMP="FALSE"/>
+       <RmIntegerVariable NAME="Y" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="55" MIN="-10" MAX="10" CLAMP="FALSE"/>
        <RmIntegerVariable NAME="Width" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="778" MIN="-10" MAX="10" CLAMP="FALSE"/>
        <RmIntegerVariable NAME="Height" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="650" MIN="-10" MAX="10" CLAMP="FALSE"/>
        <RmIntegerVariable NAME="ShowStatus" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="1" MIN="-10" MAX="10" CLAMP="FALSE"/>
        <RmIntegerVariable NAME="Visible" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="1" MIN="-10" MAX="10" CLAMP="FALSE"/>
        <RmIntegerVariable NAME="Minimized X" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="-1" MIN="-10" MAX="10" CLAMP="FALSE"/>
        <RmIntegerVariable NAME="Minimized Y" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="-1" MIN="-10" MAX="10" CLAMP="FALSE"/>
-       <RmIntegerVariable NAME="X" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="0" MIN="-10" MAX="10" CLAMP="FALSE"/>
+       <RmIntegerVariable NAME="X" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="25" MIN="-10" MAX="10" CLAMP="FALSE"/>
       </RmRegistryBranch>
      </RmRegistryBranch>
      <RmRegistryBranch NAME="RmStreamEditor" API="" XML_VERSION="RenderMonkey 1.71">
@@ -999,19 +999,19 @@ Pass 0]]></RmTextDataBlock></RmStringVariable>
     </RmRegistryBranch>
     <RmRegistryBranch NAME="WORKSPACE" API="" XML_VERSION="RenderMonkey 1.71">
      <RmStringVariable NAME="LAST_SAVE" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC=""><RmTextDataBlock TYPE="TEXT"><![CDATA[
-3/3/2013 17:40:31]]></RmTextDataBlock></RmStringVariable>
+9/3/2013 14:2:52]]></RmTextDataBlock></RmStringVariable>
      <RmStringVariable NAME="VERSION" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC=""><RmTextDataBlock TYPE="TEXT"><![CDATA[
 RenderMonkey Version 1.82 (build 322)]]></RmTextDataBlock></RmStringVariable>
      <RmStringVariable NAME="XML_VERSION" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC=""><RmTextDataBlock TYPE="TEXT"><![CDATA[
 RenderMonkey 1.71]]></RmTextDataBlock></RmStringVariable>
      <RmStringVariable NAME="BASE_WORKSPACE_PATH" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC=""><RmTextDataBlock TYPE="TEXT"><![CDATA[
-D:\github\haruna\assets\]]></RmTextDataBlock></RmStringVariable>
+C:\github\haruna\assets\]]></RmTextDataBlock></RmStringVariable>
     </RmRegistryBranch>
    </RmRegistryBranch>
   </RmRegistryBranch>
   <RmEffectGroup NAME="Effect Group 1" API="">
    <RmOpenGLESEffect NAME="Effect1" API="OpenGL ES" ACTIVE_CAMERA="">
-    <RmMatrixVariable NAME="u_mvp" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="WorldViewProjection" VALUE_0="1.902342" VALUE_1="-0.152423" VALUE_2="0.735406" VALUE_3="-0.000016" VALUE_4="0.129392" VALUE_5="2.405173" VALUE_6="0.163795" VALUE_7="0.000078" VALUE_8="0.363645" VALUE_9="0.043878" VALUE_10="-0.931579" VALUE_11="199.199158" VALUE_12="0.363281" VALUE_13="0.043835" VALUE_14="-0.930648" VALUE_15="199.999969"/>
+    <RmMatrixVariable NAME="u_mvp" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="WorldViewProjection" VALUE_0="0.240106" VALUE_1="1.264930" VALUE_2="-1.589108" VALUE_3="-0.000016" VALUE_4="-1.059681" VALUE_5="1.772365" VALUE_6="1.250690" VALUE_7="-0.000083" VALUE_8="-0.891708" VALUE_9="-0.280507" VALUE_10="-0.358016" VALUE_11="199.199127" VALUE_12="-0.890817" VALUE_13="-0.280226" VALUE_14="-0.357658" VALUE_15="199.999939"/>
     <RmMatrixVariable NAME="u_model" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="World" VALUE_0="1.000000" VALUE_1="0.000000" VALUE_2="0.000000" VALUE_3="0.000000" VALUE_4="0.000000" VALUE_5="1.000000" VALUE_6="0.000000" VALUE_7="0.000000" VALUE_8="0.000000" VALUE_9="0.000000" VALUE_10="1.000000" VALUE_11="0.000000" VALUE_12="0.000000" VALUE_13="0.000000" VALUE_14="0.000000" VALUE_15="1.000000"/>
     <RmDynamicVariable NAME="u_modelLightPos" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VARIABLE_TYPE="FLOAT" ROWS="3" COLUMNS="1" FIXED_SIZE="TRUE" MIN="-1.000000" MAX="1.000000" CLAMP="FALSE" NORMALIZE="FALSE">
      <RmDynamicVariableValueContainer>
@@ -1020,7 +1020,7 @@ D:\github\haruna\assets\]]></RmTextDataBlock></RmStringVariable>
       <RmDynamicVariableValue ROW_INDEX="2" COLUMN_INDEX="0" VALUE="500.000000"/>
      </RmDynamicVariableValueContainer>
     </RmDynamicVariable>
-    <RmVectorVariable NAME="u_modelCameraPos" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="ViewPosition" VALUE_0="-72.656273" VALUE_1="-8.766909" VALUE_2="186.129501" VALUE_3="1.000000" MIN="-10.000000" MAX="10.000000" CLAMP="FALSE" NORMALIZE="FALSE"/>
+    <RmVectorVariable NAME="u_modelCameraPos" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="ViewPosition" VALUE_0="178.163254" VALUE_1="56.045258" VALUE_2="71.531509" VALUE_3="1.000000" MIN="-10.000000" MAX="10.000000" CLAMP="FALSE" NORMALIZE="FALSE"/>
     <RmVectorVariable NAME="u_lightColor" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="0.700000" VALUE_1="0.700000" VALUE_2="1.000000" VALUE_3="1.000000" MIN="-10.000000" MAX="10.000000" CLAMP="FALSE" NORMALIZE="FALSE"/>
     <Rm2DTextureVariable NAME="specular_map" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" FILE_NAME=".\texture\fieldstone_SM.png" ORIGIN="0"/>
     <Rm2DTextureVariable NAME="diffuse_map" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" FILE_NAME=".\texture\fieldstone_DM.png" ORIGIN="0"/>
@@ -1101,13 +1101,18 @@ uniform vec4 u_lightColor;
 void main() {
    vec3 tangentNormal = texture2D(s_normal, v_texcoord).xyz;
    tangentNormal = normalize(tangentNormal * 2.0 - 1.0);
-   //tangentNormal.y = -tangentNormal.y;
-   //tangentNormal.z = -tangentNormal.z;
-   mat3 basis = mat3(normalize(v_T), normalize(v_B), normalize(v_N));
-   //basis[0] = vec3(basis[0][0], basis[1][0], basis[2][0]);
-   //basis[1] = vec3(basis[0][1], basis[1][1], basis[2][1]);
-   //basis[2] = vec3(basis[0][2], basis[1][2], basis[2][2]);
-   vec3 modelNormal = basis * tangentNormal;
+   vec3 n = normalize(v_N);
+   vec3 t = normalize(v_T);
+   vec3 b = normalize(v_B);
+   
+   mat3 basis = mat3(t, b, n);
+   basis = mat3(
+   basis[0][0], basis[1][0], basis[2][0],
+   basis[0][1], basis[1][1], basis[2][1],
+   basis[0][2], basis[1][2], basis[2][2]
+   );
+   
+   vec3 modelNormal = tangentNormal * basis;
    //vec3 modelNormal = v_N;
    
    vec4 albedo = texture2D(s_diffuse, v_texcoord);
@@ -1130,8 +1135,8 @@ void main() {
    vec3 ambient = vec3(0.1, 0.1, 0.1) * albedo.xyz;
    
    gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
-   //gl_FragColor = vec4(v_N, 1.0);
    //gl_FragColor = vec4(modelNormal, 1.0);
+   //gl_FragColor = vec4(v_N, 1.0);
 }]]></RmShaderCode></RmGLESShader>
      <RmStreamMapReference NAME="Stream Mapping" API=""/>
      <RmTextureObject NAME="s_diffuse" API="OpenGL ES" STATE_INDEX="0" VERTEX_TEXTURE="FALSE">

@@ -58,7 +58,7 @@ bool Lighting::Init()
 }
 bool Lighting::Update(float dt)
 {
-	y_rot_ += 4.0f * dt;
+	y_rot_ += 1.0f * dt;
 	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
 	return running;
 }
