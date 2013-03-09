@@ -20,12 +20,13 @@ void main()
 	//uv = uv * 0.5 + 0.5;
 	
 	// Used to lower moiré pattern and self-shadowing
-	//currentDepth += 0.0005;
+	currentDepth += 0.0005;
 	
 	float shadowDepth = texture2D(s_shadow, uv).z;
 	
 	float shadow = 1.0;
-	if (shadowCoord.w > 0.0) {
+	// .w로 나눠진 값을 사용할경우 (-)/(-)가 발생할수 있어서 원본을 그냥 쓴다
+	if (v_shadowCoord.w > 0.0) {
 		shadow = shadowDepth < currentDepth ? 0.5 : 1.0;
 	}
 	

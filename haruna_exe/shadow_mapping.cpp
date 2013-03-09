@@ -28,10 +28,10 @@ ShadowMapping::ShadowMapping(float width, float height)
 	light_pos_ = glm::vec3(3, 20, 0);
 	light_lookat_ = glm::vec3(0, 0, -5);
 
-	shadow_map_width_ = width * kShadowMapRatio;
-	shadow_map_height_ = height * kShadowMapRatio;
-	//shadow_map_width_ = 128;
-	//shadow_map_height_ = 128;
+	//shadow_map_width_ = width * kShadowMapRatio;
+	//shadow_map_height_ = height * kShadowMapRatio;
+	shadow_map_width_ = 2048;
+	shadow_map_height_ = 2048;
 }
 
 ShadowMapping::~ShadowMapping()
@@ -125,9 +125,9 @@ bool ShadowMapping::InitShadowFBO()
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
 	// No need to force GL_DEPTH_COMPONENT24, drivers usually give you the max precision if available
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadow_map_w, shadow_map_h, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
+	//glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadow_map_w, shadow_map_h, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
 	//glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, shadow_map_w, shadow_map_h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);	
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, shadow_map_w, shadow_map_h, 0, GL_DEPTH_COMPONENT, GL_INT, NULL);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, shadow_map_w, shadow_map_h, 0, GL_DEPTH_COMPONENT, GL_INT, NULL);	
 	haruna::gl::GLEnv::CheckError("DepthTexture");
 
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -178,6 +178,7 @@ void ShadowMapping::Draw()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
+		glCullFace(GL_FRONT);
 
 		auto pos_loc = prog->GetAttribLocation("a_position");
 		auto mvp_loc = prog->GetUniformLocation("u_mvp");
@@ -194,7 +195,7 @@ void ShadowMapping::Draw()
 
 		mvp_mat = proj_mat * view_mat * world_mat;
 		glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, glm::value_ptr(mvp_mat));
-		//DrawGround(*prog);
+		DrawGround(*prog);
 
 		glm::mat4 cube_1_world_mat = glm::translate(0.0f, 4.0f, -16.0f);
 		mvp_mat = proj_mat * view_mat * cube_1_world_mat;
@@ -218,6 +219,7 @@ void ShadowMapping::Draw()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
+		glCullFace(GL_BACK);
 
 		auto pos_loc = prog->GetAttribLocation("a_position");
 		auto normal_loc = prog->GetAttribLocation("a_normal");
