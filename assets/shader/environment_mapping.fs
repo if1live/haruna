@@ -19,7 +19,6 @@ uniform vec4 u_lightColor;
 void main() {
 	vec3 tangentNormal = texture2D(s_normal, v_texcoord).xyz;
 	tangentNormal = normalize(tangentNormal * 2 - 1.0);
-	tangentNormal.y = -tangentNormal.y;
 	mat3 basis = mat3(v_T, v_B, v_N);
 	vec3 modelNormal = basis * tangentNormal;
 	
@@ -44,6 +43,7 @@ void main() {
 	
 	vec3 viewReflect = reflect(viewDir, modelNormal);
 	vec3 environment = textureCube(s_environment, viewReflect).xyz;
+	//gl_FragColor = vec4(ambient + diffuse + specular + environment * 0.5, 1.0);
 	gl_FragColor = vec4(ambient + diffuse + specular + environment * 0.5, 1.0);
 	//gl_FragColor = vec4(environment, 1.0);
 }

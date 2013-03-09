@@ -108,13 +108,13 @@ std::unique_ptr<AbstractLogic> CreateLogicByMenu()
 
 int main()
 {
-	//std::unique_ptr<AbstractLogic> logic = CreateLogicByMenu();
+	std::unique_ptr<AbstractLogic> logic = CreateLogicByMenu();
 	//std::unique_ptr<AbstractLogic> logic(new NormalMapping(kWidth, kHeight));
 	//std::unique_ptr<AbstractLogic> logic(new DiffuseSpecularMapping(kWidth, kHeight));
 	//std::unique_ptr<AbstractLogic> logic(new EnvironmentMapping(kWidth, kHeight));
 	//std::unique_ptr<AbstractLogic> logic(new UVAnimation(kWidth, kHeight));
 	//std::unique_ptr<AbstractLogic> logic(new ColorConversion(kWidth, kHeight));
-	std::unique_ptr<AbstractLogic> logic(new EdgeDetection(kWidth, kHeight));
+	//std::unique_ptr<AbstractLogic> logic(new EdgeDetection(kWidth, kHeight));
 
 	InitWindow(static_cast<int>(kWidth), static_cast<int>(kHeight));
 

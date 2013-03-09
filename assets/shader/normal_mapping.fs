@@ -17,9 +17,7 @@ uniform vec4 u_lightColor;
 void main() {
 	vec3 tangentNormal = texture2D(s_normal, v_texcoord).xyz;
 	tangentNormal = normalize(tangentNormal * 2.0 - 1.0);
-	//tangentNormal.y = -tangentNormal.y;
 	mat3 basis = mat3(normalize(v_T), normalize(v_B), normalize(v_N));
-	//basis = transpose(basis);
 	vec3 modelNormal = basis * tangentNormal;
 	//vec3 modelNormal = v_N;
 	
@@ -43,6 +41,5 @@ void main() {
 	vec3 ambient = vec3(0.1, 0.1, 0.1) * albedo.xyz;
 	
 	gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
-	//gl_FragColor = vec4(v_N, 1.0);
 	//gl_FragColor = vec4(modelNormal, 1.0);
 }

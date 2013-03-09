@@ -85,6 +85,7 @@ bool NormalMapping::Init()
 	}
 
 	std::string normal_map_path = sora::Filesystem::GetAppPath("texture/fieldstone_NM.png");
+	//std::string normal_map_path = sora::Filesystem::GetAppPath("texture/standard_normal.png");
 	normal_map_.reset(new haruna::gl::Texture2D(normal_map_path));
 	bool normal_map_init_result = normal_map_->Init();
 	if(!normal_map_init_result) {
