@@ -13,6 +13,7 @@
     <ClCompile Include="haruna_exe\uv_animation.cpp" />
     <ClCompile Include="haruna_exe\color_conversion.cpp" />
     <ClCompile Include="haruna_exe\edge_detection.cpp" />
+    <ClCompile Include="haruna_exe\shadow_mapping.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna_exe\renderer.h" />
@@ -26,5 +27,6 @@
     <ClInclude Include="haruna_exe\uv_animation.h" />
     <ClInclude Include="haruna_exe\color_conversion.h" />
     <ClInclude Include="haruna_exe\edge_detection.h" />
+    <ClInclude Include="haruna_exe\shadow_mapping.h" />
   </ItemGroup>
 </Project>

@@ -16,6 +16,7 @@
 #include "uv_animation.h"
 #include "color_conversion.h"
 #include "edge_detection.h"
+#include "shadow_mapping.h"
 
 const float kWidth = 640;
 const float kHeight = 480;
@@ -88,9 +89,8 @@ std::unique_ptr<AbstractLogic> CreateLogicByMenu()
 		logic.reset(new UVAnimation(kWidth, kHeight));
 		break;
 	case 9:
-		printf("Not support yet");
-		getchar();
-		exit(EXIT_FAILURE);
+		logic.reset(new ShadowMapping(kWidth, kHeight));
+		break;
 	case 10:
 		logic.reset(new ColorConversion(kWidth, kHeight));
 		break;
@@ -108,13 +108,14 @@ std::unique_ptr<AbstractLogic> CreateLogicByMenu()
 
 int main()
 {
-	std::unique_ptr<AbstractLogic> logic = CreateLogicByMenu();
+	//std::unique_ptr<AbstractLogic> logic = CreateLogicByMenu();
 	//std::unique_ptr<AbstractLogic> logic(new NormalMapping(kWidth, kHeight));
 	//std::unique_ptr<AbstractLogic> logic(new DiffuseSpecularMapping(kWidth, kHeight));
 	//std::unique_ptr<AbstractLogic> logic(new EnvironmentMapping(kWidth, kHeight));
 	//std::unique_ptr<AbstractLogic> logic(new UVAnimation(kWidth, kHeight));
 	//std::unique_ptr<AbstractLogic> logic(new ColorConversion(kWidth, kHeight));
 	//std::unique_ptr<AbstractLogic> logic(new EdgeDetection(kWidth, kHeight));
+	std::unique_ptr<AbstractLogic> logic(new ShadowMapping(kWidth, kHeight));
 
 	InitWindow(static_cast<int>(kWidth), static_cast<int>(kHeight));
 

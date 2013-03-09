@@ -182,7 +182,7 @@ std::vector<DrawCmdData<Vertex_1P1N1UV>> SolidCubeFactory::CreateNormalMesh()
 	{
 		// Left Face
 		int baseIndex = vert_list.size();
-		vec3 normal(0, -1, 0);
+		vec3 normal(-1, 0, 0);
 
 		vec2 texCoord1(0, 0);	vec3 vertex1(-width, -height, -depth);
 		vec2 texCoord2(1, 0);	vec3 vertex2(-width, -height,  depth);
