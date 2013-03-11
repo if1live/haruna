@@ -1,10 +1,5 @@
 ﻿// Ŭnicode please 
-#include <gtest/gtest.h>
-
-#include <GL/glew.h>
-#include <GL/glfw.h>
-
-#include <iostream>
+#include "test_stdafx.h"
 
 #include "sora/filesystem.h"
 #include "sora/low_level_c_file.h"
@@ -15,7 +10,9 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if(!glfwOpenWindow(640, 480, 0, 0, 0, 0, 0, 0, GLFW_WINDOW)) {
+	int width = 320;
+	int height = 240;
+	if(!glfwOpenWindow(width, height, 0, 0, 0, 0, 0, 0, GLFW_WINDOW)) {
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}

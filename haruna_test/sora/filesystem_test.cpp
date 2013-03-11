@@ -1,5 +1,5 @@
 ﻿// Ŭnicode please
-#include <gtest/gtest.h>
+#include "test_stdafx.h"
 #include "sora/filesystem.h"
 
 TEST(Filesystem, GetExtension) 

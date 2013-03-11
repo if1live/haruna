@@ -1,8 +1,7 @@
 ﻿// Ŭnicode please
-#include <gtest/gtest.h>
+#include "test_stdafx.h"
+
 #include "haruna/gl/buffer_object.h"
-#include <vector>
-#include <glm/glm.hpp>
 
 using namespace std;
 

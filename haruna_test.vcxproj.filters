@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="haruna_test\test_main.cpp" />
     <ClCompile Include="haruna_test\sora\low_level_c_file_test.cpp">
       <Filter>sora</Filter>
     </ClCompile>
@@ -10,6 +9,18 @@
     </ClCompile>
     <ClCompile Include="haruna_test\haruna\gl\buffer_object_test.cpp">
       <Filter>haruna\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_test\sora\string_hash_test.cpp">
+      <Filter>sora</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_test\sora\string_util_test.cpp">
+      <Filter>sora</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_test\test_main.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_test\test_stdafx.cpp">
+      <Filter>support</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -22,5 +33,13 @@
     <Filter Include="haruna\gl">
       <UniqueIdentifier>{4bbfe20a-7154-44db-85ba-5f163de3772f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="support">
+      <UniqueIdentifier>{f3044ffc-a214-4861-b00c-82199ca19ff1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="haruna_test\test_stdafx.h">
+      <Filter>support</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

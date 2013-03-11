@@ -60,6 +60,12 @@
     <ClCompile Include="haruna\gl\buffer_object.cpp">
       <Filter>haruna\gl</Filter>
     </ClCompile>
+    <ClCompile Include="sora\string_util.cpp">
+      <Filter>sora</Filter>
+    </ClCompile>
+    <ClCompile Include="sora\string_hash.cpp">
+      <Filter>sora</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna\gl\shader.h">
@@ -121,6 +127,12 @@
     </ClInclude>
     <ClInclude Include="haruna\gl\buffer_object.h">
       <Filter>haruna\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="sora\string_hash.h">
+      <Filter>sora</Filter>
+    </ClInclude>
+    <ClInclude Include="sora\string_util.h">
+      <Filter>sora</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

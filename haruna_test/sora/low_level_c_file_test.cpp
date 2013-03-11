@@ -1,5 +1,5 @@
 ﻿// Ŭnicode please
-#include <gtest/gtest.h>
+#include "test_stdafx.h"
 #include "sora/low_level_c_file.h"
 #include "sora/memory_file.h"
 
