@@ -52,3 +52,28 @@
 #else
 #error "not valid architecture"
 #endif
+
+
+// dx/gl 사용여부 설정
+#define SR_USE_DX11     0
+#define SR_USE_GL       1
+#define SR_USE_GLES		0
+
+#if SR_USE_GL
+#define SR_IF_GL(EXPR)		EXPR
+#define SR_IF_GLES(EXPR)
+#define SR_IF_DX11(EXPR)    
+#elif SR_USE_GLES
+#define SR_IF_GL(EXPR)      
+#define SR_IF_GLES(EXPR)	EXPR
+#define SR_IF_DX11(EXPR)
+#elif SR_USE_DX11
+#define SR_IF_GL(EXPR)
+#define SR_IF_GLES(EXPR)    EXPR
+#define SR_IF_DX11(EXPR)
+#else
+#define SR_IF_GL(EXPR)
+#define SR_IF_GLES(EXPR)
+#define SR_IF_DX11(EXPR)
+#endif
+

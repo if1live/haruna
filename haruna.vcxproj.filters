@@ -66,6 +66,9 @@
     <ClCompile Include="sora\string_hash.cpp">
       <Filter>sora</Filter>
     </ClCompile>
+    <ClCompile Include="sora\stack_allocator.cpp">
+      <Filter>sora</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna\gl\shader.h">
@@ -132,6 +135,9 @@
       <Filter>sora</Filter>
     </ClInclude>
     <ClInclude Include="sora\string_util.h">
+      <Filter>sora</Filter>
+    </ClInclude>
+    <ClInclude Include="sora\stack_allocator.h">
       <Filter>sora</Filter>
     </ClInclude>
   </ItemGroup>

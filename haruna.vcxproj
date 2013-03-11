@@ -25,6 +25,7 @@
     <ClCompile Include="sora\low_level_c_file.cpp" />
     <ClCompile Include="sora\math_helper.cpp" />
     <ClCompile Include="sora\memory_file.cpp" />
+    <ClCompile Include="sora\stack_allocator.cpp" />
     <ClCompile Include="sora\string_hash.cpp" />
     <ClCompile Include="sora\string_util.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -51,6 +52,7 @@
     <ClInclude Include="sora\low_level_c_file.h" />
     <ClInclude Include="sora\math_helper.h" />
     <ClInclude Include="sora\memory_file.h" />
+    <ClInclude Include="sora\stack_allocator.h" />
     <ClInclude Include="sora\string_hash.h" />
     <ClInclude Include="sora\string_util.h" />
     <ClInclude Include="sora\template_lib.h" />
