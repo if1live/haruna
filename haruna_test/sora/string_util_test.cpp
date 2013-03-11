@@ -17,7 +17,7 @@ TEST(SID, test)
 TEST(StringTable, Get)
 {
 	{
-		sora::StringTable<std::string> table;
+		sora::StringTable<char> table;
 
 		sora::SID<char> a = table.Get("this is a");
 		sora::SID<char> b = table.Get("this is a", 9);
@@ -29,7 +29,7 @@ TEST(StringTable, Get)
 		EXPECT_TRUE(a != d);
 	}
 	{
-		sora::StringTable<std::wstring> table;
+		sora::StringTable<wchar_t> table;
 
 		sora::SID<wchar_t> a = table.Get(L"this is a");
 		sora::SID<wchar_t> b = table.Get(L"this is a", 9);

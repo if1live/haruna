@@ -31,15 +31,26 @@ struct SID {
 };
 
 template<typename T>
+struct StringHolder {};
+template<> struct StringHolder<char> { 
+	typedef std::string value_type; 
+	typedef std::ostringstream stringstream_type;
+};
+template<> struct StringHolder<wchar_t> { 
+	typedef std::wstring value_type; 
+	typedef std::wostringstream stringstream_type;
+};
+
+template<typename T>
 class StringTable {
 public:
-	typedef T value_type;
-	typedef typename T::value_type elem_type;
+	typedef typename T elem_type;
+	typedef typename StringHolder<T>::value_type string_type;
 	typedef CRC32 HashFunc;
 	typedef std::unordered_map<unsigned int, SID<elem_type>* > TableType;
 
-	static_assert(std::is_same<std::string, T>::value == 1
-		|| std::is_same<std::wstring, T>::value == 1,
+	static_assert(std::is_same<char, T>::value == 1
+		|| std::is_same<wchar_t, T>::value == 1,
 		"not valid string table type");
 
 public:
@@ -63,7 +74,7 @@ public:
 		return *sid;
 	}
 
-	SID<elem_type> Get(const T &str)
+	SID<elem_type> Get(const string_type &str)
 	{
 		return Get(str.data(), str.length());
 	}
@@ -148,11 +159,8 @@ public:
 	template<typename T>
 	static T Join(const T &str, const std::vector<T> &tokenlist) 
 	{
-		//typedef basic_ostringstream<char, char_traits<char>, allocator<char> > ostringstream;
 		typename typedef T::value_type elem_type;
-		typedef std::basic_ostringstream<elem_type, std::char_traits<elem_type>, std::allocator<elem_type> > stringstream_type;
-
-		stringstream_type oss;
+		typename StringHolder<elem_type>::stringstream_type oss;
 		for (size_t i = 0 ; i < tokenlist.size() ; i++) {
 			oss << tokenlist[i];
 			if (i != tokenlist.size() - 1) {
