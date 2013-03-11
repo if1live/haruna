@@ -1,6 +1,7 @@
 ﻿// Ŭnicode please 
 #pragma once
 
+#include <string>
 #include <unordered_map>
 #include "string_hash.h"
 
@@ -31,10 +32,15 @@ struct SID {
 
 template<typename T>
 class StringTable {
+public:
 	typedef T value_type;
 	typedef typename T::value_type elem_type;
 	typedef CRC32 HashFunc;
 	typedef std::unordered_map<unsigned int, SID<elem_type>* > TableType;
+
+	static_assert(std::is_same<std::string, T>::value == 1
+		|| std::is_same<std::wstring, T>::value == 1,
+		"not valid string table type");
 
 public:
 	StringTable() {}

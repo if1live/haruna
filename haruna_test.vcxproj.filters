@@ -25,6 +25,9 @@
     <ClCompile Include="haruna_test\sora\stack_allocator_test.cpp">
       <Filter>sora</Filter>
     </ClCompile>
+    <ClCompile Include="haruna_test\haruna\debug_draw_manager_test.cpp">
+      <Filter>haruna</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sora">

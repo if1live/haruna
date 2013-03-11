@@ -4,6 +4,11 @@
 #include <glm/glm.hpp>
 
 namespace haruna {;
+
+typedef glm::detail::tvec2<unsigned char> vec2ub;
+typedef glm::detail::tvec3<unsigned char> vec3ub;
+typedef glm::detail::tvec4<unsigned char> vec4ub;
+
 class Vertex_1P {
 public:
 	glm::vec3 p;

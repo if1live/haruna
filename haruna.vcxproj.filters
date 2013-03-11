@@ -63,6 +63,12 @@
     <ClCompile Include="sora\stack_allocator.cpp">
       <Filter>sora</Filter>
     </ClCompile>
+    <ClCompile Include="haruna\debug_draw_manager.cpp">
+      <Filter>haruna</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna\gl\debug_draw.cpp">
+      <Filter>haruna\gl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna\gl\shader.h">
@@ -133,6 +139,12 @@
     </ClInclude>
     <ClInclude Include="sora\string_hash.h">
       <Filter>sora</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna\debug_draw_manager.h">
+      <Filter>haruna</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna\gl\debug_draw.h">
+      <Filter>haruna\gl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
