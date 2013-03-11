@@ -2,50 +2,56 @@
 #pragma once
 
 #include <string>
+#include "template_lib.h"
 
-//http://blog.daum.net/aswip/4538253
-//문자열 해쉬함수 모음 (String Hash Function) 
 namespace sora {;
-struct RSHash {
-    static unsigned int Hash(const char *str, int len);
-};
+//잡다한 함수 있어봣자 어차피 CRC밖에 안쓴다
 
-struct JSHash {
-    static unsigned int Hash(const char *str, int len);
-};
+template<typename T>
+class CRC32Logic : public Singleton<CRC32Logic<T>> {
+public:
+    CRC32Logic() { GenerateTable(); }
+    ~CRC32Logic() {}
+	///@brief calculate the crc value
+	unsigned int Hash(const T *str, int len) const
+	{
+		unsigned int crc = 0xFFFFFFFF;
+		for(int i = 0 ; i < len ; i++) {
+			int ch = static_cast<int>(str[i]);
+			crc = (crc>>8) ^ crc_table[ (crc^ch) & 0xFF ];
+		}     
+		return( crc^0xFFFFFFFF );
+	}
 
-// P. J. Weinberger Hash Function
-struct PJWHash {
-    static unsigned int Hash(const char *str, int len);
-};
+private:
+	///@brief build the crc table 
+	void GenerateTable()
+	{
+		unsigned int crc, poly;
+		int i, j;
 
-struct ELFHash {
-    static unsigned int Hash(const char *str, int len);
-};
-
-
-struct BKDRHash {
-    static unsigned int Hash(const char *str, int len);
-};
-
-struct SDBMHash {
-    static unsigned int Hash(const char *str, int len);
-};
-
-struct DJBHash {
-    static unsigned int Hash(const char *str, int len);
-};
-
-struct DEKHash {
-    static unsigned int Hash(const char *str, int len);
-};
-
-struct APHash {
-    static unsigned int Hash(const char *str, int len);
+		poly = 0xEDB88320L;
+		for (i = 0; i < 256; i++) {
+			crc = i;
+			for (j = 8; j > 0; j--) {
+				if (crc & 1) {
+					crc = (crc >> 1) ^ poly;
+				} else {
+					crc >>= 1;
+				}
+				crc_table[i] = crc;
+			}
+		}
+	}
+	unsigned int crc_table[256];
 };
 
 struct CRC32 {
-    static unsigned int Hash(const char *str, int len);
+	template<typename T>
+    static unsigned int Hash(const T *str, int len)
+	{
+		return CRC32Logic<T>::GetInstance().Hash(str, len);
+	}
 };
 
 }   // namespace sora

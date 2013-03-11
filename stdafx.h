@@ -27,3 +27,4 @@
 #include <GL/glew.h>
 #include <GL/glfw.h>
 
+#include "loki/Typelist.h"
