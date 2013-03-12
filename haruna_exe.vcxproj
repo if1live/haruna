@@ -70,6 +70,7 @@
   <ItemGroup>
     <ClCompile Include="haruna_exe\color_conversion.cpp" />
     <ClCompile Include="haruna_exe\color_shader.cpp" />
+    <ClCompile Include="haruna_exe\demo.cpp" />
     <ClCompile Include="haruna_exe\diffuse_specular_mapping.cpp" />
     <ClCompile Include="haruna_exe\edge_detection.cpp" />
     <ClCompile Include="haruna_exe\environment_mapping.cpp" />
@@ -90,6 +91,7 @@
   <ItemGroup>
     <ClInclude Include="haruna_exe\color_conversion.h" />
     <ClInclude Include="haruna_exe\color_shader.h" />
+    <ClInclude Include="haruna_exe\demo.h" />
     <ClInclude Include="haruna_exe\diffuse_specular_mapping.h" />
     <ClInclude Include="haruna_exe\edge_detection.h" />
     <ClInclude Include="haruna_exe\environment_mapping.h" />

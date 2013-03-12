@@ -12,7 +12,7 @@ typedef enum {
 	kDebugDraw2DLine,
 	kDebugDraw2DCross,
 	kDebugDraw2DString,
-	kDebugDraw2DSphere,
+	kDebugDraw2DCircle,
 } Draw2DType;
 
 typedef enum {
@@ -36,7 +36,7 @@ struct DebugDraw2D;
 struct DebugDraw2D_Line;
 struct DebugDraw2D_Cross;
 struct DebugDraw2D_String;
-struct DebugDraw2D_Sphere;
+struct DebugDraw2D_Circle;
 
 class DebugDrawManager;
 
@@ -71,7 +71,7 @@ public:
 	virtual void DrawElem(DebugDraw2D_Line *cmd) = 0;
 	virtual void DrawElem(DebugDraw2D_Cross *cmd) = 0;
 	virtual void DrawElem(DebugDraw2D_String *cmd) = 0;
-	virtual void DrawElem(DebugDraw2D_Sphere *cmd) = 0;
+	virtual void DrawElem(DebugDraw2D_Circle *cmd) = 0;
 };
 
 class DebugDrawManager {;
@@ -128,7 +128,7 @@ public:
 		float scale = 1.0f,
 		float duration = 0.0f);
 
-	void AddSphere(const glm::vec2 &pos, float radius,
+	void AddCircle(const glm::vec2 &pos, float radius,
 		const haruna::vec4ub &color,
 		float duration = 0.0f);
 
@@ -166,9 +166,9 @@ struct DebugDraw2D_String : public DebugDraw2D {
 	std::string msg;
 	float scale;
 };
-struct DebugDraw2D_Sphere : public DebugDraw2D {
-	DebugDraw2D_Sphere() : DebugDraw2D(kDebugDraw2DSphere), radius(0) {}
-	virtual ~DebugDraw2D_Sphere() {}
+struct DebugDraw2D_Circle: public DebugDraw2D {
+	DebugDraw2D_Circle() : DebugDraw2D(kDebugDraw2DCircle), radius(0) {}
+	virtual ~DebugDraw2D_Circle() {}
 	float radius;
 	glm::vec2 pos;  //cross, sphere, string
 };

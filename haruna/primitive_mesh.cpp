@@ -1,6 +1,7 @@
 ﻿// Ŭnicode please 
 #include "stdafx.h"
 #include "primitive_mesh.h"
+#include "sora/math_helper.h"
 
 using glm::vec3;
 using glm::vec2;
@@ -303,14 +304,19 @@ std::vector<DrawCmdData<Vertex_1P1N1UV>> SolidSphereFactory::CreateNormalMesh()
 	data_list.push_back(cmd);
 	return data_list;
 }
-/*
-WireCubeDataFactory::WireCubeDataFactory(float width, float height, float depth)
-	: width_(width), height_(height), depth_(depth)
+
+WireCubeFactory::WireCubeFactory(float width, float height, float depth)
+	: width_(width),
+	height_(height),
+	depth_(depth)
 {
 	SR_ASSERT(width > 0 && height > 0 && depth > 0);
-	width = width/2;
-	height = height/2;
-	depth = depth/2;
+}
+std::vector<DrawCmdData<Vertex_1P>> WireCubeFactory::CreateSimpleMesh()
+{
+	float width = width_ / 2.0f;
+	float height = height_ / 2.0f;
+	float depth = depth_ / 2.0f;
 
 	vec3 v0(-width, height, -depth);
 	vec3 v1(width, height, -depth);
@@ -322,7 +328,7 @@ WireCubeDataFactory::WireCubeDataFactory(float width, float height, float depth)
 	vec3 v6(-width, -height, depth);
 	vec3 v7(width, -height, depth);
 
-	vector<vec3> pos_list(8);
+	std::vector<vec3> pos_list(8);
 	pos_list[0] = v0;
 	pos_list[1] = v1;
 	pos_list[2] = v2;
@@ -332,11 +338,11 @@ WireCubeDataFactory::WireCubeDataFactory(float width, float height, float depth)
 	pos_list[6] = v6;
 	pos_list[7] = v7;
 
-	DrawCmdData<Vertex> cmd;
+	DrawCmdData<Vertex_1P> cmd;
 	cmd.draw_mode = kDrawLines;
 	for(size_t i = 0 ; i < pos_list.size() ; ++i) {
-		Vertex vert;
-		vert.set_pos(pos_list[i]);
+		Vertex_1P vert;
+		vert.p = pos_list[i];
 		cmd.vertex_list.push_back(vert);
 	}
 
@@ -348,48 +354,55 @@ WireCubeDataFactory::WireCubeDataFactory(float width, float height, float depth)
 	};
 	cmd.index_list.resize(index_list.size());
 	copy(index_list.begin(), index_list.end(), cmd.index_list.begin());
-	this->cmd_list_->push_back(cmd);
+
+	std::vector<DrawCmdData<Vertex_1P>> cmd_list;
+	cmd_list.push_back(cmd);
+	return cmd_list;
 }
 
-WireSphereDataFactory::WireSphereDataFactory(float radius, int slices, int stacks)
+WireSphereFactory::WireSphereFactory(float radius, int slices, int stacks)
 	: radius_(radius), slices_(slices), stacks_(stacks)
 {
+}
+
+std::vector<DrawCmdData<Vertex_1P>> WireSphereFactory::CreateSimpleMesh()
+{
 	float nsign = 1.0f;
-	float drho = sora::kPi / stacks;
-	float dtheta = 2.0f * sora::kPi / slices;
+	float drho = sora::kPi / stacks_;
+	float dtheta = 2.0f * sora::kPi / slices_;
 
 	//한방에 그릴수 잇도록하자.
 	//vertex list + index로 구성을 변경한다는 소리
 	//구성 방법은 gl_lines
-	DrawCmdData<Vertex> cmd;
+	DrawCmdData<Vertex_1P> cmd;
 	cmd.draw_mode = kDrawLines;
-	vector<Vertex> &vert_list = cmd.vertex_list;
-	vector<unsigned short> &index_list = cmd.index_list;
+	std::vector<Vertex_1P> &vert_list = cmd.vertex_list;
+	std::vector<unsigned short> &index_list = cmd.index_list;
 
 	// draw stack lines
-	for (int i = 1 ; i < stacks ; i++) { // stack line at i==stacks-1 was missing here
+	for (int i = 1 ; i < stacks_ ; i++) { // stack line at i==stacks-1 was missing here
 		float rho = i * drho;
 
-		vector<Vertex> tmp_vert_list;
-		for (int j = 0; j < slices; j++) {
+		std::vector<Vertex_1P> tmp_vert_list;
+		for (int j = 0; j < slices_; j++) {
 			float theta = j * dtheta;
 			float x = cos(theta) * sin(rho);
 			float y = sin(theta) * sin(rho);
 			float z = cos(rho);
 
-			Vertex vert;
-			vert.n[0] = x * nsign;
-			vert.n[1] = y * nsign;
-			vert.n[2] = z * nsign;
+			Vertex_1P vert;
+			//vert.n[0] = x * nsign;
+			//vert.n[1] = y * nsign;
+			//vert.n[2] = z * nsign;
 
-			vert.p[0] = x * radius;
-			vert.p[1] = y * radius;
-			vert.p[2] = z * radius;
+			vert.p[0] = x * radius_;
+			vert.p[1] = y * radius_;
+			vert.p[2] = z * radius_;
 			tmp_vert_list.push_back(vert);
 		}
 		int base_vert_list_size = vert_list.size();
 		//copy vertex
-		std::copy(tmp_vert_list.begin(), tmp_vert_list.end(), back_inserter(vert_list));
+		std::copy(tmp_vert_list.begin(), tmp_vert_list.end(), std::back_inserter(vert_list));
 
 		for(int i = 0 ; i < (int)tmp_vert_list.size() ; i++) {
 			unsigned short idx1 = base_vert_list_size + i;
@@ -399,28 +412,28 @@ WireSphereDataFactory::WireSphereDataFactory(float radius, int slices, int stack
 		}
 	}
 	// draw slice lines
-	for (int j = 0; j < slices; j++) {
+	for (int j = 0; j < slices_; j++) {
 		float theta = j * dtheta;
 
-		vector<Vertex> tmp_vert_list;
-		for (int i = 0; i <= stacks; i++) {
+		std::vector<Vertex_1P> tmp_vert_list;
+		for (int i = 0; i <= stacks_; i++) {
 			float rho = i * drho;
 			float x = cos(theta) * sin(rho);
 			float y = sin(theta) * sin(rho);
 			float z = cos(rho);
 
-			Vertex vert;
-			vert.n[0] = x * nsign;
-			vert.n[1] = y * nsign;
-			vert.n[2] = z * nsign;
+			Vertex_1P vert;
+			//vert.n[0] = x * nsign;
+			//vert.n[1] = y * nsign;
+			//vert.n[2] = z * nsign;
 
-			vert.p[0] = x * radius;
-			vert.p[1] = y * radius;
-			vert.p[2] = z * radius;
+			vert.p[0] = x * radius_;
+			vert.p[1] = y * radius_;
+			vert.p[2] = z * radius_;
 			tmp_vert_list.push_back(vert);
 		}
 		int base_vert_list_size = vert_list.size();
-		std::copy(tmp_vert_list.begin(), tmp_vert_list.end(), back_inserter(vert_list));
+		std::copy(tmp_vert_list.begin(), tmp_vert_list.end(), std::back_inserter(vert_list));
 
 		for(int i = 0 ; i < (int)tmp_vert_list.size() - 1 ; i++) {
 			unsigned short idx1 = base_vert_list_size + i;
@@ -429,9 +442,13 @@ WireSphereDataFactory::WireSphereDataFactory(float radius, int slices, int stack
 			index_list.push_back(idx2);
 		}
 	}
-	this->cmd_list_->push_back(cmd);
+
+	std::vector<DrawCmdData<Vertex_1P>> cmd_list;
+	cmd_list.push_back(cmd);
+	return cmd_list;
 }
 
+/*
 AxisDataFactory::AxisDataFactory(float size)
 	: size_(size)
 {

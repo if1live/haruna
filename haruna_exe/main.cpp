@@ -18,6 +18,9 @@
 #include "edge_detection.h"
 #include "shadow_mapping.h"
 
+#include "demo.h"
+#include "haruna/gl/debug_draw.h"
+
 const float kWidth = 640;
 const float kHeight = 480;
 
@@ -108,7 +111,7 @@ std::unique_ptr<AbstractLogic> CreateLogicByMenu()
 
 int main()
 {
-	std::unique_ptr<AbstractLogic> logic = CreateLogicByMenu();
+	//std::unique_ptr<AbstractLogic> logic = CreateLogicByMenu();
 	//std::unique_ptr<AbstractLogic> logic(new NormalMapping(kWidth, kHeight));
 	//std::unique_ptr<AbstractLogic> logic(new DiffuseSpecularMapping(kWidth, kHeight));
 	//std::unique_ptr<AbstractLogic> logic(new EnvironmentMapping(kWidth, kHeight));
@@ -116,8 +119,15 @@ int main()
 	//std::unique_ptr<AbstractLogic> logic(new ColorConversion(kWidth, kHeight));
 	//std::unique_ptr<AbstractLogic> logic(new EdgeDetection(kWidth, kHeight));
 	//std::unique_ptr<AbstractLogic> logic(new ShadowMapping(kWidth, kHeight));
+	std::unique_ptr<AbstractLogic> logic(new Demo(kWidth, kHeight));
 
 	InitWindow(static_cast<int>(kWidth), static_cast<int>(kHeight));
+
+	// engine initialize begin
+	{
+		haruna::gl::init_debug_draw();
+	}
+	// engine initialize end
 
 	bool running = true;
 	bool init_result = logic->Init();
@@ -139,6 +149,13 @@ int main()
 	}
 
 	logic.reset(NULL);
+
+	// engine deinitialize begin
+	{
+		haruna::gl::deinit_debug_draw();
+	}
+	// engine deinitialize end
+
 	glfwTerminate();
 	return 0;	
 }	

@@ -142,11 +142,11 @@ void DebugDrawManager::AddString(const glm::vec2 &pos, const std::string &msg,
 	cmd_2d_list_.push_back(std::move(cmd));
 }
 
-void DebugDrawManager::AddSphere(const glm::vec2 &pos, float radius,
+void DebugDrawManager::AddCircle(const glm::vec2 &pos, float radius,
 								 const haruna::vec4ub &color,
 								 float duration) 
 {
-	std::unique_ptr<DebugDraw2D_Sphere> cmd(new DebugDraw2D_Sphere());
+	std::unique_ptr<DebugDraw2D_Circle> cmd(new DebugDraw2D_Circle());
 	cmd->pos = pos;
 	cmd->radius = radius;
 	cmd->color = color;
@@ -214,8 +214,8 @@ void AbstractDebugDrawer2D::Draw(DebugDraw2D *cmd)
 	case kDebugDraw2DString:
 		DrawElem(static_cast<DebugDraw2D_String*>(cmd));
 		break;
-	case kDebugDraw2DSphere:
-		DrawElem(static_cast<DebugDraw2D_Sphere*>(cmd));
+	case kDebugDraw2DCircle:
+		DrawElem(static_cast<DebugDraw2D_Circle*>(cmd));
 		break;
 	default:
 		break;

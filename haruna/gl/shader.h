@@ -6,6 +6,7 @@ namespace gl {
 
 	class ShaderLocation {
 	public:
+		ShaderLocation() : loc_(-1) {}
 		ShaderLocation(GLint loc) : loc_(loc) {}
 		bool IsValid() const { return (loc_ != -1); }
 

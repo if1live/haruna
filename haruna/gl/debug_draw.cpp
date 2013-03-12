@@ -2,98 +2,223 @@
 #include "stdafx.h"
 #include "debug_draw.h"
 
+#include <memory>
+
+#include "sora/low_level_c_file.h"
+#include "sora/filesystem.h"
+#include "haruna/gl/shader.h"
+#include "haruna/primitive_mesh.h"
+#include "haruna/gl/gl_env.h"
+#include "sora/math_helper.h"
+
+using glm::vec4;
+using glm::vec3;
+using sora::Filesystem;
+
 namespace haruna {;
 namespace gl {
+	class ColorShader {
+	public:
+		ColorShader() {}
+		~ColorShader() {}
+
+		bool Init();
+		bool Deinit();
+
+		void ApplyColor(const haruna::vec4ub &color);
+
+		const haruna::gl::ShaderLocation &mvp_loc() const { return mvp_loc_; }
+		const haruna::gl::ShaderLocation &pos_loc() const { return pos_loc_; }
+		const haruna::gl::ShaderLocation &color_loc() const { return color_loc_; }
+
+		const ShaderProgram* prog() const { return prog_.get(); }
+		ShaderProgram* prog() { return prog_.get(); }
+	private:
+		std::unique_ptr<haruna::gl::ShaderProgram> prog_;
+
+		haruna::gl::ShaderLocation mvp_loc_;
+		haruna::gl::ShaderLocation pos_loc_;
+		haruna::gl::ShaderLocation color_loc_;
+	};
+
+	std::vector<DrawCmdData<Vertex_1P>> wire_sphere_mesh;
+	std::unique_ptr<ColorShader> color_shader;
+
+	bool init_debug_draw()
+	{
+		WireSphereFactory factory(1, 8, 8);
+		wire_sphere_mesh = factory.CreateSimpleMesh();
+
+		color_shader.reset(new ColorShader());
+		return color_shader->Init();
+	}
+	bool deinit_debug_draw()
+	{
+		if(color_shader.get() != nullptr) {
+			bool retval = color_shader->Deinit();
+			color_shader.reset(nullptr);
+			return retval;
+		}
+		return true;
+	}
+
+	glm::vec4 ConvertColor(const haruna::vec4ub &orig) 
+	{
+		vec4 color;
+		for(int i = 0 ; i < 4 ; i++) {
+			color[i] = (float)orig[i] / 255.0f;
+		}
+		return color;
+	}
+
+	bool ColorShader::Init()
+	{
+		std::string fs_path = sora::Filesystem::GetAppPath("shader/color_shader.fs");
+		std::string vs_path = sora::Filesystem::GetAppPath("shader/color_shader.vs");
+		sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
+		sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
+		bool fs_open_result = fs_file.Open();
+		bool vs_open_result = vs_file.Open();
+		if(!fs_open_result) {
+			return false;
+		}
+		if(!vs_open_result) {
+			return false;
+		}
 	
+		std::string fs_src(static_cast<const char*>(fs_file.GetBuffer()));
+		std::string vs_src(static_cast<const char*>(vs_file.GetBuffer()));
+	
+		haruna::gl::VertexShader vs(vs_src);
+		haruna::gl::FragmentShader fs(fs_src);
+
+		prog_.reset(new haruna::gl::ShaderProgram(vs, fs));
+		bool prog_result = prog_->Init();
+		if(!prog_result) {
+			return false;
+		}
+
+		pos_loc_ = prog_->GetAttribLocation("a_position");
+		
+		mvp_loc_ = prog_->GetUniformLocation("u_mvp");
+		color_loc_ = prog_->GetUniformLocation("u_color");
+
+		return true;
+	}
+
+	bool ColorShader::Deinit()
+	{
+		if(prog_.get() != nullptr) {
+			return prog_->Deinit();
+		}
+		return false;
+	}
+	void ColorShader::ApplyColor(const haruna::vec4ub &color)
+	{
+		vec4 colorf = ConvertColor(color);
+		glUniform4fv(color_shader->color_loc(), 1, glm::value_ptr(colorf));
+	}
+
+	struct LineWidthReplacer {
+		LineWidthReplacer(float width) : width_(width) 
+		{
+			if(width_ != 1.0f) {
+				glLineWidth(width);
+			}
+		}
+		~LineWidthReplacer()
+		{
+			if(width_ != 1.0f) {
+				glLineWidth(1.0f);
+			}
+		}
+	private:
+		float width_;
+	};
+
+	struct PointSizeReplacer {
+		PointSizeReplacer(float size) : size_(size) 
+		{
+			if(size != 1.0f) {
+				glPointSize(size_);
+			}
+		}
+		~PointSizeReplacer()
+		{
+			if(size_ != 1.0f) {
+				glPointSize(1.0f);
+			}
+		}
+	private:
+		float size_;
+	};
+
+		
+
+	DebugDrawer3D::DebugDrawer3D()
+	{
+	}
+
+	DebugDrawer3D::~DebugDrawer3D()
+	{
+	}
 
 	void DebugDrawer3D::Draw(const DebugDrawManager &mgr) 
 	{
-		/*
-		mgr_ = const_cast<DebugDrawManager*>(&mgr);
+		color_shader->prog()->Use();
 
+		auto pos_loc = color_shader->pos_loc();
+		glEnableVertexAttribArray(pos_loc);
+
+		/*
 		RenderState *dev = &Device::GetInstance()->render_state();
 		dev->Set3D();
-
 		DrawCmdList(mgr);
-
-		mgr_ = NULL;
 		*/
-	}
 
-
-	
-
-	/*
-	void DebugDrawer3D::ApplyDepthTest(DebugDraw3D *cmd) 
-	{
-	if(cmd->depth_enable == false) {
-	glDisable(GL_DEPTH_TEST);
+		// 깊이씹고 렌더링하는것과 깊이고려 렌더링을 분리해서 그리자
+		// 굳이 순서대로 그릴 이유가 없겟더라
+		//glDisable(GL_DEPTH_TEST);
+		//glEnable(GL_DEPTH_TEST);
 	}
-	}
-	void DebugDrawer3D::UnapplyDepthTest(DebugDraw3D *cmd) 
-	{
-	if(cmd->depth_enable == false) {
-	glEnable(GL_DEPTH_TEST);
-	}
-	}
-	*/
-	///////////////////////////////////////////////
 
 	void DebugDrawer3D::DrawElem(DebugDraw3D_Line *cmd) 
 	{
-		/*
-		ShaderManager *shader_mgr = Device::GetInstance()->shader_mgr();
-		Shader *shader = shader_mgr->Get(ShaderManager::kConstColor);
-		RenderState *render_state = &Device::GetInstance()->render_state();
-		render_state->UseShader(*shader);
-
-		vec4 color = Draw2DPolicy::ConvertColor(cmd->color);
-		bool const_color_result = shader->SetUniformVector(kConstColorHandleName, color);
-		SR_ASSERT(const_color_result == true);
-
-		vector<vec3> vertex_list;
-		vertex_list.push_back(cmd->p1);
-		vertex_list.push_back(cmd->p2);
-
+		/*		
 		mat4 mvp = cmd->GetMVPMatrix();
 		ShaderVariable mvp_var = shader->uniform_var(kMVPHandleName);
 		SR_ASSERT(mvp_var.location != kInvalidShaderVarLocation);
-		SetUniformMatrix(mvp_var, mvp);
-
-		shader->SetVertexList(vertex_list);
-		glLineWidth(cmd->line_width);
-		ApplyDepthTest(cmd);
-		shader->DrawArrays(kDrawLines, vertex_list.size());  
-		UnapplyDepthTest(cmd);
-		glLineWidth(1.0f);
+		SetUniformMatrix(mvp_var, mvp);		
 		*/
+
+		color_shader->ApplyColor(cmd->color);
+
+		std::array<vec3, 2> vertex_list;
+		vertex_list[0] = cmd->p1;
+		vertex_list[1] = cmd->p2;
+		auto pos_loc = color_shader->pos_loc();
+		glVertexAttribPointer(pos_loc, 3, GL_FLOAT, GL_FALSE, 0, &vertex_list[0]);
+
+		LineWidthReplacer replacer(cmd->line_width);
+		glDrawArrays(GL_LINES, 0, 2);
 	}
 	void DebugDrawer3D::DrawElem(DebugDraw3D_Cross *cmd) 
 	{
 		/*
-		ShaderManager *shader_mgr = Device::GetInstance()->shader_mgr();
-		Shader &shader = *(shader_mgr->Get(ShaderManager::kConstColor));
-		RenderState *dev = &Device::GetInstance()->render_state();
-		dev->UseShader(shader);
-
-		vec4 color = Draw2DPolicy::ConvertColor(cmd->color);
-		shader.SetUniformVector(kConstColorHandleName, color);
-
 		mat4 mvp = cmd->GetMVPMatrix();
 		ShaderVariable mvp_var = shader.uniform_var(kMVPHandleName);
 		SetUniformMatrix(mvp_var, mvp);
-
-		vector<glm::vec3> vert_list;
-		vert_list.push_back(cmd->pos);
-
-		shader.SetVertexList(vert_list);
-
-		ApplyDepthTest(cmd);
-		glPointSize(cmd->size);
-		shader.DrawArrays(kDrawPoints, vert_list.size());
-		glPointSize(1.0f);
-		UnapplyDepthTest(cmd);
 		*/
+
+		color_shader->ApplyColor(cmd->color);
+
+		std::array<glm::vec3, 0> vert_list;
+		vert_list[0] = cmd->pos;
+		auto pos_loc = color_shader->pos_loc();
+		glVertexAttribPointer(pos_loc, 3, GL_FLOAT, GL_FALSE, 0, &vert_list[0]);
+
+		PointSizeReplacer replacer(cmd->size);
+		glDrawArrays(GL_POINTS, 0, 1);
 	}
 
 	void DebugDrawer3D::DrawElem(DebugDraw3D_Sphere *cmd) 
@@ -119,21 +244,24 @@ namespace gl {
 		mvp = glm::scale(mvp, vec3(cmd->radius, cmd->radius, cmd->radius));
 		ShaderVariable mvp_var = shader.uniform_var(kMVPHandleName);
 		SetUniformMatrix(mvp_var, mvp);
+		*/
 
-		ApplyDepthTest(cmd);
-		auto it = mesh.Begin();
-		auto endit = mesh.End();
+		color_shader->ApplyColor(cmd->color);
+
+				/*
+		//resize! cmd->size
+		auto it = wire_sphere_mesh.begin();
+		auto endit = wire_sphere_mesh.end();
 		for( ; it != endit ; ++it) {
-		//const DrawCmdData<Vertex> &cmd = *it;
-		const DrawCmdData<vec3> &cmd = *it;
-		shader.SetVertexList(cmd.vertex_list);
-		if(cmd.index_list.empty()) {
-		Shader::DrawArrays(cmd.draw_mode, cmd.vertex_list.size());
-		} else {
-		Shader::DrawElements(cmd.draw_mode, cmd.index_list);
+			const DrawCmdData<Vertex_1P> &cmd = *it;
+			auto index_list = cmd.index_list;
+			auto vert_list = cmd.vertex_list;
+
+			SR_ASSERT(index_list.empty() == false);
+
+			glVertexAttribPointer(color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_1P), &vert_list[0]);
+			glDrawElements(GL_LINES, index_list.size(), GL_UNSIGNED_SHORT, &index_list[0]);
 		}
-		}
-		UnapplyDepthTest(cmd);
 		*/
 	}
 
@@ -175,11 +303,9 @@ namespace gl {
 		//2d처럼 렌더링하기
 		glEnable(GL_BLEND);
 
-		ApplyDepthTest(cmd);
 		sora::Label label(font, cmd->msg);
 		shader.SetVertexList(label.vertex_list());
 		shader.DrawElements(kDrawTriangles, label.index_list());
-		UnapplyDepthTest(cmd);
 
 		//3d용으로 복구
 		glDisable(GL_BLEND);
@@ -196,6 +322,8 @@ namespace gl {
 		cross_cmd.size = 5;
 		DrawElem(&cross_cmd);
 		*/
+
+		color_shader->ApplyColor(cmd->color);
 	}
 
 	void DebugDrawer3D::DrawElem(DebugDraw3D_Axis *cmd) 
@@ -229,103 +357,93 @@ namespace gl {
 		ShaderVariable mvp_var = shader->uniform_var(kMVPHandleName);
 		SetUniformMatrix(mvp_var, mvp);
 
-		ApplyDepthTest(cmd);
 		shader->SetVertexList(vertex_list);
 		shader->DrawArrays(kDrawLines, vertex_list.size());  
-		UnapplyDepthTest(cmd);
 		*/
+
+		color_shader->ApplyColor(cmd->color);
 	}
 
-	/*
-	void DebugDrawer2D::BeforeDraw() {
-		RenderState *dev = &Device::GetInstance()->render_state();
-		dev->Set2D();
-	}
-	*/
 	void DebugDrawer2D::DrawElem(DebugDraw2D_Line *cmd) 
 	{
-		/*
-		ShaderManager *shader_mgr = Device::GetInstance()->shader_mgr();
-		Shader &shader = *(shader_mgr->Get(ShaderManager::kConstColor));
-		RenderState *dev = &Device::GetInstance()->render_state();
-		dev->UseShader(shader);
+		//TODO
+		float width = 640;
+		float height = 480;
 
-		vec4 color = ConvertColor(cmd->color);
-		shader.SetUniformVector(kConstColorHandleName, color);
+		glm::mat4 model_mat;
+		glm::mat4 view_mat;
+		glm::mat4 proj_mat = glm::ortho(0.0f, width, 0.0f, height);
 
-		const mat4 &projection = dev->projection_mat();
-		ShaderVariable mvp_var = shader.uniform_var(kMVPHandleName);
-		SetUniformMatrix(mvp_var, projection);
+		glm::mat4 mvp_mat = proj_mat * view_mat * model_mat;
+		glUniformMatrix4fv(color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp_mat));
 
-		vector<glm::vec2> vert_list;
-		vert_list.push_back(cmd->p1);
-		vert_list.push_back(cmd->p2);
+		color_shader->ApplyColor(cmd->color);
 
-		shader.SetVertexList(vert_list);
+		std::array<glm::vec3, 2> vert_list;
+		vert_list[0] = vec3(cmd->p1.x, cmd->p1.y, 0);
+		vert_list[1] = vec3(cmd->p2.x, cmd->p2.y, 0);
+		glVertexAttribPointer(color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, 0, &vert_list[0]);
 
-		glLineWidth(cmd->line_width);
-		shader.DrawArrays(kDrawLines, 2);
-		glLineWidth(1.0f);
-		*/
+		LineWidthReplacer replacer(cmd->line_width);
+		glDrawArrays(GL_LINES, 0, 2);
+		
 	}
 	void DebugDrawer2D::DrawElem(DebugDraw2D_Cross *cmd) 
 	{
-		/*
-		ShaderManager *shader_mgr = Device::GetInstance()->shader_mgr();
-		Shader &shader = *(shader_mgr->Get(ShaderManager::kConstColor));
-		RenderState *dev = &Device::GetInstance()->render_state();
-		dev->UseShader(shader);
+		//TODO
+		float width = 640;
+		float height = 480;
 
-		vec4 color = ConvertColor(cmd->color);
-		shader.SetUniformVector(kConstColorHandleName, color);
+		glm::mat4 model_mat;
+		glm::mat4 view_mat;
+		glm::mat4 proj_mat = glm::ortho(0.0f, width, 0.0f, height);
 
-		const mat4 &projection = dev->projection_mat();
-		ShaderVariable mvp_var = shader.uniform_var(kMVPHandleName);
-		SetUniformMatrix(mvp_var, projection);
+		glm::mat4 mvp_mat = proj_mat * view_mat * model_mat;
+		glUniformMatrix4fv(color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp_mat));
 
-		vector<glm::vec2> vert_list;
-		vert_list.push_back(cmd->pos);
 
-		shader.SetVertexList(vert_list);
+		color_shader->ApplyColor(cmd->color);
 
-		glPointSize(cmd->size);
-		shader.DrawArrays(kDrawPoints, 2);
-		glPointSize(1.0f);
-		*/
+		std::array<glm::vec3, 1> vert_list;
+		vert_list[0] = vec3(cmd->pos.x, cmd->pos.y, 0);
+		glVertexAttribPointer(color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, 0, &vert_list[0]);
+
+		PointSizeReplacer replacer(cmd->size);
+		glDrawArrays(GL_POINTS, 0, 1);
 	}
 
-	void DebugDrawer2D::DrawElem(DebugDraw2D_Sphere *cmd) 
+	void DebugDrawer2D::DrawElem(DebugDraw2D_Circle *cmd) 
 	{
-		/*
-		ShaderManager *shader_mgr = Device::GetInstance()->shader_mgr();
-		Shader &shader = *(shader_mgr->Get(ShaderManager::kConstColor));
-		RenderState *dev = &Device::GetInstance()->render_state();
-		dev->UseShader(shader);
+		//TODO
+		float width = 640;
+		float height = 480;
 
-		vec4 color = ConvertColor(cmd->color);
-		shader.SetUniformVector(kConstColorHandleName, color);
+		glm::mat4 model_mat;
+		model_mat = glm::translate(model_mat, vec3(cmd->pos.x, cmd->pos.y, 0));
+		model_mat = glm::scale(model_mat, glm::vec3(cmd->radius, cmd->radius, 1));
+		glm::mat4 view_mat;
+		glm::mat4 proj_mat = glm::ortho(0.0f, width, 0.0f, height);
 
-		const mat4 &projection = dev->projection_mat();
-		glm::mat4 mvp = glm::translate(projection, vec3(cmd->pos.x, cmd->pos.y, 0));
-		ShaderVariable mvp_var = shader.uniform_var(kMVPHandleName);
-		SetUniformMatrix(mvp_var, mvp);
+		glm::mat4 mvp_mat = proj_mat * view_mat * model_mat;
+		glUniformMatrix4fv(color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp_mat));
 
-		GeometricObject<glm::vec3> mesh;
-		mesh.WireSphere(cmd->radius, 16, 16);
+		color_shader->ApplyColor(cmd->color);
 
-		auto it = mesh.Begin();
-		auto endit = mesh.End();
-		for( ; it != endit ; ++it) {
-			//const DrawCmdData<Vertex> &cmd = *it;
-			const DrawCmdData<vec3> &cmd = *it;
-			shader.SetVertexList(cmd.vertex_list);
-			if(cmd.index_list.empty()) {
-				Shader::DrawArrays(cmd.draw_mode, cmd.vertex_list.size());
-			} else {
-				Shader::DrawElements(cmd.draw_mode, cmd.index_list);
-			}
+		std::vector<glm::vec3> point_list;
+		point_list.push_back(glm::vec3(0, 0, 0));
+
+		float split = 32;
+		for(int i = 0 ; i < split + 1 ; i++) {
+			float rad_seg = sora::kPi / split  * 2;
+			float rad = rad_seg * i;
+			float x = cos(rad);
+			float y = sin(rad);
+
+			point_list.push_back(glm::vec3(x, y, 0));
 		}
-		*/
+
+		glVertexAttribPointer(color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, 0, &point_list[0]);
+		glDrawArrays(GL_LINE_STRIP, 0, point_list.size());
 	}
 
 	void DebugDrawer2D::DrawElem(DebugDraw2D_String *cmd) 
@@ -335,9 +453,6 @@ namespace gl {
 		Shader &shader = *(shader_mgr->Get(ShaderManager::kText));
 		RenderState *dev = &Device::GetInstance()->render_state();
 		dev->UseShader(shader);
-
-		vec4 color = ConvertColor(cmd->color);
-		shader.SetUniformVector(kConstColorHandleName, color);
 
 		sora::SysFont *font = Device::GetInstance()->sys_font();
 		dev->UseTexture(font->font_texture(), 0);
@@ -356,29 +471,27 @@ namespace gl {
 
 		shader.DrawElements(kDrawTriangles, label.index_list());
 		*/
+
+		color_shader->ApplyColor(cmd->color);
 	}
 
-	/*
-	glm::vec4 DebugDrawer2D::ConvertColor(const sora::vec4ub &orig) {
-		vec4 color;
-		for(int i = 0 ; i < 4 ; i++) {
-			color[i] = (float)orig[i] / 255.0f;
-		}
-		return color;
-	}
-	*/
-
+	
 	
 	void DebugDrawer2D::Draw(const DebugDrawManager &mgr) 
 	{
-		/*
-		mgr_ = const_cast<Draw2DManager*>(&mgr);
-
-		BeforeDraw();
+		//RenderState *dev = &Device::GetInstance()->render_state();
+		//dev->Set2D();
+		color_shader->prog()->Use();
+		auto pos_loc = color_shader->pos_loc();
+		glEnableVertexAttribArray(pos_loc);
 		DrawCmdList(mgr);
+	}
 
-		mgr_ = NULL;
-		*/
+	DebugDrawer2D::DebugDrawer2D()
+	{
+	}
+	DebugDrawer2D::~DebugDrawer2D()
+	{
 	}
 }	// namespace gl
 }	// namespace haruna

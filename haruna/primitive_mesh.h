@@ -65,30 +65,33 @@ private:
 	int stacks_;
 };
 
-/*
-class PrimitiveMeshDataFactory {
+class WireMeshFactory {
 public:
-	PrimitiveMeshDataFactory() {}
-	virtual ~PrimitiveMeshDataFactory() {}
+	WireMeshFactory() {}
+	virtual ~WireMeshFactory() {}
 
-	virtual DrawCmdData<Vertex_1P> create() = 0;
+	virtual std::vector<DrawCmdData<Vertex_1P>> CreateSimpleMesh() = 0;
 };
 
-
-class SolidCubeDataFactory : public PrimitiveMeshDataFactory {
+class WireCubeFactory : public WireMeshFactory {
 public:
-	SolidCubeDataFactory(float width, float height, float depth);
-	virtual ~SolidCubeDataFactory() {}
+	WireCubeFactory(float width, float height, float depth);
+	virtual ~WireCubeFactory() {}
+
+	virtual std::vector<DrawCmdData<Vertex_1P>> CreateSimpleMesh();
+
 private:
 	float width_;
 	float height_;
 	float depth_;
 };
 
-class WireSphereDataFactory : public PrimitiveMeshDataFactory {
+class WireSphereFactory : public WireMeshFactory {
 public:
-	WireSphereDataFactory(float radius, int slices, int stacks);
-	virtual ~WireSphereDataFactory() {}
+	WireSphereFactory(float radius, int slices, int stacks);
+	virtual ~WireSphereFactory() {}
+
+	virtual std::vector<DrawCmdData<Vertex_1P>> CreateSimpleMesh();
 
 private:
 	float radius_;
@@ -96,8 +99,7 @@ private:
 	int stacks_;
 };
 
-
-
+/*
 class AxisDataFactory : public PrimitiveMeshDataFactory {
 public:
 	AxisDataFactory(float size);

@@ -13,6 +13,7 @@
 
 #include <memory>
 
+#include <array>
 #include <string>
 #include <vector>
 #include <map>
@@ -23,6 +24,7 @@
 
 
 #include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 #include <GL/glew.h>
 #include <GL/glfw.h>
