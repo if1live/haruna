@@ -1,4 +1,5 @@
 ﻿// Ŭnicode please 
+#include "exe_stdafx.h"
 #include "toon_shader.h"
 
 #include <glm/glm.hpp>

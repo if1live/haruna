@@ -1,4 +1,6 @@
 ﻿// Ŭnicode please 
+#include "exe_stdafx.h"
+
 #include "uv_animation.h"
 
 #include <glm/glm.hpp>

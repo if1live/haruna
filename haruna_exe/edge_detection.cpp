@@ -1,4 +1,5 @@
 ﻿// Ŭnicode please 
+#include "exe_stdafx.h"
 #include "edge_detection.h"
 
 #include <glm/glm.hpp>

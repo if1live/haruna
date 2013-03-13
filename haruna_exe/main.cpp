@@ -1,4 +1,6 @@
 ﻿// Ŭnicode please 
+#include "exe_stdafx.h"
+
 #include <GL/glew.h>
 #include <GL/glfw.h>
 

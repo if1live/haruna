@@ -1,34 +1,102 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="haruna_exe\main.cpp" />
-    <ClCompile Include="haruna_exe\renderer.cpp" />
-    <ClCompile Include="haruna_exe\color_shader.cpp" />
-    <ClCompile Include="haruna_exe\texture_mapping.cpp" />
-    <ClCompile Include="haruna_exe\lighting.cpp" />
-    <ClCompile Include="haruna_exe\diffuse_specular_mapping.cpp" />
-    <ClCompile Include="haruna_exe\toon_shader.cpp" />
-    <ClCompile Include="haruna_exe\normal_mapping.cpp" />
-    <ClCompile Include="haruna_exe\environment_mapping.cpp" />
-    <ClCompile Include="haruna_exe\uv_animation.cpp" />
-    <ClCompile Include="haruna_exe\color_conversion.cpp" />
-    <ClCompile Include="haruna_exe\edge_detection.cpp" />
-    <ClCompile Include="haruna_exe\shadow_mapping.cpp" />
-    <ClCompile Include="haruna_exe\demo.cpp" />
+    <ClCompile Include="haruna_exe\exe_stdafx.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_exe\main.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_exe\demo.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_exe\color_conversion.cpp">
+      <Filter>example</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_exe\color_shader.cpp">
+      <Filter>example</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_exe\diffuse_specular_mapping.cpp">
+      <Filter>example</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_exe\edge_detection.cpp">
+      <Filter>example</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_exe\environment_mapping.cpp">
+      <Filter>example</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_exe\lighting.cpp">
+      <Filter>example</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_exe\normal_mapping.cpp">
+      <Filter>example</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_exe\renderer.cpp">
+      <Filter>example</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_exe\shadow_mapping.cpp">
+      <Filter>example</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_exe\texture_mapping.cpp">
+      <Filter>example</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_exe\toon_shader.cpp">
+      <Filter>example</Filter>
+    </ClCompile>
+    <ClCompile Include="haruna_exe\uv_animation.cpp">
+      <Filter>example</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="haruna_exe\renderer.h" />
-    <ClInclude Include="haruna_exe\color_shader.h" />
-    <ClInclude Include="haruna_exe\texture_mapping.h" />
-    <ClInclude Include="haruna_exe\lighting.h" />
-    <ClInclude Include="haruna_exe\diffuse_specular_mapping.h" />
-    <ClInclude Include="haruna_exe\toon_shader.h" />
-    <ClInclude Include="haruna_exe\normal_mapping.h" />
-    <ClInclude Include="haruna_exe\environment_mapping.h" />
-    <ClInclude Include="haruna_exe\uv_animation.h" />
-    <ClInclude Include="haruna_exe\color_conversion.h" />
-    <ClInclude Include="haruna_exe\edge_detection.h" />
-    <ClInclude Include="haruna_exe\shadow_mapping.h" />
-    <ClInclude Include="haruna_exe\demo.h" />
+    <ClInclude Include="haruna_exe\exe_stdafx.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna_exe\demo.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna_exe\color_conversion.h">
+      <Filter>example</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna_exe\color_shader.h">
+      <Filter>example</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna_exe\diffuse_specular_mapping.h">
+      <Filter>example</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna_exe\edge_detection.h">
+      <Filter>example</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna_exe\environment_mapping.h">
+      <Filter>example</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna_exe\lighting.h">
+      <Filter>example</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna_exe\normal_mapping.h">
+      <Filter>example</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna_exe\renderer.h">
+      <Filter>example</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna_exe\shadow_mapping.h">
+      <Filter>example</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna_exe\texture_mapping.h">
+      <Filter>example</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna_exe\toon_shader.h">
+      <Filter>example</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna_exe\uv_animation.h">
+      <Filter>example</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="support">
+      <UniqueIdentifier>{b9e25974-5366-41f0-b9f4-31748ada105b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="example">
+      <UniqueIdentifier>{603ff3f9-2cb7-408c-bcd2-19787cc5c4f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

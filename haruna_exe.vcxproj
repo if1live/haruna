@@ -48,6 +48,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>exe_stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -60,6 +62,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>exe_stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -74,6 +78,10 @@
     <ClCompile Include="haruna_exe\diffuse_specular_mapping.cpp" />
     <ClCompile Include="haruna_exe\edge_detection.cpp" />
     <ClCompile Include="haruna_exe\environment_mapping.cpp" />
+    <ClCompile Include="haruna_exe\exe_stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="haruna_exe\lighting.cpp" />
     <ClCompile Include="haruna_exe\main.cpp" />
     <ClCompile Include="haruna_exe\normal_mapping.cpp" />
@@ -95,6 +103,7 @@
     <ClInclude Include="haruna_exe\diffuse_specular_mapping.h" />
     <ClInclude Include="haruna_exe\edge_detection.h" />
     <ClInclude Include="haruna_exe\environment_mapping.h" />
+    <ClInclude Include="haruna_exe\exe_stdafx.h" />
     <ClInclude Include="haruna_exe\lighting.h" />
     <ClInclude Include="haruna_exe\normal_mapping.h" />
     <ClInclude Include="haruna_exe\renderer.h" />

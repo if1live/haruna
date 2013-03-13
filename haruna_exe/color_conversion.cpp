@@ -1,4 +1,5 @@
 ﻿// Ŭnicode please 
+#include "exe_stdafx.h"
 #include "color_conversion.h"
 
 #include <glm/glm.hpp>

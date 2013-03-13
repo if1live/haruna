@@ -1,4 +1,5 @@
 ﻿// Ŭnicode please 
+#include "exe_stdafx.h"
 #include "lighting.h"
 
 #include <glm/glm.hpp>

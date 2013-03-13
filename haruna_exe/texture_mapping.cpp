@@ -1,4 +1,5 @@
 ﻿// Ŭnicode please 
+#include "exe_stdafx.h"
 #include "texture_mapping.h"
 
 #include <glm/glm.hpp>
