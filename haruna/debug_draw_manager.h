@@ -47,7 +47,7 @@ public:
 
 	virtual void Draw(const DebugDrawManager &mgr) = 0;
 	void DrawCmdList(const DebugDrawManager &mgr);
-	void Draw(DebugDraw3D *cmd);
+	void DrawElem(DebugDraw3D *cmd);
 
 public:
 	virtual void DrawElem(DebugDraw3D_Line *cmd) = 0;
@@ -65,7 +65,7 @@ public:
 public:
 	virtual void Draw(const DebugDrawManager &mgr) = 0;
 	void DrawCmdList(const DebugDrawManager &mgr);
-	void Draw(DebugDraw2D *cmd);
+	void DrawElem(DebugDraw2D *cmd);
 
 public:
 	virtual void DrawElem(DebugDraw2D_Line *cmd) = 0;
@@ -75,9 +75,9 @@ public:
 };
 
 class DebugDrawManager {;
-friend class AbstractDebugDrawer2D;
-friend class AbstractDebugDrawer3D;
-
+public:
+	typedef std::list<std::unique_ptr<DebugDraw3D>> DebugDraw3DList;
+	typedef std::list<std::unique_ptr<DebugDraw2D>> DebugDraw2DList;
 public:
 	DebugDrawManager();
 	~DebugDrawManager();
@@ -132,9 +132,14 @@ public:
 		const haruna::vec4ub &color,
 		float duration = 0.0f);
 
+	DebugDraw3DList::const_iterator begin_3d() const { return cmd_3d_list_.begin(); }
+	DebugDraw3DList::const_iterator end_3d() const { return cmd_3d_list_.end(); }
+	DebugDraw2DList::const_iterator begin_2d() const { return cmd_2d_list_.begin(); }
+	DebugDraw2DList::const_iterator end_2d() const { return cmd_2d_list_.end(); }
+
 private:
-	std::list<std::unique_ptr<DebugDraw3D>> cmd_3d_list_;
-	std::list<std::unique_ptr<DebugDraw2D>> cmd_2d_list_;
+	DebugDraw3DList cmd_3d_list_;
+	DebugDraw2DList cmd_2d_list_;
 };
 
 

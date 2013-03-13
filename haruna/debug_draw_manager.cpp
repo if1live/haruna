@@ -202,7 +202,7 @@ void DebugDrawManager::Update(float dt)
 	}
 }
 
-void AbstractDebugDrawer2D::Draw(DebugDraw2D *cmd) 
+void AbstractDebugDrawer2D::DrawElem(DebugDraw2D *cmd) 
 {
 	switch(cmd->type) {
 	case kDebugDraw2DLine:
@@ -222,7 +222,7 @@ void AbstractDebugDrawer2D::Draw(DebugDraw2D *cmd)
 	}
 }
 
-void AbstractDebugDrawer3D::Draw(DebugDraw3D *cmd) 
+void AbstractDebugDrawer3D::DrawElem(DebugDraw3D *cmd) 
 {
 	switch(cmd->type) {
 	case kDebugDraw3DLine:
@@ -244,24 +244,5 @@ void AbstractDebugDrawer3D::Draw(DebugDraw3D *cmd)
 		break;
 	}
 }
-
-void AbstractDebugDrawer3D::DrawCmdList(const DebugDrawManager &mgr) 
-{
-	auto it = mgr.cmd_3d_list_.begin();
-	auto endit = mgr.cmd_3d_list_.end();
-	for( ; it != endit ; ++it) {
-		Draw(it->get());
-	}
-}
-
-void AbstractDebugDrawer2D::DrawCmdList(const DebugDrawManager &mgr) 
-{
-	auto it = mgr.cmd_2d_list_.begin();
-	auto endit = mgr.cmd_2d_list_.end();
-	for( ; it != endit ; ++it) {
-		Draw(it->get());
-	}
-}
-
 
 } //namespace sora

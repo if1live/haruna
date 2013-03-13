@@ -36,6 +36,7 @@ bool Demo::Update(float dt)
 	debug_draw_mgr.AddLine(vec2(0, 0), vec2(100, 100), vec4ub(255, 255, 0, 255), 5.0f);
 	debug_draw_mgr.AddCross(vec2(100, 200), vec4ub(255, 255, 255, 255), 10.0f);
 	debug_draw_mgr.AddCircle(vec2(200, 200), 20, vec4ub(255, 0, 255, 255));
+	debug_draw_mgr.AddString(vec2(20, 20), "this is some msg", vec4ub(255, 0, 0, 255), 1.5f);
 
 	bool running = !glfwGetKey(GLFW_KEY_ESC) && glfwGetWindowParam(GLFW_OPENED);
 	return running;

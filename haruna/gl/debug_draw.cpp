@@ -6,10 +6,12 @@
 
 #include "sora/low_level_c_file.h"
 #include "sora/filesystem.h"
-#include "haruna/gl/shader.h"
-#include "haruna/primitive_mesh.h"
-#include "haruna/gl/gl_env.h"
 #include "sora/math_helper.h"
+#include "haruna/primitive_mesh.h"
+#include "shader.h"
+#include "gl_env.h"
+#include "sys_font.h"
+#include "texture.h"
 
 using glm::vec4;
 using glm::vec3;
@@ -17,15 +19,68 @@ using sora::Filesystem;
 
 namespace haruna {;
 namespace gl {
+	glm::vec4 ConvertColor(const haruna::vec4ub &orig) 
+	{
+		vec4 color;
+		for(int i = 0 ; i < 4 ; i++) {
+			color[i] = (float)orig[i] / 255.0f;
+		}
+		return color;
+	}
+
 	class ColorShader {
 	public:
 		ColorShader() {}
 		~ColorShader() {}
 
-		bool Init();
-		bool Deinit();
+		bool Init()
+		{
+			std::string fs_path = sora::Filesystem::GetAppPath("shader/color_shader.fs");
+			std::string vs_path = sora::Filesystem::GetAppPath("shader/color_shader.vs");
+			sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
+			sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
+			bool fs_open_result = fs_file.Open();
+			bool vs_open_result = vs_file.Open();
+			if(!fs_open_result) {
+				return false;
+			}
+			if(!vs_open_result) {
+				return false;
+			}
+	
+			std::string fs_src(static_cast<const char*>(fs_file.GetBuffer()));
+			std::string vs_src(static_cast<const char*>(vs_file.GetBuffer()));
+	
+			haruna::gl::VertexShader vs(vs_src);
+			haruna::gl::FragmentShader fs(fs_src);
 
-		void ApplyColor(const haruna::vec4ub &color);
+			prog_.reset(new haruna::gl::ShaderProgram(vs, fs));
+			bool prog_result = prog_->Init();
+			if(!prog_result) {
+				return false;
+			}
+
+			pos_loc_ = prog_->GetAttribLocation("a_position");
+		
+			mvp_loc_ = prog_->GetUniformLocation("u_mvp");
+			color_loc_ = prog_->GetUniformLocation("u_color");
+
+			return true;
+		}
+
+		bool Deinit()
+		{
+			if(prog_.get() != nullptr) {
+				return prog_->Deinit();
+			}
+			return false;
+		}
+
+		void ApplyColor(const haruna::vec4ub &color)
+		{
+			vec4 colorf = ConvertColor(color);
+			glUniform4fv(color_loc(), 1, glm::value_ptr(colorf));
+		}
 
 		const haruna::gl::ShaderLocation &mvp_loc() const { return mvp_loc_; }
 		const haruna::gl::ShaderLocation &pos_loc() const { return pos_loc_; }
@@ -41,84 +96,137 @@ namespace gl {
 		haruna::gl::ShaderLocation color_loc_;
 	};
 
+	class TextShader {
+	public:
+		TextShader() {}
+		~TextShader() {}
+
+		bool Init()
+		{
+			std::string fs_path = sora::Filesystem::GetAppPath("shader/text.fs");
+			std::string vs_path = sora::Filesystem::GetAppPath("shader/text.vs");
+			sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
+			sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
+			bool fs_open_result = fs_file.Open();
+			bool vs_open_result = vs_file.Open();
+			if(!fs_open_result) {
+				return false;
+			}
+			if(!vs_open_result) {
+				return false;
+			}
+	
+			std::string fs_src(static_cast<const char*>(fs_file.GetBuffer()));
+			std::string vs_src(static_cast<const char*>(vs_file.GetBuffer()));
+	
+			haruna::gl::VertexShader vs(vs_src);
+			haruna::gl::FragmentShader fs(fs_src);
+
+			prog_.reset(new haruna::gl::ShaderProgram(vs, fs));
+			bool prog_result = prog_->Init();
+			if(!prog_result) {
+				return false;
+			}
+
+			pos_loc_ = prog_->GetAttribLocation("a_position");
+			texcoord_loc_ = prog_->GetAttribLocation("a_texcoord");
+		
+			mvp_loc_ = prog_->GetUniformLocation("u_mvp");
+			color_loc_ = prog_->GetUniformLocation("u_color");
+			font_tex_loc_ = prog_->GetUniformLocation("s_tex");
+
+			return true;
+		}
+		bool Deinit()
+		{
+			if(prog_.get() != nullptr) {
+				return prog_->Deinit();
+			}
+			return false;
+		}
+
+		void ApplyColor(const haruna::vec4ub &color)
+		{
+			vec4 colorf = ConvertColor(color);
+			glUniform4fv(color_loc(), 1, glm::value_ptr(colorf));
+		}
+
+		const ShaderProgram* prog() const { return prog_.get(); }
+		ShaderProgram* prog() { return prog_.get(); }
+
+		const haruna::gl::ShaderLocation &mvp_loc() const { return mvp_loc_; }
+		const haruna::gl::ShaderLocation &pos_loc() const { return pos_loc_; }
+		const haruna::gl::ShaderLocation &color_loc() const { return color_loc_; }
+		const haruna::gl::ShaderLocation &texcoord_loc() const { return texcoord_loc_; }
+		const haruna::gl::ShaderLocation &font_tex_loc() const { return font_tex_loc_; }
+
+	private:
+		std::unique_ptr<haruna::gl::ShaderProgram> prog_;
+
+		haruna::gl::ShaderLocation mvp_loc_;
+		haruna::gl::ShaderLocation pos_loc_;
+		haruna::gl::ShaderLocation texcoord_loc_;
+		haruna::gl::ShaderLocation color_loc_;
+		haruna::gl::ShaderLocation font_tex_loc_;
+	};
+
 	std::vector<DrawCmdData<Vertex_1P>> wire_sphere_mesh;
 	std::unique_ptr<ColorShader> color_shader;
+	std::unique_ptr<TextShader> text_shader;
+	std::unique_ptr<SysFont> sys_font;
+
+	////////////////
 
 	bool init_debug_draw()
 	{
 		WireSphereFactory factory(1, 8, 8);
 		wire_sphere_mesh = factory.CreateSimpleMesh();
 
+		sys_font.reset(new SysFont());
+		if(!sys_font->Init()) {
+			return false;
+		}
+
 		color_shader.reset(new ColorShader());
-		return color_shader->Init();
+		if(!color_shader->Init()) {
+			return false;
+		}
+
+		text_shader.reset(new TextShader());
+		if(!text_shader->Init()) {
+			return false;
+		}
+		return true;
 	}
 	bool deinit_debug_draw()
 	{
+		if(sys_font.get() != nullptr) {
+			bool retval = sys_font->Deinit();
+			sys_font.reset(nullptr);
+			if(!retval) {
+				return false;
+			}
+		}
+
 		if(color_shader.get() != nullptr) {
 			bool retval = color_shader->Deinit();
 			color_shader.reset(nullptr);
-			return retval;
+			if(!retval) {
+				return false;
+			}
+		}
+
+		if(text_shader.get() != nullptr) {
+			bool retval = text_shader->Deinit();
+			text_shader.reset(nullptr);
+			if(!retval) {
+				return false;
+			}
 		}
 		return true;
 	}
 
-	glm::vec4 ConvertColor(const haruna::vec4ub &orig) 
-	{
-		vec4 color;
-		for(int i = 0 ; i < 4 ; i++) {
-			color[i] = (float)orig[i] / 255.0f;
-		}
-		return color;
-	}
-
-	bool ColorShader::Init()
-	{
-		std::string fs_path = sora::Filesystem::GetAppPath("shader/color_shader.fs");
-		std::string vs_path = sora::Filesystem::GetAppPath("shader/color_shader.vs");
-		sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
-		sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
-		bool fs_open_result = fs_file.Open();
-		bool vs_open_result = vs_file.Open();
-		if(!fs_open_result) {
-			return false;
-		}
-		if(!vs_open_result) {
-			return false;
-		}
 	
-		std::string fs_src(static_cast<const char*>(fs_file.GetBuffer()));
-		std::string vs_src(static_cast<const char*>(vs_file.GetBuffer()));
-	
-		haruna::gl::VertexShader vs(vs_src);
-		haruna::gl::FragmentShader fs(fs_src);
-
-		prog_.reset(new haruna::gl::ShaderProgram(vs, fs));
-		bool prog_result = prog_->Init();
-		if(!prog_result) {
-			return false;
-		}
-
-		pos_loc_ = prog_->GetAttribLocation("a_position");
-		
-		mvp_loc_ = prog_->GetUniformLocation("u_mvp");
-		color_loc_ = prog_->GetUniformLocation("u_color");
-
-		return true;
-	}
-
-	bool ColorShader::Deinit()
-	{
-		if(prog_.get() != nullptr) {
-			return prog_->Deinit();
-		}
-		return false;
-	}
-	void ColorShader::ApplyColor(const haruna::vec4ub &color)
-	{
-		vec4 colorf = ConvertColor(color);
-		glUniform4fv(color_shader->color_loc(), 1, glm::value_ptr(colorf));
-	}
-
 	struct LineWidthReplacer {
 		LineWidthReplacer(float width) : width_(width) 
 		{
@@ -448,43 +556,79 @@ namespace gl {
 
 	void DebugDrawer2D::DrawElem(DebugDraw2D_String *cmd) 
 	{
-		/*
-		ShaderManager *shader_mgr = Device::GetInstance()->shader_mgr();
-		Shader &shader = *(shader_mgr->Get(ShaderManager::kText));
-		RenderState *dev = &Device::GetInstance()->render_state();
-		dev->UseShader(shader);
+		//TODO 
+		float width = 640;
+		float height = 480;
 
-		sora::SysFont *font = Device::GetInstance()->sys_font();
-		dev->UseTexture(font->font_texture(), 0);
+		//폰트의 왼쪽위를 원점으로 사용하기 위해서 약간 올린다
+		float base_line = SysFont::kFontSize * cmd->scale;
 
-		//해상도에 맞춰서 적절히 설정
-		const mat4 &projection = dev->projection_mat();
-		ShaderVariable mvp_var = shader.uniform_var(kMVPHandleName);
+		glm::mat4 model_mat;
+		model_mat = glm::translate(model_mat, vec3(cmd->pos.x, cmd->pos.y + base_line, 0));
+		model_mat = glm::scale(model_mat, glm::vec3(cmd->scale, cmd->scale, 1));
+		glm::mat4 view_mat;
+		glm::mat4 proj_mat = glm::ortho(0.0f, width, 0.0f, height);
+		glm::mat4 mvp_mat = proj_mat * view_mat * model_mat;
+		glUniformMatrix4fv(text_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp_mat));
 
-		mat4 world_mat(1.0f);
-		world_mat = glm::translate(world_mat, vec3(cmd->pos.x, cmd->pos.y, 0));
-		world_mat = glm::scale(world_mat, vec3(cmd->scale));
-		mat4 mvp = projection * world_mat;
-		SetUniformMatrix(mvp_var, mvp);
-		sora::Label label(font, cmd->msg);
-		shader.SetVertexList(label.vertex_list());
+		text_shader->ApplyColor(cmd->color);
 
-		shader.DrawElements(kDrawTriangles, label.index_list());
-		*/
+		Label label(sys_font.get(), cmd->msg);
+		auto vert_list = label.vertex_list();
+		auto index_list = label.index_list();
 
-		color_shader->ApplyColor(cmd->color);
+		int stride = sizeof(vert_list[0]);
+		glVertexAttribPointer(text_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, stride, &vert_list[0].p);
+		glVertexAttribPointer(text_shader->texcoord_loc(), 2, GL_FLOAT, GL_FALSE, stride, &vert_list[0].uv);
+		glDrawElements(GL_TRIANGLES, index_list.size(), GL_UNSIGNED_SHORT, &index_list[0]);
 	}
 
 	
 	
 	void DebugDrawer2D::Draw(const DebugDrawManager &mgr) 
 	{
+		//string은 쉐이더가 다르니 따로 그린다
+		//종류를 나눠서 그리다보니까 높이 정보는 씹는다
+		//어차피 2차원 디버깅은 통계 관련에서만 쓸데니까 별 문제 없을거다
+		std::vector<DebugDraw2D*> color_list;
+		std::vector<DebugDraw2D*> text_list;
+
+		auto it = mgr.begin_2d();
+		auto endit = mgr.end_2d();
+		for( ; it != endit ; ++it) {
+			DebugDraw2D *cmd = it->get();
+			if(cmd->type == kDebugDraw2DString) {
+				text_list.push_back(cmd);
+			} else {
+				color_list.push_back(cmd);
+			}
+		}
+
+		//2차원 환경에서의 렌더링 기본 설정
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_DEPTH_TEST);
+
 		//RenderState *dev = &Device::GetInstance()->render_state();
 		//dev->Set2D();
 		color_shader->prog()->Use();
-		auto pos_loc = color_shader->pos_loc();
-		glEnableVertexAttribArray(pos_loc);
-		DrawCmdList(mgr);
+		glEnableVertexAttribArray(color_shader->pos_loc());
+		for(DebugDraw2D *cmd : color_list) {
+			AbstractDebugDrawer2D::DrawElem(cmd);
+		}
+		
+		text_shader->prog()->Use();
+		glEnableVertexAttribArray(text_shader->pos_loc());
+		glEnableVertexAttribArray(text_shader->texcoord_loc());
+
+		// 폰트 텍스쳐는 1번만 쓰면 된다
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, sys_font->font_texture()->tex());
+		glUniform1i(text_shader->font_tex_loc(), 0);
+
+		for(DebugDraw2D *cmd : text_list) {
+			AbstractDebugDrawer2D::DrawElem(cmd);
+		}
 	}
 
 	DebugDrawer2D::DebugDrawer2D()
