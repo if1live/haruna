@@ -40,6 +40,9 @@ struct DebugDraw2D_Circle;
 
 class DebugDrawManager;
 
+bool DebugDrawManager_Init();
+bool DebugDrawManager_Deinit();
+
 class AbstractDebugDrawer3D {
 public:
 	AbstractDebugDrawer3D() {}
@@ -190,11 +193,11 @@ struct DebugDraw3D {
 	float duration;
 	bool depth_enable;
 
-	glm::mat4 projection_mat;
+	glm::mat4 proj_mat;
 	glm::mat4 view_mat;
 	glm::mat4 model_mat;
 
-	glm::mat4 GetMVPMatrix() const { return projection_mat * view_mat * model_mat; }
+	glm::mat4 GetMVPMatrix() const { return proj_mat * view_mat * model_mat; }
 };
 
 struct DebugDraw3D_Line : public DebugDraw3D {

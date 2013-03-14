@@ -72,6 +72,9 @@
     <ClCompile Include="haruna\gl\sys_font.cpp">
       <Filter>haruna\gl</Filter>
     </ClCompile>
+    <ClCompile Include="haruna\gl\render_state.cpp">
+      <Filter>haruna\gl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna\gl\shader.h">
@@ -150,6 +153,9 @@
       <Filter>haruna\gl</Filter>
     </ClInclude>
     <ClInclude Include="haruna\gl\sys_font.h">
+      <Filter>haruna\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="haruna\gl\render_state.h">
       <Filter>haruna\gl</Filter>
     </ClInclude>
   </ItemGroup>

@@ -13,4 +13,5 @@ public:
 	virtual void Draw();
 
 private:
+	float y_rot_;
 };

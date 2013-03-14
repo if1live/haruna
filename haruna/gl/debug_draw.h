@@ -5,8 +5,8 @@
 
 namespace haruna {;
 namespace gl {
-	bool init_debug_draw();
-	bool deinit_debug_draw();
+	bool GLDebugDraw_Init();
+	bool GLDebugDraw_Deinit();
 
 	class DebugDrawer3D : public haruna::AbstractDebugDrawer3D {
 	public:

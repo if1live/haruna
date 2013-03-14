@@ -16,6 +16,7 @@
     <ClCompile Include="haruna\gl\debug_draw.cpp" />
     <ClCompile Include="haruna\gl\frame_buffer.cpp" />
     <ClCompile Include="haruna\gl\gl_env.cpp" />
+    <ClCompile Include="haruna\gl\render_state.cpp" />
     <ClCompile Include="haruna\gl\shader.cpp" />
     <ClCompile Include="haruna\gl\sys_font.cpp" />
     <ClCompile Include="haruna\gl\texture.cpp" />
@@ -40,6 +41,7 @@
     <ClInclude Include="haruna\gl\debug_draw.h" />
     <ClInclude Include="haruna\gl\frame_buffer.h" />
     <ClInclude Include="haruna\gl\gl_env.h" />
+    <ClInclude Include="haruna\gl\render_state.h" />
     <ClInclude Include="haruna\gl\shader.h" />
     <ClInclude Include="haruna\gl\sys_font.h" />
     <ClInclude Include="haruna\gl\texture.h" />

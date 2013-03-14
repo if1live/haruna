@@ -2,10 +2,39 @@
 #include "stdafx.h"
 #include "debug_draw_manager.h"
 
+#if SR_USE_GL
+#include "gl/debug_draw.h"
+#include "gl/render_state.h"
+#endif
+
 using namespace std;
 using namespace glm;
 
 namespace haruna {;
+
+bool DebugDrawManager_Init()
+{
+	bool retval = false;
+#if SR_USE_GL
+	retval = gl::GLDebugDraw_Init();
+	if(!retval) {
+		return false;
+	}
+#endif
+
+	return retval;
+}
+bool DebugDrawManager_Deinit()
+{
+	bool retval = false;
+#if SR_USE_GL
+	retval = gl::GLDebugDraw_Deinit();
+	if(!retval) {
+		return false;
+	}
+#endif
+	return retval;
+}
 
 //디버깅 렌더링에서 쓰이는 쉐이더는 크게 2가지이다
 //쉐이더 고정 단색 + 좌표정보만 잇는 버텍스를 처리할수 잇는 쉐이더. 이것은 선이나 뭐 그런거에 쓴다
@@ -16,15 +45,10 @@ DebugDraw3D::DebugDraw3D(DebugDraw3DType type)
 	duration(0),
 	depth_enable(true) 
 {
-	/*
-	TODO
-	RenderState &render_dev = Device::GetInstance()->render_state();
-	render_dev.Set3D();
-
-	projection_mat = render_dev.projection_mat();
-	view_mat = render_dev.view_mat();
-	model_mat = render_dev.model_mat();
-	*/
+	gl::RenderState *render_state = gl::RenderState::Get();
+	proj_mat = render_state->proj_mat;
+	view_mat = render_state->view_mat;
+	model_mat = render_state->model_mat;
 }
 
 void DebugDrawManager::AddLine(const glm::vec3 &p1, const glm::vec3 &p2,

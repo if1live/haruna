@@ -10,7 +10,8 @@ using glm::vec2;
 
 namespace haruna {;
 namespace gl {
-	SysFont::SysFont() 
+	SysFont::SysFont()
+		: tex_id_(0)
 	{	
 	}
 	SysFont::~SysFont() 
@@ -18,11 +19,16 @@ namespace gl {
 	}
 	bool SysFont::Init()
 	{
+		if(tex_id_ != 0) {
+			return false;
+		}
+
 		// 텍스쳐는 1/0만 처리하면됨. 작게 할당받자
 		typedef unsigned char byte;
+
 		int img_size = sizeof(byte) * kTextureWidth * kTextureHeight;
 		byte *data = static_cast<byte*>(malloc(img_size));
-		memset(data, 0, sizeof(byte) * img_size);
+		std::fill(data, data + sizeof(byte) * img_size, 0);
 
 		// 이미지 생성.
 		for (int i = 0 ; i < 128 ; i++) {
@@ -46,23 +52,23 @@ namespace gl {
 		}
 		//create texture
 		//Nearest로 써야된다. 그래야 텍스쳐 번지는게 없다
-		GLuint tex_id;
-		glGenTextures(1, &tex_id);
-		glBindTexture(GL_TEXTURE_2D, tex_id);
+		glGenTextures(1, &tex_id_);
+		glBindTexture(GL_TEXTURE_2D, tex_id_);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, kTextureWidth, kTextureHeight, 0, GL_ALPHA, GL_UNSIGNED_BYTE, data);
 		free(data);
 
-		font_tex_.reset(new Texture2D());
-		return font_tex_->Init(tex_id, kTextureWidth, kTextureHeight);
+		return true;
 	}
 	bool SysFont::Deinit()
 	{
-		if(font_tex_.get() != nullptr) {
-			return font_tex_->Deinit();
+		if(tex_id_ == 0) {
+			return false;
 		}
-		return false;
+		glDeleteTextures(1, &tex_id_);
+		tex_id_ = 0;
+		return true;
 	}
 
 	void SysFont::GetCharacterCoord(unsigned char ch, int *x, int *y) const 

@@ -21,7 +21,8 @@
 #include "shadow_mapping.h"
 
 #include "demo.h"
-#include "haruna/gl/debug_draw.h"
+#include "haruna/debug_draw_manager.h"
+#include "haruna/gl/render_state.h"
 
 const float kWidth = 640;
 const float kHeight = 480;
@@ -127,7 +128,12 @@ int main()
 
 	// engine initialize begin
 	{
-		haruna::gl::init_debug_draw();
+		bool retval = false;
+		retval = haruna::DebugDrawManager_Init();
+		SR_ASSERT(retval);
+
+		retval = haruna::gl::RenderState_Init(kWidth, kHeight);
+		SR_ASSERT(retval);
 	}
 	// engine initialize end
 
@@ -154,7 +160,11 @@ int main()
 
 	// engine deinitialize begin
 	{
-		haruna::gl::deinit_debug_draw();
+		bool retval = false;
+		retval = haruna::DebugDrawManager_Deinit();
+		SR_ASSERT(retval);
+		retval = haruna::gl::RenderState_Deinit();
+		SR_ASSERT(retval);
 	}
 	// engine deinitialize end
 

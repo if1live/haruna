@@ -5,6 +5,15 @@
 #include <vector>
 #include <string>
 
+#if _DEBUG
+#define SR_CHECK_ERROR(MSG) { haruna::gl::GLEnv::CheckError(MSG); }
+#define SR_CHECK_FRAMEBUFFER(MSG) { haruna::gl::GLEnv::CheckFrameBufferStatus(MSG); }
+#else
+#define SR_CHECK_ERROR(MSG)
+#define SR_CHECK_FRAMEBUFFER(MSG)
+#endif
+
+
 namespace haruna {;
 namespace gl {
 	typedef GLint ShaderVariableHandleType;

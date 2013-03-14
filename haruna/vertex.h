@@ -14,12 +14,6 @@ public:
 	glm::vec3 p;
 };
 
-class Vertex_1P1C {
-public:
-	glm::vec3 p;
-	unsigned char color[3];
-};
-
 class Vertex_1P1UV {
 public:
 	glm::vec3 p;

@@ -9,7 +9,6 @@ namespace haruna {;
 namespace gl {
 	class Font;
 	class Label;
-	class Texture2D;
 
 	class SysFont {
 	public:
@@ -39,10 +38,9 @@ namespace gl {
 		void GetCharacterTextureQuad(unsigned char ch,
 			float *left, float *right, float *top, float *bottom) const;
 
-		Texture2D *font_texture() { return font_tex_.get(); }
-
+		GLuint tex_id() const { return tex_id_; }
 	private:
-		std::unique_ptr<Texture2D> font_tex_;
+		GLuint tex_id_;
 	};
 
 	class Label {
