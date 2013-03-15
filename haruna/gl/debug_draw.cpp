@@ -21,6 +21,21 @@ using sora::Filesystem;
 
 namespace haruna {;
 namespace gl {
+	struct Vertex_1P1C {
+		glm::vec3 p;
+		vec4ub c;
+		Vertex_1P1C(const glm::vec3 &p, const vec4ub &c) : p(p), c(c) {}
+		Vertex_1P1C() {}
+	};
+
+	struct Vertex_1P1C1UV {
+		glm::vec3 p;
+		vec4ub c;
+		glm::vec2 uv;
+		Vertex_1P1C1UV(const glm::vec3 &p, const vec4ub &c, const glm::vec2 &uv) : p(p), c(c), uv(uv) {}
+		Vertex_1P1C1UV() {}
+	};
+
 	glm::vec4 ConvertColor(const haruna::vec4ub &orig) 
 	{
 		vec4 color;
@@ -76,39 +91,6 @@ namespace gl {
 
 	private:
 		std::unique_ptr<haruna::gl::ShaderProgram> prog_;
-	};
-
-	class ConstColorShader : public DebugShader {
-	public:
-		ConstColorShader() {}
-		virtual ~ConstColorShader() {}
-
-		bool Init()
-		{
-			bool prog_init = CreateShaderProgram("shader/const_color.vs", "shader/const_color.fs");
-			if(!prog_init) {
-				return false;
-			}
-			pos_loc_ = prog()->GetAttribLocation("a_position");
-			mvp_loc_ = prog()->GetUniformLocation("u_mvp");
-			color_loc_ = prog()->GetUniformLocation("u_color");
-			return true;
-		}
-
-		void ApplyColor(const haruna::vec4ub &color)
-		{
-			vec4 colorf = ConvertColor(color);
-			glUniform4fv(color_loc(), 1, glm::value_ptr(colorf));
-		}
-
-		const haruna::gl::ShaderLocation &mvp_loc() const { return mvp_loc_; }
-		const haruna::gl::ShaderLocation &pos_loc() const { return pos_loc_; }
-		const haruna::gl::ShaderLocation &color_loc() const { return color_loc_; }
-
-	private:
-		haruna::gl::ShaderLocation mvp_loc_;
-		haruna::gl::ShaderLocation pos_loc_;
-		haruna::gl::ShaderLocation color_loc_;
 	};
 
 	class TextShader : public DebugShader {
@@ -177,7 +159,6 @@ namespace gl {
 
 
 	std::vector<DrawCmdData<Vertex_1P>> wire_sphere_mesh;
-	std::unique_ptr<ConstColorShader> const_color_shader;
 	std::unique_ptr<TextShader> text_shader;
 	std::unique_ptr<ColorShader> color_shader;
 	std::unique_ptr<SysFont> sys_font;
@@ -191,11 +172,6 @@ namespace gl {
 
 		sys_font.reset(new SysFont());
 		if(!sys_font->Init()) {
-			return false;
-		}
-
-		const_color_shader.reset(new ConstColorShader());
-		if(!const_color_shader->Init()) {
 			return false;
 		}
 
@@ -215,14 +191,6 @@ namespace gl {
 		if(sys_font.get() != nullptr) {
 			bool retval = sys_font->Deinit();
 			sys_font.reset(nullptr);
-			if(!retval) {
-				return false;
-			}
-		}
-
-		if(const_color_shader.get() != nullptr) {
-			bool retval = const_color_shader->Deinit();
-			const_color_shader.reset(nullptr);
 			if(!retval) {
 				return false;
 			}
@@ -296,8 +264,6 @@ namespace gl {
 
 		// 깊이씹고 렌더링하는것과 깊이고려 렌더링을 분리해서 그리자
 		// 굳이 순서대로 그릴 이유가 없겟더라
-		std::vector<DebugDraw3D*> with_depth_list;
-		std::vector<DebugDraw3D*> without_depth_list;
 		std::vector<DebugDraw3D*> with_depth_text_list;
 		std::vector<DebugDraw3D*> without_depth_text_list;
 		std::vector<DebugDraw3D*> with_depth_color_list;
@@ -307,16 +273,13 @@ namespace gl {
 		auto endit = mgr.end_3d();
 		for( ; it != endit ; ++it) {
 			DebugDraw3D *cmd = it->get();
-			std::vector<DebugDraw3D*> *const_color_list = nullptr;
 			std::vector<DebugDraw3D*> *text_list = nullptr;
 			std::vector<DebugDraw3D*> *color_list = nullptr;
 
 			if(cmd->depth_enable == true) {
-				const_color_list = &with_depth_list;
 				text_list = &with_depth_text_list;
 				color_list = &with_depth_color_list;
 			} else {
-				const_color_list = &without_depth_list;
 				text_list = &without_depth_text_list;
 				color_list = &without_depth_color_list;
 			}
@@ -326,25 +289,10 @@ namespace gl {
 				text_list->push_back(cmd);
 				break;
 			case kDebugDraw3DAxis:
+			default:
 				color_list->push_back(cmd);
 				break;
-			default:
-				const_color_list->push_back(cmd);
 			}
-		}
-
-		// 단색으로 그릴수 있는거
-		const_color_shader->prog()->Use();
-		glEnableVertexAttribArray(const_color_shader->pos_loc());
-
-		glEnable(GL_DEPTH_TEST);
-		for(DebugDraw3D *cmd : with_depth_list) {
-			AbstractDebugDrawer3D::DrawElem(cmd);
-		}		
-
-		glDisable(GL_DEPTH_TEST);
-		for(DebugDraw3D *cmd : without_depth_list) {
-			AbstractDebugDrawer3D::DrawElem(cmd);
 		}
 
 		// pos+color속성으로 그릴것
@@ -389,15 +337,15 @@ namespace gl {
 	void DebugDrawer3D::DrawElem(DebugDraw3D_Line *cmd) 
 	{
 		mat4 mvp = cmd->GetMVPMatrix();
-		glUniformMatrix4fv(const_color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp));
+		glUniformMatrix4fv(color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp));
 
-		const_color_shader->ApplyColor(cmd->color);
+		std::array<Vertex_1P1C, 2> vert_list;
+		vert_list[0] = Vertex_1P1C(cmd->p1, cmd->color);
+		vert_list[1] = Vertex_1P1C(cmd->p2, cmd->color);
 
-		std::array<vec3, 2> vertex_list;
-		vertex_list[0] = cmd->p1;
-		vertex_list[1] = cmd->p2;
-		auto pos_loc = const_color_shader->pos_loc();
-		glVertexAttribPointer(pos_loc, 3, GL_FLOAT, GL_FALSE, 0, &vertex_list[0]);
+		int stride = sizeof(vert_list[0]);
+		glVertexAttribPointer(color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, stride,  &vert_list[0].p);
+		glVertexAttribPointer(color_shader->color_loc(), 4, GL_UNSIGNED_BYTE, GL_FALSE, stride, &vert_list[0].c);
 
 		LineWidthReplacer replacer(cmd->line_width);
 		glDrawArrays(GL_LINES, 0, 2);
@@ -405,14 +353,12 @@ namespace gl {
 	void DebugDrawer3D::DrawElem(DebugDraw3D_Cross *cmd) 
 	{
 		mat4 mvp = cmd->GetMVPMatrix();
-		glUniformMatrix4fv(const_color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp));
+		glUniformMatrix4fv(color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp));
 
-		const_color_shader->ApplyColor(cmd->color);
-
-		std::array<glm::vec3, 1> vert_list;
-		vert_list[0] = cmd->pos;
-		auto pos_loc = const_color_shader->pos_loc();
-		glVertexAttribPointer(pos_loc, 3, GL_FLOAT, GL_FALSE, 0, &vert_list[0]);
+		Vertex_1P1C vert(cmd->pos, cmd->color);
+		int stride = sizeof(vert);
+		glVertexAttribPointer(color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, stride, &vert.p);
+		glVertexAttribPointer(color_shader->color_loc(), 4, GL_UNSIGNED_BYTE, GL_FALSE, stride, &vert.c);
 
 		PointSizeReplacer replacer(cmd->size);
 		glDrawArrays(GL_POINTS, 0, 1);
@@ -423,23 +369,25 @@ namespace gl {
 		mat4 model_mat = cmd->model_mat;
 		model_mat = glm::scale(model_mat, vec3(cmd->radius, cmd->radius, cmd->radius));
 		mat4 mvp = cmd->proj_mat * cmd->view_mat * model_mat;
-		glUniformMatrix4fv(const_color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp));
+		glUniformMatrix4fv(color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp));
 
-		const_color_shader->ApplyColor(cmd->color);
+		SR_ASSERT(wire_sphere_mesh.size() == 1);
+		const DrawCmdData<Vertex_1P> &cmd_elem = wire_sphere_mesh[0];
+		auto index_list = cmd_elem.index_list;
+		auto pos_vert_list = cmd_elem.vertex_list;
+		SR_ASSERT(index_list.empty() == false);
 
-		//resize! cmd->size
-		auto it = wire_sphere_mesh.begin();
-		auto endit = wire_sphere_mesh.end();
-		for( ; it != endit ; ++it) {
-			const DrawCmdData<Vertex_1P> &cmd = *it;
-			auto index_list = cmd.index_list;
-			auto vert_list = cmd.vertex_list;
-
-			SR_ASSERT(index_list.empty() == false);
-
-			glVertexAttribPointer(const_color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_1P), &vert_list[0]);
-			glDrawElements(GL_LINES, index_list.size(), GL_UNSIGNED_SHORT, &index_list[0]);
+		std::vector<Vertex_1P1C> vert_list(pos_vert_list.size());
+		for(size_t i = 0 ; i < pos_vert_list.size() ; ++i) {
+			Vertex_1P1C &vert = vert_list[i];
+			vert.p = pos_vert_list[i].p;
+			vert.c = cmd->color;
 		}
+
+		int stride = sizeof(vert_list[0]);
+		glVertexAttribPointer(color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, stride, &vert_list[0].p);
+		glVertexAttribPointer(color_shader->color_loc(), 4, GL_UNSIGNED_BYTE, GL_FALSE, stride, &vert_list[0].c);
+		glDrawElements(GL_LINES, index_list.size(), GL_UNSIGNED_SHORT, &index_list[0]);
 	}
 
 	void DebugDrawer3D::DrawElem(DebugDraw3D_String *cmd) 
@@ -481,34 +429,27 @@ namespace gl {
 
 	void DebugDrawer3D::DrawElem(DebugDraw3D_Axis *cmd) 
 	{
-		struct ColorVertex {
-			glm::vec3 p;
-			vec4ub c;
-			ColorVertex(const glm::vec3 &p, const vec4ub &c) : p(p), c(c) {}
-			ColorVertex() {}
-		};
-
-		std::array<ColorVertex, 6> vertex_list;
+		std::array<Vertex_1P1C, 6> vertex_list;
 		vec4ub red(255, 0, 0, 255);
 		vec4ub green(0, 255, 0, 255);
 		vec4ub blue(0, 0, 255, 255);
 
 		// x = red
-		vertex_list[0] = ColorVertex(vec3(0, 0, 0), red);
-		vertex_list[1] = ColorVertex(vec3(cmd->size, 0, 0), red);
+		vertex_list[0] = Vertex_1P1C(vec3(0, 0, 0), red);
+		vertex_list[1] = Vertex_1P1C(vec3(cmd->size, 0, 0), red);
 
 		// y = green
-		vertex_list[2] = ColorVertex(vec3(0, 0, 0), green);
-		vertex_list[3] = ColorVertex(vec3(0, cmd->size, 0), green);
+		vertex_list[2] = Vertex_1P1C(vec3(0, 0, 0), green);
+		vertex_list[3] = Vertex_1P1C(vec3(0, cmd->size, 0), green);
 
 		// z = blue
-		vertex_list[4] = ColorVertex(vec3(0, 0, 0), blue);
-		vertex_list[5] = ColorVertex(vec3(0, 0, cmd->size), blue);
+		vertex_list[4] = Vertex_1P1C(vec3(0, 0, 0), blue);
+		vertex_list[5] = Vertex_1P1C(vec3(0, 0, cmd->size), blue);
 
 		mat4 mvp = cmd->GetMVPMatrix() * cmd->xf;
 		glUniformMatrix4fv(color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp));
 
-		int stride = sizeof(ColorVertex);
+		int stride = sizeof(vertex_list[0]);
 		glVertexAttribPointer(color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, stride, &vertex_list[0].p);
 		glVertexAttribPointer(color_shader->color_loc(), 4, GL_UNSIGNED_BYTE, GL_FALSE, stride, &vertex_list[0].c);
 		glDrawArrays(GL_LINES, 0, vertex_list.size());
@@ -525,14 +466,15 @@ namespace gl {
 		glm::mat4 proj_mat = glm::ortho(0.0f, width, 0.0f, height);
 
 		glm::mat4 mvp_mat = proj_mat * view_mat * model_mat;
-		glUniformMatrix4fv(const_color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp_mat));
+		glUniformMatrix4fv(color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp_mat));
 
-		const_color_shader->ApplyColor(cmd->color);
 
-		std::array<glm::vec3, 2> vert_list;
-		vert_list[0] = vec3(cmd->p1.x, cmd->p1.y, 0);
-		vert_list[1] = vec3(cmd->p2.x, cmd->p2.y, 0);
-		glVertexAttribPointer(const_color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, 0, &vert_list[0]);
+		std::array<Vertex_1P1C, 2> vert_list;
+		vert_list[0] = Vertex_1P1C(vec3(cmd->p1.x, cmd->p1.y, 0), cmd->color);
+		vert_list[1] = Vertex_1P1C(vec3(cmd->p2.x, cmd->p2.y, 0), cmd->color);
+		int stride = sizeof(vert_list[0]);
+		glVertexAttribPointer(color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, stride, &vert_list[0].p);
+		glVertexAttribPointer(color_shader->color_loc(), 4, GL_UNSIGNED_BYTE, GL_FALSE, stride, &vert_list[0].c);
 
 		LineWidthReplacer replacer(cmd->line_width);
 		glDrawArrays(GL_LINES, 0, 2);
@@ -549,14 +491,11 @@ namespace gl {
 		glm::mat4 proj_mat = glm::ortho(0.0f, width, 0.0f, height);
 
 		glm::mat4 mvp_mat = proj_mat * view_mat * model_mat;
-		glUniformMatrix4fv(const_color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp_mat));
+		glUniformMatrix4fv(color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp_mat));
 
-
-		const_color_shader->ApplyColor(cmd->color);
-
-		std::array<glm::vec3, 1> vert_list;
-		vert_list[0] = vec3(cmd->pos.x, cmd->pos.y, 0);
-		glVertexAttribPointer(const_color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, 0, &vert_list[0]);
+		Vertex_1P1C vert(vec3(cmd->pos.x, cmd->pos.y, 0), cmd->color);
+		glVertexAttribPointer(color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, 0, &vert.p);
+		glVertexAttribPointer(color_shader->color_loc(), 4, GL_UNSIGNED_BYTE, GL_FALSE, 0, &vert.c);
 
 		PointSizeReplacer replacer(cmd->size);
 		glDrawArrays(GL_POINTS, 0, 1);
@@ -575,24 +514,25 @@ namespace gl {
 		glm::mat4 proj_mat = glm::ortho(0.0f, width, 0.0f, height);
 
 		glm::mat4 mvp_mat = proj_mat * view_mat * model_mat;
-		glUniformMatrix4fv(const_color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp_mat));
-
-		const_color_shader->ApplyColor(cmd->color);
-
-		std::vector<glm::vec3> point_list;
-		point_list.push_back(glm::vec3(0, 0, 0));
-
+		glUniformMatrix4fv(color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp_mat));
+		
 		float split = 32;
+
+		std::vector<Vertex_1P1C> point_list;
+		point_list.reserve(split + 1);
+		point_list.push_back(Vertex_1P1C(glm::vec3(0, 0, 0), cmd->color));
 		for(int i = 0 ; i < split + 1 ; i++) {
 			float rad_seg = sora::kPi / split  * 2;
 			float rad = rad_seg * i;
 			float x = cos(rad);
 			float y = sin(rad);
 
-			point_list.push_back(glm::vec3(x, y, 0));
+			point_list.push_back(Vertex_1P1C(glm::vec3(x, y, 0), cmd->color));
 		}
-
-		glVertexAttribPointer(const_color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, 0, &point_list[0]);
+		
+		int stride = sizeof(point_list[0]);
+		glVertexAttribPointer(color_shader->pos_loc(), 3, GL_FLOAT, GL_FALSE, stride, &point_list[0].p);
+		glVertexAttribPointer(color_shader->color_loc(), 4, GL_UNSIGNED_BYTE, GL_FALSE, stride, &point_list[0].c);
 		glDrawArrays(GL_LINE_STRIP, 0, point_list.size());
 	}
 
@@ -649,8 +589,8 @@ namespace gl {
 		//2차원 환경에서의 렌더링 기본 설정
 		RenderState::Get()->Set2D();
 
-		const_color_shader->prog()->Use();
-		glEnableVertexAttribArray(const_color_shader->pos_loc());
+		color_shader->prog()->Use();
+		glEnableVertexAttribArray(color_shader->pos_loc());
 		for(DebugDraw2D *cmd : color_list) {
 			AbstractDebugDrawer2D::DrawElem(cmd);
 		}
