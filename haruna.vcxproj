@@ -49,6 +49,7 @@
     <ClInclude Include="haruna\parametric_equations.h" />
     <ClInclude Include="haruna\parametric_surface.h" />
     <ClInclude Include="haruna\primitive_mesh.h" />
+    <ClInclude Include="haruna\teapot.h" />
     <ClInclude Include="haruna\vertex.h" />
     <ClInclude Include="sora\arch.h" />
     <ClInclude Include="sora\assert_inc.h" />

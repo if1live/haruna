@@ -158,5 +158,8 @@
     <ClInclude Include="haruna\gl\render_state.h">
       <Filter>haruna\gl</Filter>
     </ClInclude>
+    <ClInclude Include="haruna\teapot.h">
+      <Filter>haruna</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

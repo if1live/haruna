@@ -77,11 +77,12 @@ bool Texture2DMapping::Update(float dt)
 void Texture2DMapping::Draw()
 {
 	//sample mesh
-	haruna::SolidCubeFactory cube_factory(1, 1, 1);
-	auto data = cube_factory.CreateNormalMesh();
-
+	//haruna::SolidCubeFactory cube_factory(1, 1, 1);
+	//auto data = cube_factory.CreateNormalMesh();
 	//haruna::SolidSphereFactory sphere_factory(1, 16, 16);
 	//auto data = sphere_factory.CreateNormalMesh();
+	haruna::SolidTeapotFactory teapot_factory(0.02);
+	auto data = teapot_factory.CreateNormalMesh();
 	
 	prog_->Use();
 	haruna::gl::ShaderLocation pos_loc = prog_->GetAttribLocation("a_position");
@@ -110,6 +111,7 @@ void Texture2DMapping::Draw()
 	glViewport(0, 0, (int)width(), (int)height());
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 
 	glUniformMatrix4fv(mvp_loc.handle(), 1, GL_FALSE, glm::value_ptr(mvp));
 	glEnableVertexAttribArray(pos_loc.handle());

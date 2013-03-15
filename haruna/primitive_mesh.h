@@ -65,6 +65,16 @@ private:
 	int stacks_;
 };
 
+class SolidTeapotFactory : public SolidMeshFactory {
+public:
+	SolidTeapotFactory(float size) : size_(size) {}
+	virtual ~SolidTeapotFactory() {}
+
+	virtual std::vector<DrawCmdData<Vertex_1P1N1UV>> CreateNormalMesh();
+private:
+	float size_;
+};
+
 class WireMeshFactory {
 public:
 	WireMeshFactory() {}
@@ -99,13 +109,14 @@ private:
 	int stacks_;
 };
 
-/*
-class AxisDataFactory : public PrimitiveMeshDataFactory {
+class WireTeapotFactory : public SolidMeshFactory {
 public:
-	AxisDataFactory(float size);
-	virtual ~AxisDataFactory() {}
+	WireTeapotFactory(float size) : size_(size) {}
+	virtual ~WireTeapotFactory() {}
+
+	virtual std::vector<DrawCmdData<Vertex_1P>> CreateSimpleMesh();
 private:
 	float size_;
 };
-*/
+
 }

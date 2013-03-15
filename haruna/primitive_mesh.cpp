@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "primitive_mesh.h"
 #include "sora/math_helper.h"
+#include "teapot.h"
 
 using glm::vec3;
 using glm::vec2;
@@ -219,7 +220,7 @@ std::vector<DrawCmdData<Vertex_1P1N1UV>> SolidCubeFactory::CreateNormalMesh()
 SolidSphereFactory::SolidSphereFactory(float radius, int slices, int stacks)
 	: radius_(radius), slices_(slices), stacks_(stacks)
 {
-	
+
 }
 
 std::vector<DrawCmdData<Vertex_1P1N1UV>> SolidSphereFactory::CreateNormalMesh()
@@ -448,62 +449,58 @@ std::vector<DrawCmdData<Vertex_1P>> WireSphereFactory::CreateSimpleMesh()
 	return cmd_list;
 }
 
-/*
-AxisDataFactory::AxisDataFactory(float size)
-	: size_(size)
+std::vector<DrawCmdData<Vertex_1P1N1UV>> SolidTeapotFactory::CreateNormalMesh()
 {
-	DrawCmdData<Vertex> cmd;
-	cmd.draw_mode = kDrawLines;
-	VertexList &vert_list = cmd.vertex_list;
+	DrawCmdData<Vertex_1P1N1UV> cmd;
+	cmd.draw_mode = kDrawTriangles;
+	cmd.vertex_list.resize(NUM_TEAPOT_OBJECT_VERTEX);
+	for(int i = 0 ; i < NUM_TEAPOT_OBJECT_VERTEX ; i++) {
+		Vertex_1P1N1UV &vert = cmd.vertex_list[i];
+		vert.p[0] = teapotVertices[i*3+0] * size_;
+		vert.p[1] = teapotVertices[i*3+1] * size_;
+		vert.p[2] = teapotVertices[i*3+2] * size_;
 
-	//vertex list 생성
-	vec3 xPos(size, 0, 0);
-	vec3 yPos(0, size, 0);
-	vec3 zPos(0, 0, size);
-	vec3 zero(0, 0, 0);
+		vert.uv[0] = teapotTexCoords[i*2+0];
+		vert.uv[1] = teapotTexCoords[i*2+1];
 
-	sora::vec4ub red(255, 0, 0, 255);
-	sora::vec4ub green(0, 255, 0, 255);
-	sora::vec4ub blue(0, 0, 255, 255);
-
-	{
-		// x axis - r
-		Vertex x_zero_vert;
-		x_zero_vert.color = red;
-		x_zero_vert.p = zero;
-		vert_list.push_back(x_zero_vert);
-
-		Vertex x_one_vert;
-		x_one_vert.color = red;
-		x_one_vert.p = xPos;
-		vert_list.push_back(x_one_vert);
+		vert.n[0] = teapotNormals[i*3+0];
+		vert.n[1] = teapotNormals[i*3+1];
+		vert.n[2] = teapotNormals[i*3+2];
 	}
-	{
-		//y axis - g
-		Vertex zero_vert;
-		zero_vert.color = green;
-		zero_vert.p = zero;
-		vert_list.push_back(zero_vert);
 
-		Vertex y_vert;
-		y_vert.color = green;
-		y_vert.p = yPos;
-		vert_list.push_back(y_vert);
-	}
-	{
-		//z axis - b
-		Vertex zero_vert;
-		zero_vert.color = blue;
-		zero_vert.p = zero;
-		vert_list.push_back(zero_vert);
+	cmd.index_list.resize(NUM_TEAPOT_OBJECT_INDEX);
+	memcpy(&cmd.index_list[0], teapotIndices, sizeof(teapotIndices));
 
-		Vertex z_vert;
-		z_vert.color = blue;
-		z_vert.p = zPos;
-		vert_list.push_back(z_vert);
-	}
-	this->cmd_list_->push_back(cmd);
+	std::vector<DrawCmdData<Vertex_1P1N1UV>> cmd_list;
+	cmd_list.push_back(cmd);
+	return cmd_list;
 }
-*/
+std::vector<DrawCmdData<Vertex_1P>> WireTeapotFactory::CreateSimpleMesh()
+{
+	DrawCmdData<Vertex_1P> cmd;
+	cmd.draw_mode = kDrawLines;
+	cmd.vertex_list.resize(NUM_TEAPOT_OBJECT_VERTEX);
+	for(int i = 0 ; i < NUM_TEAPOT_OBJECT_VERTEX ; i++) {
+		Vertex_1P &vert = cmd.vertex_list[i];
+		vert.p[0] = teapotVertices[i*3+0] * size_;
+		vert.p[1] = teapotVertices[i*3+1] * size_;
+		vert.p[2] = teapotVertices[i*3+2] * size_;
+	}
+
+	for(int i = 0 ; i < NUM_TEAPOT_OBJECT_INDEX / 3 ; i++) {
+		unsigned short idx_1 = teapotIndices[i*3+0];
+		unsigned short idx_2 = teapotIndices[i*3+1];
+		unsigned short idx_3 = teapotIndices[i*3+2];
+		cmd.index_list.push_back(idx_1);
+		cmd.index_list.push_back(idx_2);
+		cmd.index_list.push_back(idx_2);
+		cmd.index_list.push_back(idx_3);
+		cmd.index_list.push_back(idx_3);
+		cmd.index_list.push_back(idx_1);
+	}
+	std::vector<DrawCmdData<Vertex_1P>> cmd_list;
+	cmd_list.push_back(cmd);
+	return cmd_list;
+}
 
 }	//namespace haruna
