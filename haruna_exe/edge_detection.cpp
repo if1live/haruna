@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "sora/assert_inc.h"
-#include "sora/filesystem.h"
-#include "sora/low_level_c_file.h"
+#include "sora/io/filesystem.h"
+#include "sora/io/low_level_c_file.h"
 #include "haruna/gl/shader.h"
 #include "haruna/gl/texture.h"
 #include "haruna/gl/gl_env.h"
@@ -20,12 +20,14 @@
 #include "haruna/primitive_mesh.h"
 #include "haruna/gl/frame_buffer.h"
 
+using sora::io::Filesystem;
+using sora::io::ReadonlyCFile;
+
 typedef enum {
 	kEffectNo,
 	kEffectEmboss,
 	kEffectEdgeDetection,
 } EffectType;
-
 
 EdgeDetection::EdgeDetection(float width, float height)
 	: AbstractLogic(width, height), y_rot_(0), effect_type_(kEffectNo)
@@ -67,10 +69,10 @@ EdgeDetection::~EdgeDetection()
 bool EdgeDetection::Init()
 {
 	//쉐이더 
-	std::string fs_path = sora::Filesystem::GetAppPath("shader/environment_mapping.fs");
-	std::string vs_path = sora::Filesystem::GetAppPath("shader/environment_mapping.vs");
-	sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
-	sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
+	std::string fs_path = Filesystem::GetAppPath("shader/environment_mapping.fs");
+	std::string vs_path = Filesystem::GetAppPath("shader/environment_mapping.vs");
+	ReadonlyCFile fs_file(fs_path);
+	ReadonlyCFile vs_file(vs_path);
 	bool fs_open_result = fs_file.Open();
 	bool vs_open_result = vs_file.Open();
 	if(!fs_open_result) {
@@ -93,7 +95,7 @@ bool EdgeDetection::Init()
 	}
 
 	//create texture
-	std::string diffuse_map_path = sora::Filesystem::GetAppPath("texture/fieldstone_DM.png");
+	std::string diffuse_map_path = Filesystem::GetAppPath("texture/fieldstone_DM.png");
 	diffuse_map_.reset(new haruna::gl::Texture2D(diffuse_map_path));
 	bool diffuse_map_init_result = diffuse_map_->Init();
 	if(!diffuse_map_init_result) {
@@ -101,14 +103,14 @@ bool EdgeDetection::Init()
 	}
 
 	//create texture
-	std::string specular_map_path = sora::Filesystem::GetAppPath("texture/fieldstone_SM.png");
+	std::string specular_map_path = Filesystem::GetAppPath("texture/fieldstone_SM.png");
 	specular_map_.reset(new haruna::gl::Texture2D(specular_map_path));
 	bool specular_map_init_result = specular_map_->Init();
 	if(!specular_map_init_result) {
 		return false;
 	}
 
-	std::string normal_map_path = sora::Filesystem::GetAppPath("texture/fieldstone_NM.png");
+	std::string normal_map_path = Filesystem::GetAppPath("texture/fieldstone_NM.png");
 	normal_map_.reset(new haruna::gl::Texture2D(normal_map_path));
 	bool normal_map_init_result = normal_map_->Init();
 	if(!normal_map_init_result) {
@@ -117,12 +119,12 @@ bool EdgeDetection::Init()
 
 	//cube map
 	environment_map_.reset(new haruna::gl::TextureCube(
-		sora::Filesystem::GetAppPath("texture/cubemap_left.png"),
-		sora::Filesystem::GetAppPath("texture/cubemap_right.png"),
-		sora::Filesystem::GetAppPath("texture/cubemap_bottom.png"),
-		sora::Filesystem::GetAppPath("texture/cubemap_top.png"),
-		sora::Filesystem::GetAppPath("texture/cubemap_back.png"),
-		sora::Filesystem::GetAppPath("texture/cubemap_front.png")
+		Filesystem::GetAppPath("texture/cubemap_left.png"),
+		Filesystem::GetAppPath("texture/cubemap_right.png"),
+		Filesystem::GetAppPath("texture/cubemap_bottom.png"),
+		Filesystem::GetAppPath("texture/cubemap_top.png"),
+		Filesystem::GetAppPath("texture/cubemap_back.png"),
+		Filesystem::GetAppPath("texture/cubemap_front.png")
 	));
 	bool env_map_init_result = environment_map_->Init();
 	if(!env_map_init_result) {
@@ -156,10 +158,10 @@ bool EdgeDetection::Init()
 
 bool EdgeDetection::InitNoEffect()
 {
-	std::string no_effect_fs_path = sora::Filesystem::GetAppPath("shader/no_effect.fs");
-	std::string no_effect_vs_path = sora::Filesystem::GetAppPath("shader/no_effect.vs");
-	sora::ReadonlyCFile no_effect_fs_file = sora::ReadonlyCFile(no_effect_fs_path);
-	sora::ReadonlyCFile no_effect_vs_file = sora::ReadonlyCFile(no_effect_vs_path);
+	std::string no_effect_fs_path = Filesystem::GetAppPath("shader/no_effect.fs");
+	std::string no_effect_vs_path = Filesystem::GetAppPath("shader/no_effect.vs");
+	ReadonlyCFile no_effect_fs_file(no_effect_fs_path);
+	ReadonlyCFile no_effect_vs_file(no_effect_vs_path);
 	if(!no_effect_fs_file.Open()) {
 		return false;
 	}
@@ -182,10 +184,10 @@ bool EdgeDetection::InitNoEffect()
 }
 bool EdgeDetection::InitEmboss()
 {
-	std::string fs_path = sora::Filesystem::GetAppPath("shader/emboss.fs");
-	std::string vs_path = sora::Filesystem::GetAppPath("shader/emboss.vs");
-	sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
-	sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
+	std::string fs_path = Filesystem::GetAppPath("shader/emboss.fs");
+	std::string vs_path = Filesystem::GetAppPath("shader/emboss.vs");
+	ReadonlyCFile fs_file(fs_path);
+	ReadonlyCFile vs_file(vs_path);
 	if(!fs_file.Open()) {
 		return false;
 	}
@@ -207,10 +209,10 @@ bool EdgeDetection::InitEmboss()
 }
 bool EdgeDetection::InitEdgeDetection()
 {
-	std::string fs_path = sora::Filesystem::GetAppPath("shader/edge_detection.fs");
-	std::string vs_path = sora::Filesystem::GetAppPath("shader/edge_detection.vs");
-	sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
-	sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
+	std::string fs_path = Filesystem::GetAppPath("shader/edge_detection.fs");
+	std::string vs_path = Filesystem::GetAppPath("shader/edge_detection.vs");
+	ReadonlyCFile fs_file(fs_path);
+	ReadonlyCFile vs_file(vs_path);
 	if(!fs_file.Open()) {
 		return false;
 	}

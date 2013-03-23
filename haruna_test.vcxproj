@@ -80,8 +80,8 @@
   <ItemGroup>
     <ClCompile Include="haruna_test\haruna\debug_draw_manager_test.cpp" />
     <ClCompile Include="haruna_test\haruna\gl\buffer_object_test.cpp" />
-    <ClCompile Include="haruna_test\sora\filesystem_test.cpp" />
-    <ClCompile Include="haruna_test\sora\low_level_c_file_test.cpp" />
+    <ClCompile Include="haruna_test\sora\io\filesystem_test.cpp" />
+    <ClCompile Include="haruna_test\sora\io\low_level_c_file_test.cpp" />
     <ClCompile Include="haruna_test\sora\stack_allocator_test.cpp" />
     <ClCompile Include="haruna_test\sora\string_hash_test.cpp" />
     <ClCompile Include="haruna_test\sora\string_util_test.cpp" />

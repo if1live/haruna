@@ -24,11 +24,11 @@
     <ClCompile Include="haruna\parametric_surface.cpp" />
     <ClCompile Include="haruna\primitive_mesh.cpp" />
     <ClCompile Include="sora\common_string.cpp" />
-    <ClCompile Include="sora\filesystem.cpp" />
+    <ClCompile Include="sora\io\filesystem.cpp" />
+    <ClCompile Include="sora\io\low_level_c_file.cpp" />
+    <ClCompile Include="sora\io\memory_file.cpp" />
     <ClCompile Include="sora\logger.cpp" />
-    <ClCompile Include="sora\low_level_c_file.cpp" />
     <ClCompile Include="sora\math_helper.cpp" />
-    <ClCompile Include="sora\memory_file.cpp" />
     <ClCompile Include="sora\stack_allocator.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -54,11 +54,11 @@
     <ClInclude Include="sora\arch.h" />
     <ClInclude Include="sora\assert_inc.h" />
     <ClInclude Include="sora\common_string.h" />
-    <ClInclude Include="sora\filesystem.h" />
+    <ClInclude Include="sora\io\filesystem.h" />
+    <ClInclude Include="sora\io\low_level_c_file.h" />
+    <ClInclude Include="sora\io\memory_file.h" />
     <ClInclude Include="sora\logger.h" />
-    <ClInclude Include="sora\low_level_c_file.h" />
     <ClInclude Include="sora\math_helper.h" />
-    <ClInclude Include="sora\memory_file.h" />
     <ClInclude Include="sora\stack_allocator.h" />
     <ClInclude Include="sora\string_hash.h" />
     <ClInclude Include="sora\string_util.h" />

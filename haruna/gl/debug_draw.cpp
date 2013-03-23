@@ -4,8 +4,8 @@
 
 #include <memory>
 
-#include "sora/low_level_c_file.h"
-#include "sora/filesystem.h"
+#include "sora/io/low_level_c_file.h"
+#include "sora/io/filesystem.h"
 #include "sora/math_helper.h"
 #include "haruna/primitive_mesh.h"
 #include "shader.h"
@@ -17,7 +17,8 @@
 using glm::vec4;
 using glm::vec3;
 using glm::mat4;
-using sora::Filesystem;
+using sora::io::Filesystem;
+using sora::io::ReadonlyCFile;
 
 namespace haruna {;
 namespace gl {
@@ -51,10 +52,10 @@ namespace gl {
 		virtual ~DebugShader() {}
 		bool CreateShaderProgram(const std::string &vs_filename, const std::string &fs_filename)
 		{
-			std::string vs_path = sora::Filesystem::GetAppPath(vs_filename);
-			std::string fs_path = sora::Filesystem::GetAppPath(fs_filename);
-			sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
-			sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
+			std::string vs_path = Filesystem::GetAppPath(vs_filename);
+			std::string fs_path = Filesystem::GetAppPath(fs_filename);
+			ReadonlyCFile vs_file = ReadonlyCFile(vs_path);
+			ReadonlyCFile fs_file = ReadonlyCFile(fs_path);
 			bool vs_open_result = vs_file.Open();
 			bool fs_open_result = fs_file.Open();
 			if(!vs_open_result) {

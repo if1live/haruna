@@ -11,10 +11,13 @@
 #include <vector>
 
 #include "sora/assert_inc.h"
-#include "sora/filesystem.h"
-#include "sora/low_level_c_file.h"
+#include "sora/io/filesystem.h"
+#include "sora/io/low_level_c_file.h"
 #include "haruna/gl/shader.h"
 #include "haruna/primitive_mesh.h"
+
+using sora::io::Filesystem;
+using sora::io::ReadonlyCFile;
 
 ColorShader::ColorShader(float width, float height)
 	: AbstractLogic(width, height),
@@ -29,10 +32,10 @@ ColorShader::~ColorShader()
 bool ColorShader::Init() 
 {
 	//쉐이더 
-	std::string fs_path = sora::Filesystem::GetAppPath("shader/simple_red.fs");
-	std::string vs_path = sora::Filesystem::GetAppPath("shader/simple_red.vs");
-	sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
-	sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
+	std::string fs_path = Filesystem::GetAppPath("shader/simple_red.fs");
+	std::string vs_path = Filesystem::GetAppPath("shader/simple_red.vs");
+	ReadonlyCFile fs_file(fs_path);
+	ReadonlyCFile vs_file(vs_path);
 	bool fs_open_result = fs_file.Open();
 	bool vs_open_result = vs_file.Open();
 	if(!fs_open_result) {

@@ -3,6 +3,7 @@
 #include "filesystem.h"
 
 namespace sora {;
+namespace io {
 
 class ReadonlyCFile;
 class WriteonlyCFile;
@@ -73,4 +74,5 @@ private:
 	LowLevelCFile file_;
 };
 
-}
+}	// namespace io
+}	// namespcee sora

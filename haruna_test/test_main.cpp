@@ -1,8 +1,6 @@
 ﻿// Ŭnicode please 
 #include "test_stdafx.h"
 
-#include "sora/filesystem.h"
-#include "sora/low_level_c_file.h"
 
 int main(int argc, char *argv[])
 {

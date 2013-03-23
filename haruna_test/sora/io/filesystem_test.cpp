@@ -1,11 +1,11 @@
 ﻿// Ŭnicode please
 #include "test_stdafx.h"
-#include "sora/filesystem.h"
+#include "sora/io/filesystem.h"
 
 TEST(Filesystem, GetExtension) 
 {
 	using std::string;
-	using sora::Filesystem;
+	using sora::io::Filesystem;
 
 	const char file1[] = "asdf.txt";
 	EXPECT_STREQ("txt", Filesystem::GetExtension(file1).c_str());

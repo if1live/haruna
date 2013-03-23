@@ -1,11 +1,15 @@
 ﻿// Ŭnicode please
 #include "test_stdafx.h"
-#include "sora/low_level_c_file.h"
-#include "sora/memory_file.h"
+#include "sora/io/low_level_c_file.h"
+#include "sora/io/memory_file.h"
+
+using sora::io::LowLevelCFile;
+using sora::io::WriteonlyCFile;
+using sora::io::ReadonlyCFile;
+using sora::io::MemoryFile;
 
 TEST(LowLevelCFile, test) 
 {
-	using sora::LowLevelCFile;
 	const char *path1 = "low_level_c_file.txt";
 
 	LowLevelCFile file1(path1);
@@ -20,8 +24,6 @@ TEST(LowLevelCFile, test)
 
 TEST(ReadonlyFile_WriteonlyFile, test) 
 {
-	using sora::WriteonlyCFile;
-	using sora::ReadonlyCFile;
 	const char path1[] = "asdf.txt";
 	const char content[] = "this is line1.this is line2.";
 
@@ -41,7 +43,6 @@ TEST(ReadonlyFile_WriteonlyFile, test)
 
 TEST(MemoryFile, test) 
 {
-	using sora::MemoryFile;
 	const char *path1 = "low_level_c_file.txt";
 
 	MemoryFile file1(path1);

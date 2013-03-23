@@ -12,13 +12,16 @@
 #include <vector>
 
 #include "sora/assert_inc.h"
-#include "sora/filesystem.h"
-#include "sora/low_level_c_file.h"
+#include "sora/io/filesystem.h"
+#include "sora/io/low_level_c_file.h"
 #include "haruna/gl/shader.h"
 #include "haruna/gl/texture.h"
 #include "haruna/gl/gl_env.h"
 #include "haruna/primitive_mesh.h"
 #include "haruna/parametric_equations.h"
+
+using sora::io::Filesystem;
+using sora::io::ReadonlyCFile;
 
 UVAnimation::UVAnimation(float width, float height)
 	: AbstractLogic(width, height), y_rot_(0), elapsed_time_(0)
@@ -41,10 +44,10 @@ UVAnimation::~UVAnimation()
 bool UVAnimation::Init()
 {
 	//쉐이더 
-	std::string fs_path = sora::Filesystem::GetAppPath("shader/uv_animation.fs");
-	std::string vs_path = sora::Filesystem::GetAppPath("shader/uv_animation.vs");
-	sora::ReadonlyCFile fs_file = sora::ReadonlyCFile(fs_path);
-	sora::ReadonlyCFile vs_file = sora::ReadonlyCFile(vs_path);
+	std::string fs_path = Filesystem::GetAppPath("shader/uv_animation.fs");
+	std::string vs_path = Filesystem::GetAppPath("shader/uv_animation.vs");
+	ReadonlyCFile fs_file(fs_path);
+	ReadonlyCFile vs_file(vs_path);
 	bool fs_open_result = fs_file.Open();
 	bool vs_open_result = vs_file.Open();
 	if(!fs_open_result) {
@@ -67,7 +70,7 @@ bool UVAnimation::Init()
 	}
 
 	//create texture
-	std::string diffuse_map_path = sora::Filesystem::GetAppPath("texture/glazed_brick_D.png");
+	std::string diffuse_map_path = Filesystem::GetAppPath("texture/glazed_brick_D.png");
 	diffuse_map_.reset(new haruna::gl::Texture2D(diffuse_map_path));
 	bool diffuse_map_init_result = diffuse_map_->Init();
 	if(!diffuse_map_init_result) {
@@ -75,7 +78,7 @@ bool UVAnimation::Init()
 	}
 
 	//create texture
-	std::string specular_map_path = sora::Filesystem::GetAppPath("texture/glazed_brick_S.png");
+	std::string specular_map_path = Filesystem::GetAppPath("texture/glazed_brick_S.png");
 	specular_map_.reset(new haruna::gl::Texture2D(specular_map_path));
 	bool specular_map_init_result = specular_map_->Init();
 	if(!specular_map_init_result) {
