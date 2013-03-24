@@ -12,6 +12,10 @@
 *.la
 *.a
 
+# Cmake
+build/*
+!build/runCmake.bat
+
 # visual studio
 *.sdf
 *.suo
