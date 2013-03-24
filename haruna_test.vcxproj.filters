@@ -28,6 +28,9 @@
     <ClCompile Include="haruna_test\sora\io\filesystem_test.cpp">
       <Filter>sora\io</Filter>
     </ClCompile>
+    <ClCompile Include="haruna_test\sora\io\zip_helper_test.cpp">
+      <Filter>sora\io</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sora">

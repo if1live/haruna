@@ -1,12 +1,27 @@
 ﻿// Ŭnicode please
 #include "test_stdafx.h"
 #include "haruna/debug_draw_manager.h"
+#include "haruna/gl/render_state.h"
 
 using namespace glm;
 using namespace std;
 using namespace haruna;
 
-TEST(DebugDrawManager, Update) 
+class DebugDrawManagerTest : public ::testing::Test {
+protected:
+	virtual void SetUp()
+	{
+		haruna::DebugDrawManager_Init();
+		haruna::gl::RenderState_Init(640, 480);
+	}
+	virtual void TearDown()
+	{
+		haruna::DebugDrawManager_Deinit();
+		haruna::gl::RenderState_Deinit();
+	}
+};
+
+TEST_F(DebugDrawManagerTest, Update) 
 {
 	DebugDrawManager mgr;
 	EXPECT_EQ(0, mgr.CmdCount());
@@ -24,3 +39,4 @@ TEST(DebugDrawManager, Update)
 	mgr.Update(1.0f);
 	EXPECT_EQ(0, mgr.CmdCount());
 }
+

@@ -78,6 +78,9 @@
     <ClCompile Include="sora\io\low_level_c_file.cpp">
       <Filter>sora\io</Filter>
     </ClCompile>
+    <ClCompile Include="sora\io\zip_helper.cpp">
+      <Filter>sora\io</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="haruna\gl\shader.h">
@@ -162,6 +165,9 @@
       <Filter>sora\io</Filter>
     </ClInclude>
     <ClInclude Include="sora\io\filesystem.h">
+      <Filter>sora\io</Filter>
+    </ClInclude>
+    <ClInclude Include="sora\io\zip_helper.h">
       <Filter>sora\io</Filter>
     </ClInclude>
   </ItemGroup>

@@ -30,3 +30,5 @@
 #include <GL/glfw.h>
 
 #include "loki/Typelist.h"
+
+#include "zlib.h"

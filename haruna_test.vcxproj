@@ -36,12 +36,14 @@
     <Import Project="gl.props" />
     <Import Project="gtest.props" />
     <Import Project="common.props" />
+    <Import Project="zlib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="gl.props" />
     <Import Project="gtest.props" />
     <Import Project="common.props" />
+    <Import Project="zlib.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -82,6 +84,7 @@
     <ClCompile Include="haruna_test\haruna\gl\buffer_object_test.cpp" />
     <ClCompile Include="haruna_test\sora\io\filesystem_test.cpp" />
     <ClCompile Include="haruna_test\sora\io\low_level_c_file_test.cpp" />
+    <ClCompile Include="haruna_test\sora\io\zip_helper_test.cpp" />
     <ClCompile Include="haruna_test\sora\stack_allocator_test.cpp" />
     <ClCompile Include="haruna_test\sora\string_hash_test.cpp" />
     <ClCompile Include="haruna_test\sora\string_util_test.cpp" />

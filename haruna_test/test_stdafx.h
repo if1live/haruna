@@ -6,8 +6,10 @@
 #include <cstdlib>
 #include <iostream>
 
+#include <algorithm>
 #include <memory>
 #include <vector>
+#include <array>
 #include <map>
 #include <unordered_map>
 #include <string>
