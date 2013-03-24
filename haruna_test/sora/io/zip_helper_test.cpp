@@ -3,9 +3,17 @@
 #include <array>
 #include "sora/io/zip_helper.h"
 
+#include "minizip/unzip.h"
+#include "minizip/zip.h"
+#include "minizip/iowin32.h"
+#include <Windows.h>
+
+
 using std::vector;
 using std::array;
+using std::string;
 using sora::io::ContainerStream;
+using sora::io::ZlibHelper;
 using sora::io::ZipHelper;
 
 TEST(ContainerStream, Read)
@@ -70,7 +78,7 @@ TEST(ZipHelper, Run)
 
 	vector<unsigned char> dst;
 
-	ZipHelper helper;
+	ZlibHelper helper;
 	EXPECT_TRUE(helper.Compress(src, &dst));
 
 	vector<unsigned char> data;
@@ -78,4 +86,42 @@ TEST(ZipHelper, Run)
 	
 	EXPECT_TRUE(src.size() == data.size());
 	EXPECT_TRUE(std::equal(src.begin(), src.end(), data.begin()));
+}
+
+TEST(ZipHelper, Zip)
+{
+	std::string zipfilename = "zlib127-dll.zip";
+	std::string password = "";
+
+	ZipHelper helper;
+	EXPECT_TRUE(helper.Open(zipfilename, password));
+	helper.PrintList();
+
+	vector<string> file_list = helper.GetList();
+	vector<string> expect_file_list;
+	expect_file_list.push_back("DLL_FAQ.txt");
+	expect_file_list.push_back("README.txt");
+	expect_file_list.push_back("USAGE.txt");
+	expect_file_list.push_back("zlib1.dll");
+	expect_file_list.push_back("include/zconf.h");
+	expect_file_list.push_back("include/zlib.h");
+	expect_file_list.push_back("lib/zdll.lib");
+	expect_file_list.push_back("lib/zlib.def");
+	expect_file_list.push_back("test/example_d.exe");
+	expect_file_list.push_back("test/minigzip_d.exe");
+
+	EXPECT_TRUE(file_list.size() == expect_file_list.size());
+	EXPECT_TRUE(std::equal(file_list.begin(), file_list.end(), expect_file_list.begin()));
+
+	vector<unsigned char> data;
+	bool retval = false;
+	
+	retval = helper.GetFile("DLL_FAQ.txt", &data);
+	EXPECT_EQ(retval, true);
+	EXPECT_EQ(17921, data.size());
+
+	data.clear();
+	retval = helper.GetFile("USAGE.txt", &data);
+	EXPECT_EQ(retval, true);
+	EXPECT_EQ(2895, data.size());
 }

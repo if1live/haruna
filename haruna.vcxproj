@@ -23,6 +23,11 @@
     <ClCompile Include="haruna\lodepng.cpp" />
     <ClCompile Include="haruna\parametric_surface.cpp" />
     <ClCompile Include="haruna\primitive_mesh.cpp" />
+    <ClCompile Include="minizip\ioapi.cpp" />
+    <ClCompile Include="minizip\iowin32.cpp" />
+    <ClCompile Include="minizip\mztools.cpp" />
+    <ClCompile Include="minizip\unzip.cpp" />
+    <ClCompile Include="minizip\zip.cpp" />
     <ClCompile Include="sora\common_string.cpp" />
     <ClCompile Include="sora\io\filesystem.cpp" />
     <ClCompile Include="sora\io\low_level_c_file.cpp" />
@@ -52,6 +57,12 @@
     <ClInclude Include="haruna\primitive_mesh.h" />
     <ClInclude Include="haruna\teapot.h" />
     <ClInclude Include="haruna\vertex.h" />
+    <ClInclude Include="minizip\crypt.h" />
+    <ClInclude Include="minizip\ioapi.h" />
+    <ClInclude Include="minizip\iowin32.h" />
+    <ClInclude Include="minizip\mztools.h" />
+    <ClInclude Include="minizip\unzip.h" />
+    <ClInclude Include="minizip\zip.h" />
     <ClInclude Include="sora\arch.h" />
     <ClInclude Include="sora\assert_inc.h" />
     <ClInclude Include="sora\common_string.h" />

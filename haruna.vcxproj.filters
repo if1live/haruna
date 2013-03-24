@@ -16,6 +16,9 @@
     <Filter Include="sora\io">
       <UniqueIdentifier>{46364f49-4fa2-4805-b12e-88c28a5b2cfb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="minizip">
+      <UniqueIdentifier>{ff6580d9-3cd6-4020-a4a3-97bffe3d1849}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="haruna\gl\shader.cpp">
@@ -80,6 +83,21 @@
     </ClCompile>
     <ClCompile Include="sora\io\zip_helper.cpp">
       <Filter>sora\io</Filter>
+    </ClCompile>
+    <ClCompile Include="minizip\ioapi.cpp">
+      <Filter>minizip</Filter>
+    </ClCompile>
+    <ClCompile Include="minizip\iowin32.cpp">
+      <Filter>minizip</Filter>
+    </ClCompile>
+    <ClCompile Include="minizip\mztools.cpp">
+      <Filter>minizip</Filter>
+    </ClCompile>
+    <ClCompile Include="minizip\unzip.cpp">
+      <Filter>minizip</Filter>
+    </ClCompile>
+    <ClCompile Include="minizip\zip.cpp">
+      <Filter>minizip</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +187,24 @@
     </ClInclude>
     <ClInclude Include="sora\io\zip_helper.h">
       <Filter>sora\io</Filter>
+    </ClInclude>
+    <ClInclude Include="minizip\zip.h">
+      <Filter>minizip</Filter>
+    </ClInclude>
+    <ClInclude Include="minizip\crypt.h">
+      <Filter>minizip</Filter>
+    </ClInclude>
+    <ClInclude Include="minizip\ioapi.h">
+      <Filter>minizip</Filter>
+    </ClInclude>
+    <ClInclude Include="minizip\iowin32.h">
+      <Filter>minizip</Filter>
+    </ClInclude>
+    <ClInclude Include="minizip\mztools.h">
+      <Filter>minizip</Filter>
+    </ClInclude>
+    <ClInclude Include="minizip\unzip.h">
+      <Filter>minizip</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

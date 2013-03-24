@@ -5,12 +5,14 @@
 #include <algorithm>
 #include <string>
 
+#include "minizip/unzip.h"
+
 namespace sora {;
 namespace io {
-	class ZipHelper {
+	class ZlibHelper {
 	public:
-		ZipHelper();
-		~ZipHelper();
+		ZlibHelper();
+		~ZlibHelper();
 
 		const std::string &ErrorCodeToStr(int ret);
 		bool Compress(const std::vector<unsigned char> &src, std::vector<unsigned char> *dst);
@@ -18,6 +20,26 @@ namespace io {
 
 		int error() const { return error_; }
 	private:
+		int error_;
+	};
+
+	class ZipHelper {
+	public:
+		ZipHelper();
+		~ZipHelper();
+
+		bool Open(const std::string &zipfilename, const std::string &password);
+		bool Close();
+		bool PrintList();
+		std::vector<std::string> GetList();
+		bool Reset();
+		bool GetFile(const std::string &filename, std::vector<unsigned char> *data);
+		
+		int error() const { return error_; }
+
+	private:
+		unzFile uf_;
+		std::string password_;
 		int error_;
 	};
 
