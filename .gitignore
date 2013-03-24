@@ -16,6 +16,10 @@
 build/*
 !build/runCmake.bat
 
+# vim
+*.swp
+*.*~
+
 # visual studio
 *.sdf
 *.suo
