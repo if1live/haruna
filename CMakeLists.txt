@@ -1,9 +1,18 @@
 CMAKE_MINIMUM_REQUIRED( VERSION 2.4 )
 PROJECT( "haruna" )
 
+if(COMMAND CMAKE_POLICY)
+  CMAKE_POLICY(SET CMP0003 NEW)
+endif(COMMAND CMAKE_POLICY)
 
 # Global Setup
 ADD_DEFINITIONS( /D_USE_MATH_DEFINES )
+IF (MSVC)
+SET_PROPERTY( GLOBAL
+  PROPERTY
+    COMPILE_FLAGS
+      "/ZI")
+ENDIF (MSVC)
 INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_LIST_DIR}" )
 
 # GLEW
@@ -25,28 +34,23 @@ INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_LIST_DIR}/loki" )
 INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_LIST_DIR}/zlib/include" )
 LINK_DIRECTORIES( "${CMAKE_CURRENT_LIST_DIR}/zlib/lib" )
 
-MACRO( MSVC_SET_PCH SourcesVar PrecompiledHeader PrecompiledSource)
-  IF( !MSVC )
-    GET_FILENAME_COMPONENT(PrecompiledBasename
-      ${PrecompiledHeader} NAME_WE)
-    SET(PrecompiledBinary "${CMAKE_CURRENT_BINARY_DIR}/${PrecompiledBasename}.pch")
+MACRO( MSVC_SET_PCH Target PrecompiledHeader PrecompiledSource)
+  IF( MSVC )
+    SET(PrecompiledBinary "\$(IntDir)\$(TargetName).pch")
     SET(Sources ${${SourcesVar}})
+    GET_FILENAME_COMPONENT(PrecompiledBasename
+       ${PrecompiledHeader} NAME)
 
-    SET_SOURCE_FILES_PROPERTIES(${PrecompiledHeader}
-      PROPERTIES
-        COMPILE_FLAGS
-          "/Yc\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\""
-        OBJECT_OUTPUTS "${PrecompiledBinary}")
     SET_SOURCE_FILES_PROPERTIES(${PrecompiledSource}
       PROPERTIES
         COMPILE_FLAGS
-          "/Yu\"${PrecompiledBinary}\" /FI\"${PrecompiledBinary}\" /Fp\"${PrecompiledBinary}\""
-        OBJECT_DEPENDS
-          "${PrecompiledBinary}")  
-  ENDIF( !MSVC )
-
-  # Add precompiled header to SourcesVar
-  LIST(APPEND ${SourcesVar} ${PrecompiledSource} ${PrecompiledHeader})
+          "/Yc\"${PrecompiledBasename}\" /Fp\"${PrecompiledBinary}\""
+        OBJECT_OUTPUTS "${PrecompiledBinary}") 
+    SET_TARGET_PROPERTIES(${Target}
+      PROPERTIES
+        COMPILE_FLAGS
+          "/Yu\"${PrecompiledBasename}\"")
+  ENDIF( MSVC )
 ENDMACRO( MSVC_SET_PCH )
 
 # Haruna library
@@ -62,7 +66,7 @@ FUNCTION( ADD_HARUNA_LIBRARY )
     "${CMAKE_CURRENT_LIST_DIR}/sora/io/*.*" )
   FILE( GLOB HARUNA_MINIZIP_SRC_FILES
     "${CMAKE_CURRENT_LIST_DIR}/minizip/*.*" )
-  MSVC_SET_PCH( HARUNA_SUPPORT_SRC_FILES
+  SET( HARUNA_SUPPORT_SRC_FILES
     "${CMAKE_CURRENT_LIST_DIR}/stdafx.h"
     "${CMAKE_CURRENT_LIST_DIR}/stdafx.cpp")
 
@@ -75,6 +79,10 @@ FUNCTION( ADD_HARUNA_LIBRARY )
     ${HARUNA_MINIZIP_SRC_FILES})
 
   ADD_LIBRARY( haruna ${SRC_FILES} )
+
+  MSVC_SET_PCH( haruna
+    "${CMAKE_CURRENT_LIST_DIR}/stdafx.h"
+    "${CMAKE_CURRENT_LIST_DIR}/stdafx.cpp")
 
   TARGET_LINK_LIBRARIES( haruna
     GLFW
@@ -102,8 +110,7 @@ FUNCTION( ADD_HARUNA_EXE )
   SET( HARUNA_EXE_SUPPORT_SRC_FILES
     "${CUR_ROOT}/main.cpp"
     "${CUR_ROOT}/demo.cpp"
-    "${CUR_ROOT}/demo.h")
-  MSVC_SET_PCH( HARUNA_EXE_SUPPORT_SRC_FILES 
+    "${CUR_ROOT}/demo.h"
     "${CUR_ROOT}/exe_stdafx.h"
     "${CUR_ROOT}/exe_stdafx.cpp")
   LIST( REMOVE_ITEM HARUNA_EXE_EXAMPLE_SRC_FILES ${HARUNA_EXE_SUPPORT_SRC_FILES} )
@@ -113,6 +120,10 @@ FUNCTION( ADD_HARUNA_EXE )
     ${HARUNA_EXE_SUPPORT_SRC_FILES})
 
   ADD_EXECUTABLE( haruna_exe ${HARUNA_EXE_SRC_FILES} )
+
+  MSVC_SET_PCH( haruna_exe 
+    "${CUR_ROOT}/exe_stdafx.h"
+    "${CUR_ROOT}/exe_stdafx.cpp")
  
   TARGET_LINK_LIBRARIES( haruna_exe haruna )
 
@@ -133,8 +144,7 @@ FUNCTION( ADD_HARUNA_TEST )
   INCLUDE_DIRECTORIES( "${CUR_ROOT}" )
   
   FILE( GLOB HARUNA_TEST_SUPPORT_SRC_FILES
-    "${CUR_ROOT}/test_main.cpp" )
-  MSVC_SET_PCH( HARUNA_TEST_SUPPORT_SRC_FILES
+    "${CUR_ROOT}/test_main.cpp"
     "${CUR_ROOT}/test_stdafx.h"
     "${CUR_ROOT}/test_stdafx.cpp")
   FILE( GLOB HARUNA_TEST_HARUNA_SRC_FILES
@@ -151,6 +161,10 @@ FUNCTION( ADD_HARUNA_TEST )
     ${HARUNA_TEST_SUPPORT_SRC_FILES})
   
   ADD_EXECUTABLE( haruna_test ${HARUNA_TEST_SRC_FILES} )
+
+  MSVC_SET_PCH( haruna_test
+    "${CUR_ROOT}/test_stdafx.h"
+    "${CUR_ROOT}/test_stdafx.cpp")
 
   TARGET_LINK_LIBRARIES( haruna_test
     gtestd )
