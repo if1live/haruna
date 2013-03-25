@@ -63,3 +63,6 @@ soil/projects/makefile
 soil/projects/VC6
 soil/projects/VC7.1
 soil/projects/VC8
+
+# unittest
+testdata/*.tmp

@@ -3,8 +3,28 @@
 #include "file.h"
 #include "filesystem.h"
 
+#if SR_WIN
+#include <io.h>
+#include <fcntl.h>
+#endif
+
 namespace sora {;
 namespace io {
+	int SeekOriginTypeToCStyle(SeekOriginType in)
+	{
+		switch(in) {
+		case kSeekCurr:
+			return SEEK_CUR;
+		case kSeekEnd:
+			return SEEK_END;
+		case kSeekStart:
+			return SEEK_SET;
+		default:
+			SR_ASSERT(!"not valid seeek origin type");
+			return SEEK_SET;
+		}
+	}
+
 	ReadonlyCFile::ReadonlyCFile(const std::string &file)
 		: file_(nullptr), buffer_(nullptr), filename_(file)
 	{
@@ -39,18 +59,20 @@ namespace io {
 
 	int ReadonlyCFile::Read(void *buf, int size)
 	{
-		if (file_ == nullptr) {
+		if(IsOpened() == false) {
 			return -1;
 		}
-		return fread(buf, size, 1, file_);
+		return fread(buf, 1, size, file_);
 	}
 
-	int ReadonlyCFile::Seek(int offset, int origin)
+	bool ReadonlyCFile::Seek(int offset, SeekOriginType origin)
 	{
-		if (file_ == nullptr) {
-			return -1;
+		if(IsOpened() == false) {
+			return false;
 		}
-		return fseek(file_, offset, origin);
+		int c_style_origin = SeekOriginTypeToCStyle(origin);
+		int retval = fseek(file_, offset, c_style_origin);
+		return (retval == 0);
 	}
 
 	const void *ReadonlyCFile::GetBuffer()
@@ -73,7 +95,7 @@ namespace io {
 
 	int ReadonlyCFile::GetLength() const
 	{
-		if (file_ == nullptr) {
+		if(IsOpened() == false) {
 			return 0;
 		}
 		return Filesystem::GetFileSize(file_);
@@ -81,7 +103,7 @@ namespace io {
 
 	int ReadonlyCFile::GetRemainLength() const
 	{
-		if (file_ == nullptr) {
+		if(IsOpened() == false) {
 			return 0;
 		}
 		int length = GetLength();
@@ -119,10 +141,121 @@ namespace io {
 	}
 	int WriteonlyCFile::Write(const void *buf, int size)
 	{
-		if (file_ == nullptr) {
+		if(IsOpened() == false) {
 			return -1;
 		}
-		return fwrite(buf, size, 1, file_);
+		int retval = fwrite(buf, 1, size, file_);
+		return retval;
+	}
+
+	///////////////////////////////////////
+
+	MemoryFile::MemoryFile(const std::string &file)
+		: start(nullptr),
+		end(nullptr),
+		curr(nullptr),
+		data(nullptr),
+		filename_(file)
+	{
+	}
+
+	MemoryFile::~MemoryFile() 
+	{
+		Close();
+	}
+
+	bool MemoryFile::Close() 
+	{
+		if(data != NULL) {
+			free(data);
+			start = nullptr;
+			curr = nullptr;
+			end = nullptr;
+			data = nullptr;
+			return true;
+		}
+		return false;
+	}
+
+	int MemoryFile::Read(void *buf, int size) 
+	{
+		int curr_pos = curr - start;
+		int length = GetLength();
+		int remain = length - curr_pos;
+		if(remain <= 0) {
+			return 0;
+		}
+		
+		int write_size = (remain < size) ? remain : size;
+		std::copy(curr, curr + write_size, (unsigned char*)buf);
+		curr += write_size;
+		return write_size;
+	}
+
+	bool MemoryFile::Open() 
+	{
+		int flag = O_RDONLY;
+		flag |= O_BINARY;
+		int fd = _open(filename_.data(), flag);
+		SR_ASSERT(fd != -1 && "file is not exist");
+		if (fd == -1) {
+			return false;
+		}
+
+		// overflow 가능성을 조금이라도 낮추기 위해서 1byte 추가 할당
+		int length = Filesystem::GetFileSize(fd);
+		start = static_cast<unsigned char*>(malloc(length + 1)); 
+		data = start;
+		_read(fd, start, length);
+
+		curr = start;
+		end = curr + length;
+		// 조금더 안전하게 하기 위한 용도
+		*end = '\0';
+
+		_close(fd);
+		return true;
+	}
+
+	bool MemoryFile::Seek(int offset, SeekOriginType origin)
+	{
+		int remain_size = GetRemainLength();
+		int size = GetLength();
+
+		if(origin == kSeekCurr) {
+			int curr_pos = (curr - start);
+			if(offset < -curr_pos) {
+				return false;
+			}
+			if(offset > remain_size) {
+				return false;
+			}
+			curr = offset + curr;
+			return true;
+
+		} else if(origin == kSeekStart) {
+			if(offset < 0) {
+				return false;
+			}
+			if(offset > size) {
+				return false;
+			}
+			curr = start + offset;
+			return true;
+
+		} else if(origin == kSeekEnd) {
+			if(offset > 0) {
+				return false;
+			}
+			if(offset > size) {
+				return false;
+			}
+			curr = end + offset;
+			return true;
+		} else {
+			SR_ASSERT(!"not valid seek origin type");
+			return false;
+		}
 	}
 }	// namespace io
 }	// namespace sora

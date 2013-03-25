@@ -6,18 +6,24 @@ namespace sora {;
 namespace io {
 	template<typename FileType> class CFileHelper;
 
+	typedef enum {
+		kSeekCurr,
+		kSeekEnd,
+		kSeekStart,
+	} SeekOriginType;
+
 	class ReadableFile {
 	public:
 		virtual bool Open() = 0;
 		virtual bool Close() = 0;
 		virtual bool IsOpened() const = 0;
 		virtual int Read(void *buf, int size) = 0;
-		virtual int Seek(int offset, int origin) = 0;
+		virtual bool Seek(int offset, SeekOriginType origin) = 0;
 		virtual const void *GetBuffer() = 0;
 		virtual int GetLength() const = 0;
 		virtual int GetRemainLength() const = 0;
 
-		virtual const std::string &filepath() const = 0;
+		virtual const std::string &filename() const = 0;
 	};
 
 	class WritableFile {
@@ -26,10 +32,19 @@ namespace io {
 		virtual bool Close() = 0;
 		virtual bool IsOpened() const = 0;
 		virtual int Write(const void *buf, int size) = 0;
-		virtual const std::string &filepath() const = 0;
+		virtual const std::string &filename() const = 0;
+
+		template<typename Container>
+		int WriteContainer(const Container &data)
+		{
+			typedef typename Container::value_type T;
+			const T *ptr = data.data();
+			size_t size = data.size();
+			return Write(ptr, size * sizeof(T));
+		}
 	};
 
-	class ReadonlyCFile : private ReadableFile {
+	class ReadonlyCFile : public ReadableFile {
 	public:
 		friend class CFileHelper<ReadonlyCFile>;
 	public:
@@ -39,10 +54,10 @@ namespace io {
 		virtual bool Open();
 		virtual bool Close();
 		virtual bool IsOpened() const;
-		virtual const std::string &filepath() const { return filename_; }
+		virtual const std::string &filename() const { return filename_; }
 
 		virtual int Read(void *buf, int size);
-		virtual int Seek(int offset, int origin);
+		virtual bool Seek(int offset, SeekOriginType origin);
 		virtual const void *GetBuffer();
 		virtual int GetLength() const;
 		virtual int GetRemainLength() const;
@@ -53,7 +68,7 @@ namespace io {
 		void *buffer_;
 	};
 
-	class WriteonlyCFile : private WritableFile {
+	class WriteonlyCFile : public WritableFile {
 	public:
 		friend class CFileHelper<WriteonlyCFile>;
 	public:
@@ -64,10 +79,35 @@ namespace io {
 		virtual bool Close();
 		virtual bool IsOpened() const;
 		virtual int Write(const void *buf, int size);
-		virtual const std::string &filepath() const { return filename_; }
+		virtual const std::string &filename() const { return filename_; }
 
 	private:
 		FILE *file_;
+		std::string filename_;
+	};
+
+	class MemoryFile : public ReadableFile {
+	public:
+		MemoryFile(const std::string &file);
+		~MemoryFile();
+
+		virtual bool Open();
+		virtual bool Close();
+		virtual bool IsOpened() const { return (data != nullptr); }
+		virtual int Read(void *buf, int size);
+		virtual bool Seek(int offset, SeekOriginType origin);
+		virtual const void *GetBuffer() { return start; }
+		virtual int GetLength() const { return end - start; }
+		virtual int GetRemainLength() const { return end - curr; }
+
+		virtual const std::string &filename() const { return filename_; }
+
+	public:
+		// data
+		unsigned char *start;
+		unsigned char *end;
+		unsigned char *curr;
+		void *data;
 		std::string filename_;
 	};
 
