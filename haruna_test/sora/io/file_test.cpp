@@ -1,9 +1,8 @@
 ﻿// Ŭnicode please
 #include "test_stdafx.h"
-#include "sora/io/low_level_c_file.h"
+#include "sora/io/file.h"
 #include "sora/io/memory_file.h"
 
-using sora::io::LowLevelCFile;
 using sora::io::WriteonlyCFile;
 using sora::io::ReadonlyCFile;
 using sora::io::MemoryFile;
@@ -22,7 +21,7 @@ protected:
 		FS_Deinit();
 	}
 };
-
+/*
 TEST_F(FileTest, LowLevelCFile_test) 
 {
 	const char *path1 = "low_level_c_file.txt";
@@ -36,8 +35,8 @@ TEST_F(FileTest, LowLevelCFile_test)
 	const char *buffer = (const char *)file1.GetBuffer();
 	EXPECT_STREQ(content, buffer);
 }
-
-TEST_F(FileTest, WriteonlyCFile_test) 
+*/
+TEST_F(FileTest, WriteonlyCFile_ReadonlyCFile_test) 
 {
 	const char path1[] = "asdf.txt";
 	const char content[] = "this is line1.this is line2.";

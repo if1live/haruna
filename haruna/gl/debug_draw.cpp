@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "sora/io/low_level_c_file.h"
+#include "sora/io/file.h"
 #include "sora/io/filesystem.h"
 #include "sora/math_helper.h"
 #include "haruna/primitive_mesh.h"
@@ -54,8 +54,8 @@ namespace gl {
 		{
 			std::string vs_path = Filesystem::GetAppPath(vs_filename);
 			std::string fs_path = Filesystem::GetAppPath(fs_filename);
-			ReadonlyCFile vs_file = ReadonlyCFile(vs_path);
-			ReadonlyCFile fs_file = ReadonlyCFile(fs_path);
+			ReadonlyCFile vs_file(vs_path);
+			ReadonlyCFile fs_file(fs_path);
 			bool vs_open_result = vs_file.Open();
 			bool fs_open_result = fs_file.Open();
 			if(!vs_open_result) {
