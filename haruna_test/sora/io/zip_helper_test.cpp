@@ -3,11 +3,8 @@
 #include <array>
 #include "sora/io/zip_helper.h"
 
-#include "minizip/unzip.h"
-#include "minizip/zip.h"
-#include "minizip/iowin32.h"
 #include <Windows.h>
-
+#include "sora/io/filesystem.h"
 
 using std::vector;
 using std::array;
@@ -15,6 +12,9 @@ using std::string;
 using sora::io::ContainerStream;
 using sora::io::ZlibHelper;
 using sora::io::ZipHelper;
+
+using sora::io::FS_Init;
+using sora::io::FS_Deinit;
 
 TEST(ContainerStream, Read)
 {
@@ -66,8 +66,19 @@ TEST(ContainerStream, Read)
 	}
 }
 
+class ZipHelperTest : public ::testing::Test {
+protected:
+	virtual void SetUp()
+	{
+		FS_Init();
+	}
+	virtual void TearDown()
+	{
+		FS_Deinit();
+	}
+};
 
-TEST(ZipHelper, Run)
+TEST_F(ZipHelperTest, Run)
 {
 	vector<unsigned char> src;
 	src.push_back('a');
@@ -88,7 +99,7 @@ TEST(ZipHelper, Run)
 	EXPECT_TRUE(std::equal(src.begin(), src.end(), data.begin()));
 }
 
-TEST(ZipHelper, Zip)
+TEST_F(ZipHelperTest, Zip)
 {
 	std::string zipfilename = "zlib127-dll.zip";
 	std::string password = "";

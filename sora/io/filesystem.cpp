@@ -10,16 +10,14 @@
 #define tell _tell
 #define lseek _lseek
 
-
 namespace sora {;
 namespace io {
-	std::string app_root_path;
-	std::string doc_root_path;
+	const char kPathSeparator = '\\';
+	
+	std::string g_app_root_path;
+	std::string g_doc_root_path;
 
-	int InitFileSystem();
-	int init_filesystem = InitFileSystem();
-
-	int InitFileSystem() 
+	bool FS_Init()
 	{
 		/*
 		// 윈도우에서 실행프로그램이 있는 경로 얻기
@@ -35,10 +33,15 @@ namespace io {
 		*/
 		TCHAR path[MAX_PATH];
 		GetCurrentDirectory(MAX_PATH, path);
-		doc_root_path = path;
-		app_root_path = path;
-		_chdir(app_root_path.c_str());
-		return 1;
+		g_doc_root_path = path;
+		g_app_root_path = path;
+		_chdir(g_app_root_path.c_str());
+		return true;
+	}
+
+	bool FS_Deinit()
+	{
+		return true;
 	}
 
 	int Filesystem::GetFileSize(int fd) 
@@ -105,15 +108,15 @@ namespace io {
 		std::string filename = str;
 		for(size_t i = 0 ; i < filename.length() ; ++i) {
 			if(filename[i] == '/') {
-				filename[i] = PATH_SEPARATOR;
+				filename[i] = kPathSeparator;
 			}
 		}
 
-		char last_ch = app_root_path[app_root_path.size()-1];
+		char last_ch = g_app_root_path[g_app_root_path.size()-1];
 		if (last_ch == '/' || last_ch == '\\') {
-			return app_root_path + filename;
+			return g_app_root_path + filename;
 		} else {
-			return app_root_path + PATH_SEPARATOR + filename;
+			return g_app_root_path + kPathSeparator + filename;
 		}
 	}
 }	// namespace io

@@ -2,22 +2,34 @@
 #include "test_stdafx.h"
 #include "haruna/debug_draw_manager.h"
 #include "haruna/gl/render_state.h"
+#include "sora/io/filesystem.h"
 
 using namespace glm;
 using namespace std;
 using namespace haruna;
 
+using haruna::DebugDrawManager_Init;
+using haruna::gl::RenderState_Init;
+using sora::io::FS_Init;
+
+using haruna::DebugDrawManager_Deinit;
+using haruna::gl::RenderState_Deinit;
+using sora::io::FS_Deinit;
+
+
 class DebugDrawManagerTest : public ::testing::Test {
 protected:
 	virtual void SetUp()
 	{
-		haruna::DebugDrawManager_Init();
-		haruna::gl::RenderState_Init(640, 480);
+		FS_Init();
+		DebugDrawManager_Init();
+		RenderState_Init(640, 480);
 	}
 	virtual void TearDown()
 	{
-		haruna::DebugDrawManager_Deinit();
-		haruna::gl::RenderState_Deinit();
+		RenderState_Deinit();
+		DebugDrawManager_Deinit();
+		FS_Deinit();
 	}
 };
 

@@ -2,7 +2,22 @@
 #include "test_stdafx.h"
 #include "sora/io/filesystem.h"
 
-TEST(Filesystem, GetExtension) 
+using sora::io::FS_Init;
+using sora::io::FS_Deinit;
+
+class FilesystemTest : public ::testing::Test {
+protected:
+	virtual void SetUp()
+	{
+		FS_Init();
+	}
+	virtual void TearDown()
+	{
+		FS_Deinit();
+	}
+};
+
+TEST_F(FilesystemTest, GetExtension) 
 {
 	using std::string;
 	using sora::io::Filesystem;

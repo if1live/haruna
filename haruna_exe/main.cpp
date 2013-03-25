@@ -21,8 +21,10 @@
 #include "shadow_mapping.h"
 
 #include "demo.h"
+
 #include "haruna/debug_draw_manager.h"
 #include "haruna/gl/render_state.h"
+#include "sora/io/filesystem.h"
 
 const float kWidth = 640;
 const float kHeight = 480;
@@ -129,11 +131,16 @@ int main()
 
 	// engine initialize begin
 	{
-		bool retval = false;
-		retval = haruna::DebugDrawManager_Init();
-		SR_ASSERT(retval);
+		using haruna::DebugDrawManager_Init;
+		using haruna::gl::RenderState_Init;
+		using sora::io::FS_Init;
 
-		retval = haruna::gl::RenderState_Init(kWidth, kHeight);
+		bool retval = false;
+		retval = FS_Init();
+		SR_ASSERT(retval);
+		retval = DebugDrawManager_Init();
+		SR_ASSERT(retval);
+		retval = RenderState_Init(kWidth, kHeight);
 		SR_ASSERT(retval);
 	}
 	// engine initialize end
@@ -161,10 +168,16 @@ int main()
 
 	// engine deinitialize begin
 	{
+		using haruna::DebugDrawManager_Deinit;
+		using haruna::gl::RenderState_Deinit;
+		using sora::io::FS_Deinit;
+
 		bool retval = false;
-		retval = haruna::DebugDrawManager_Deinit();
+		retval = RenderState_Deinit();
 		SR_ASSERT(retval);
-		retval = haruna::gl::RenderState_Deinit();
+		retval = DebugDrawManager_Deinit();
+		SR_ASSERT(retval);
+		retval = FS_Deinit();
 		SR_ASSERT(retval);
 	}
 	// engine deinitialize end

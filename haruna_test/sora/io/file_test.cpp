@@ -7,8 +7,23 @@ using sora::io::LowLevelCFile;
 using sora::io::WriteonlyCFile;
 using sora::io::ReadonlyCFile;
 using sora::io::MemoryFile;
+using sora::io::FS_Init;
+using sora::io::FS_Deinit;
 
-TEST(LowLevelCFile, test) 
+
+class FileTest : public ::testing::Test {
+protected:
+	virtual void SetUp()
+	{
+		FS_Init();
+	}
+	virtual void TearDown()
+	{
+		FS_Deinit();
+	}
+};
+
+TEST_F(FileTest, LowLevelCFile_test) 
 {
 	const char *path1 = "low_level_c_file.txt";
 
@@ -22,7 +37,7 @@ TEST(LowLevelCFile, test)
 	EXPECT_STREQ(content, buffer);
 }
 
-TEST(ReadonlyFile_WriteonlyFile, test) 
+TEST_F(FileTest, WriteonlyCFile_test) 
 {
 	const char path1[] = "asdf.txt";
 	const char content[] = "this is line1.this is line2.";
@@ -41,7 +56,7 @@ TEST(ReadonlyFile_WriteonlyFile, test)
 	EXPECT_STREQ(content, buffer);
 }
 
-TEST(MemoryFile, test) 
+TEST_F(FileTest, MemoryFile_test) 
 {
 	const char *path1 = "low_level_c_file.txt";
 
