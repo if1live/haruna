@@ -1,7 +1,7 @@
 ﻿// Ŭnicode please 
 #include "stdafx.h"
 #include "texture.h"
-#include "haruna/lodepng.h"
+#include "lodepng/lodepng.h"
 
 #include "sora/io/filesystem.h"
 
