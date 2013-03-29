@@ -14,6 +14,9 @@ namespace io {
 
 	class ReadableFile {
 	public:
+		ReadableFile() {}
+		virtual ~ReadableFile() {}
+
 		virtual bool Open() = 0;
 		virtual bool Close() = 0;
 		virtual bool IsOpened() const = 0;
@@ -28,6 +31,9 @@ namespace io {
 
 	class WritableFile {
 	public:
+		WritableFile() {}
+		virtual ~WritableFile() {}
+
 		virtual bool Open() = 0;
 		virtual bool Close() = 0;
 		virtual bool IsOpened() const = 0;
@@ -49,6 +55,9 @@ namespace io {
 	//ReadableFile을 무조건 상속한 상태에서 이것도 상속하도록하자
 	class ReadableMemoryFile {
 	public:
+		ReadableMemoryFile() {}
+		virtual ~ReadableMemoryFile() {}
+
 		virtual unsigned char *start() = 0;
 		virtual unsigned char *end() = 0;
 		virtual unsigned char *curr() = 0;
@@ -61,7 +70,7 @@ namespace io {
 		friend class CFileHelper<ReadonlyCFile>;
 	public:
 		ReadonlyCFile(const std::string &file);
-		~ReadonlyCFile();
+		virtual ~ReadonlyCFile();
 
 		virtual bool Open();
 		virtual bool Close();
@@ -85,7 +94,7 @@ namespace io {
 		friend class CFileHelper<WriteonlyCFile>;
 	public:
 		WriteonlyCFile(const std::string &file);
-		~WriteonlyCFile();
+		virtual ~WriteonlyCFile();
 
 		virtual bool Open();
 		virtual bool Close();
@@ -101,7 +110,7 @@ namespace io {
 	class SimpleMemoryFile : public ReadableFile, public ReadableMemoryFile {
 	public:
 		SimpleMemoryFile(const std::string &file);
-		~SimpleMemoryFile();
+		virtual ~SimpleMemoryFile();
 
 		virtual bool Open();
 		virtual bool Close();

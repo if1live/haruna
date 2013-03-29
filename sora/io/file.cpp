@@ -100,7 +100,7 @@ namespace io {
 	{
 		if(IsOpened() == false) {
 			fs::path p(filename_);
-			int size = fs::file_size(p);
+			int size = static_cast<int>(fs::file_size(p));
 			return size;
 
 		} else {
@@ -215,8 +215,8 @@ namespace io {
 		// return s.st_size;
 		int curr_pos = _tell(fd);
 		_lseek(fd, 0, SEEK_END);
-		int length = tell(fd);
-		lseek(fd, curr_pos, SEEK_SET);
+		int length = _tell(fd);
+		_lseek(fd, curr_pos, SEEK_SET);
 
 		data_.resize(length + 1);
 		_read(fd, data_.data(), length);
@@ -274,7 +274,7 @@ namespace io {
 	{
 		if(data_.size() == 0) {
 			fs::path p(filename_);
-			return fs::file_size(p);
+			return static_cast<int>(fs::file_size(p));
 		} else {
 			return data_.size() - 1; 
 		}

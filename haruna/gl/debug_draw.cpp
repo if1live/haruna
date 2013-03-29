@@ -517,7 +517,7 @@ namespace gl {
 		glm::mat4 mvp_mat = proj_mat * view_mat * model_mat;
 		glUniformMatrix4fv(color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp_mat));
 		
-		float split = 32;
+		int split = 32;
 
 		std::vector<Vertex_1P1C> point_list;
 		point_list.reserve(split + 1);
