@@ -16,6 +16,10 @@ namespace fs = std::tr2::sys;
 using std::string;
 using std::vector;
 
+#ifndef FS_LOGE
+#define FS_LOGE(...) { TAG_LOGE("FS", __VA_ARGS__) }
+#endif
+
 namespace sora {;
 namespace io {
 #if SR_WIN
@@ -109,50 +113,18 @@ namespace io {
 		}
 	};
 
-	std::vector<std::string> GetFileElemList(const std::string &root, AbstractPathFilter *filter)
-	{
-		vector<string> file_list;
-
-		fs::path p(root);
-		try {
-			if(fs::exists(p)) {
-				if(fs::is_directory(p)) {
-					auto it = fs::directory_iterator(p);
-					auto end = fs::directory_iterator();
-					for( ; it != end ; ++it) {
-						fs::path elem = *it;
-						if(filter->IsValid(elem)) {
-							string file = elem.string();
-							file_list.push_back(file);
-						}
-					}
-				} else {
-					TAG_LOGE("FS", "%s is not directory", p.string().c_str());
-				}
-			} else {
-				TAG_LOGE("FS", "%s does not exist", p.string().c_str());
-			}
-		} catch(const fs::filesystem_error &ex) {
-			TAG_LOGE("FS", ex.what());
-		}
-		return file_list;
-	}
-
 	std::vector<std::string> Filesystem::GetFileList(const std::string &root)
 	{
-		FileFilter filter;
-		return GetFileElemList(root, &filter);
+		return GetFileElemList<FileFilter>(root);
 	}
 	std::vector<std::string> Filesystem::GetDirList(const std::string &root)
 	{
-		DirFilter filter;
-		return GetFileElemList(root, &filter);
+		return GetFileElemList<DirFilter>(root);
 	}
 
 	std::vector<std::string> Filesystem::GetAllList(const std::string &root)
 	{
-		NullFilter filter;
-		return GetFileElemList(root, &filter);
+		return GetFileElemList<NullFilter>(root);
 	}
 
 }	// namespace io
