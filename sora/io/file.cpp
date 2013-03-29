@@ -8,6 +8,10 @@
 #include <fcntl.h>
 #endif
 
+#include <filesystem>
+
+namespace fs = std::tr2::sys;
+
 namespace sora {;
 namespace io {
 	int SeekOriginTypeToCStyle(SeekOriginType in)
@@ -96,9 +100,17 @@ namespace io {
 	int ReadonlyCFile::GetLength() const
 	{
 		if(IsOpened() == false) {
-			return 0;
+			fs::path p(filename_);
+			int size = fs::file_size(p);
+			return size;
+
+		} else {
+			int curr_pos = ftell(file_);
+			fseek(file_, 0, SEEK_END);
+			int length = ftell(file_);
+			fseek(file_, curr_pos, SEEK_SET);
+			return length;
 		}
-		return Filesystem::GetFileSize(file_);
 	}
 
 	int ReadonlyCFile::GetRemainLength() const
@@ -195,7 +207,9 @@ namespace io {
 	bool MemoryFile::Open() 
 	{
 		int flag = O_RDONLY;
+#if SR_WIN
 		flag |= O_BINARY;
+#endif
 		int fd = _open(filename_.data(), flag);
 		SR_ASSERT(fd != -1 && "file is not exist");
 		if (fd == -1) {
@@ -203,7 +217,15 @@ namespace io {
 		}
 
 		// overflow 가능성을 조금이라도 낮추기 위해서 1byte 추가 할당
-		int length = Filesystem::GetFileSize(fd);
+		// library하고 꼬여서 자구 죽네... 다른 방법으로 얻어야될듯
+		// struct stat s;
+		// int result = fstat(fd, &s);
+		// return s.st_size;
+		int curr_pos = _tell(fd);
+		_lseek(fd, 0, SEEK_END);
+		int length = tell(fd);
+		lseek(fd, curr_pos, SEEK_SET);
+
 		start = static_cast<unsigned char*>(malloc(length + 1)); 
 		data = start;
 		_read(fd, start, length);
@@ -257,5 +279,16 @@ namespace io {
 			return false;
 		}
 	}
+
+	int MemoryFile::GetLength() const
+	{
+		if(start == nullptr) {
+			fs::path p(filename_);
+			return fs::file_size(p);
+		} else {
+			return end - start; 
+		}
+	}
+
 }	// namespace io
 }	// namespace sora

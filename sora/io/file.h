@@ -97,7 +97,7 @@ namespace io {
 		virtual int Read(void *buf, int size);
 		virtual bool Seek(int offset, SeekOriginType origin);
 		virtual const void *GetBuffer() { return start; }
-		virtual int GetLength() const { return end - start; }
+		virtual int GetLength() const;
 		virtual int GetRemainLength() const { return end - curr; }
 
 		virtual const std::string &filename() const { return filename_; }

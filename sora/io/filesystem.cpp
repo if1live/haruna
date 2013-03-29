@@ -10,9 +10,19 @@
 #define tell _tell
 #define lseek _lseek
 
+#include <filesystem>
+
+namespace fs = std::tr2::sys;
+using std::string;
+using std::vector;
+
 namespace sora {;
 namespace io {
+#if SR_WIN
 	const char kPathSeparator = '\\';
+#else
+	const char kPathSeparator = '/';
+#endif
 	
 	std::string g_app_root_path;
 	std::string g_doc_root_path;
@@ -22,6 +32,7 @@ namespace io {
 		/*
 		// 윈도우에서 실행프로그램이 있는 경로 얻기
 		// 이것을 이용해서 경로 변경후 파일을 열자
+		// 라고 하기에 디버깅 경로만 설정이 있으니까 이거 대신 아래를 사용한다
 		TCHAR path[MAX_PATH];
 		::GetModuleFileName(0, path, _MAX_PATH);
 		TCHAR* p = _tcsrchr(path, '\\');
@@ -31,11 +42,15 @@ namespace io {
 		chdir(app_root_path.c_str());
 		return 1;
 		*/
+#if SR_WIN
 		TCHAR path[MAX_PATH];
 		GetCurrentDirectory(MAX_PATH, path);
 		g_doc_root_path = path;
 		g_app_root_path = path;
 		_chdir(g_app_root_path.c_str());
+#else
+#error "implement FS_Init"
+#endif
 		return true;
 	}
 
@@ -44,63 +59,10 @@ namespace io {
 		return true;
 	}
 
-	int Filesystem::GetFileSize(int fd) 
-	{
-		if (fd == -1) {
-			return -1;
-		}
-		// library하고 꼬여서 자구 죽네... 다른 방법으로 얻어야될듯
-		// struct stat s;
-		// int result = fstat(fd, &s);
-		// return s.st_size;
-		int curr_pos = _tell(fd);
-		_lseek(fd, 0, SEEK_END);
-		int length = tell(fd);
-		lseek(fd, curr_pos, SEEK_SET);
-		return length;
-	}
-
-	int Filesystem::GetFileSize(FILE *file) 
-	{
-		int curr_pos = ftell(file);
-		fseek(file, 0, SEEK_END);
-		int length = ftell(file);
-		fseek(file, curr_pos, SEEK_SET);
-		return length;
-	}
-
 	std::string Filesystem::GetExtension(const std::string &str) 
 	{
-		using std::string;
-		// 경로 쪼개느거는 2개다 동시 지원할수 있도록함
-		// /. \\를 하나로 합치면 되겠지
-		string filename = str;
-		char *data = (char*)filename.c_str();
-		for (size_t i = 0 ; i < filename.size() ; i++) {
-			if (data[i] == '\\') {
-				data[i] = '/';
-			}
-		}
-
-		size_t comma_found = filename.rfind(".");
-		size_t separator_found = filename.rfind('/');
-
-		if (comma_found == string::npos) {
-			//.을 못찾은 경우, 아마도 확장자 없다
-			return string("");
-		}
-
-		if (comma_found != string::npos && separator_found == string::npos) {
-			string name = filename.substr(comma_found+1);
-			return name;
-		}
-
-		if (comma_found > separator_found) {
-			string name = filename.substr(comma_found+1);
-			return name;
-		} else {
-			return string("");
-		}
+		fs::path p(str);
+		return p.extension();
 	}
 
 	std::string Filesystem::GetAppPath(const std::string &str) 
@@ -119,5 +81,79 @@ namespace io {
 			return g_app_root_path + kPathSeparator + filename;
 		}
 	}
+
+	struct AbstractPathFilter {
+		AbstractPathFilter() {}
+		virtual ~AbstractPathFilter() {}
+		virtual bool IsValid(const fs::path &elem) const = 0;
+	};
+	struct FileFilter : public AbstractPathFilter {
+		FileFilter() {}
+		virtual ~FileFilter() {}
+		bool IsValid(const fs::path &elem) const {
+			return (fs::is_regular_file(elem));
+		}
+	};
+	struct DirFilter : public AbstractPathFilter {
+		DirFilter() {}
+		virtual ~DirFilter() {}
+		bool IsValid(const fs::path &elem) const {
+			return (fs::is_directory(elem));
+		}
+	};
+	struct NullFilter : public AbstractPathFilter {
+		NullFilter() {}
+		virtual ~NullFilter() {}
+		bool IsValid(const fs::path &elem) const {
+			return true;
+		}
+	};
+
+	std::vector<std::string> GetFileElemList(const std::string &root, AbstractPathFilter *filter)
+	{
+		vector<string> file_list;
+
+		fs::path p(root);
+		try {
+			if(fs::exists(p)) {
+				if(fs::is_directory(p)) {
+					auto it = fs::directory_iterator(p);
+					auto end = fs::directory_iterator();
+					for( ; it != end ; ++it) {
+						fs::path elem = *it;
+						if(filter->IsValid(elem)) {
+							string file = elem.string();
+							file_list.push_back(file);
+						}
+					}
+				} else {
+					TAG_LOGE("FS", "%s is not directory", p.string().c_str());
+				}
+			} else {
+				TAG_LOGE("FS", "%s does not exist", p.string().c_str());
+			}
+		} catch(const fs::filesystem_error &ex) {
+			TAG_LOGE("FS", ex.what());
+		}
+		return file_list;
+	}
+
+	std::vector<std::string> Filesystem::GetFileList(const std::string &root)
+	{
+		FileFilter filter;
+		return GetFileElemList(root, &filter);
+	}
+	std::vector<std::string> Filesystem::GetDirList(const std::string &root)
+	{
+		DirFilter filter;
+		return GetFileElemList(root, &filter);
+	}
+
+	std::vector<std::string> Filesystem::GetAllList(const std::string &root)
+	{
+		NullFilter filter;
+		return GetFileElemList(root, &filter);
+	}
+
 }	// namespace io
 }	// namespace sora

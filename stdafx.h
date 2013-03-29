@@ -3,6 +3,7 @@
 
 #include "sora/arch.h"
 #include "sora/assert_inc.h"
+#include "sora/logger.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -22,6 +23,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <filesystem>
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>

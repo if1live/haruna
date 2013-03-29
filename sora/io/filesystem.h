@@ -14,11 +14,12 @@ namespace io {
 
 	class Filesystem {
 	public:
-		static int GetFileSize(int fd);
-		static int GetFileSize(FILE *file);
 		static std::string GetExtension(const std::string &str);
 		static std::string GetAppPath(const std::string &str);
-	};
 
+		static std::vector<std::string> GetFileList(const std::string &root);
+		static std::vector<std::string> GetDirList(const std::string &root);
+		static std::vector<std::string> GetAllList(const std::string &root);
+	};
 }
 }
