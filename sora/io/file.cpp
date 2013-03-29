@@ -2,12 +2,6 @@
 #include "stdafx.h"
 #include "file.h"
 #include "filesystem.h"
-
-#if SR_WIN
-#include <io.h>
-#include <fcntl.h>
-#endif
-
 #include <filesystem>
 
 namespace fs = std::tr2::sys;
@@ -165,6 +159,11 @@ namespace io {
 		: curr_(nullptr), filename_(file)
 	{
 	}
+	SimpleMemoryFile::SimpleMemoryFile(const std::vector<unsigned char> &data)
+		: data_(data)
+	{
+		curr_ = data_.data();
+	}
 
 	SimpleMemoryFile::~SimpleMemoryFile() 
 	{
@@ -198,34 +197,21 @@ namespace io {
 
 	bool SimpleMemoryFile::Open() 
 	{
-		int flag = O_RDONLY;
-#if SR_WIN
-		flag |= O_BINARY;
-#endif
-		int fd = _open(filename_.data(), flag);
-		SR_ASSERT(fd != -1 && "file is not exist");
-		if (fd == -1) {
+		if(data_.size() != 0) {
 			return false;
 		}
 
-		// overflow 가능성을 조금이라도 낮추기 위해서 1byte 추가 할당
-		// library하고 꼬여서 자구 죽네... 다른 방법으로 얻어야될듯
-		// struct stat s;
-		// int result = fstat(fd, &s);
-		// return s.st_size;
-		int curr_pos = _tell(fd);
-		_lseek(fd, 0, SEEK_END);
-		int length = _tell(fd);
-		_lseek(fd, curr_pos, SEEK_SET);
+		ReadonlyCFile raw_file(filename_);
+		bool open_retval = raw_file.Open();
+		if(open_retval == false) {
+			return false;
+		}
 
-		data_.resize(length + 1);
-		_read(fd, data_.data(), length);
+		data_.resize(raw_file.GetLength());
+		raw_file.Read(data_.data(), raw_file.GetLength());
+		curr_ = data_.data();
 
-		curr_ = start();
-		// 조금더 안전하게 하기 위한 용도
-		data_[data_.size()-1] = '\0';
-
-		_close(fd);
+		raw_file.Close();
 		return true;
 	}
 
@@ -276,7 +262,7 @@ namespace io {
 			fs::path p(filename_);
 			return static_cast<int>(fs::file_size(p));
 		} else {
-			return data_.size() - 1; 
+			return data_.size(); 
 		}
 	}
 

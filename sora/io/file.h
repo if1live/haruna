@@ -1,4 +1,5 @@
 ﻿// Ŭnicode please
+#pragma once
 #include "filesystem.h"
 #include <string>
 
@@ -58,6 +59,10 @@ namespace io {
 		ReadableMemoryFile() {}
 		virtual ~ReadableMemoryFile() {}
 
+		virtual bool Open() = 0;
+		virtual bool Close() = 0;
+		virtual bool IsOpened() const = 0;
+
 		virtual unsigned char *start() = 0;
 		virtual unsigned char *end() = 0;
 		virtual unsigned char *curr() = 0;
@@ -110,6 +115,9 @@ namespace io {
 	class SimpleMemoryFile : public ReadableFile, public ReadableMemoryFile {
 	public:
 		SimpleMemoryFile(const std::string &file);
+		//데이터로 사용할것을 같이 넣어주면 Open까지 되엇다고 친다
+		SimpleMemoryFile(const std::vector<unsigned char> &data);
+
 		virtual ~SimpleMemoryFile();
 
 		virtual bool Open();
@@ -119,12 +127,12 @@ namespace io {
 		virtual bool Seek(int offset, SeekOriginType origin);
 		virtual const void *GetBuffer() { return data_.data(); }
 		virtual int GetLength() const;
-		virtual int GetRemainLength() const { return data_.data() + data_.size() - 1 - curr_; }
+		virtual int GetRemainLength() const { return data_.data() + data_.size() - curr_; }
 
 		virtual const std::string &filename() const { return filename_; }
 
 		virtual unsigned char *start() { return data_.data(); }
-		virtual unsigned char *end() { return data_.data() + data_.size() - 1; }
+		virtual unsigned char *end() { return data_.data() + data_.size(); }
 		virtual unsigned char *curr() { return curr_; }
 		virtual void *data() { return data_.data(); }
 		virtual void set_curr(unsigned char *curr) { curr_ = curr; }
@@ -132,7 +140,6 @@ namespace io {
 	public:
 		unsigned char *curr_;
 		std::string filename_;
-		//data는 안전을(buffer-overflow) 위해서 1만큼 추가로 할당한다
 		std::vector<unsigned char> data_;
 	};
 

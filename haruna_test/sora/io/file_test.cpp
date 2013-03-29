@@ -35,9 +35,11 @@ protected:
 
 		ASSERT_EQ(true, f->Open());
 		EXPECT_EQ(28, f->GetLength());
-		const char *content = "this is line1.this is line2.";
+		string content = "this is line1.this is line2.";
 		const char *buffer = (const char *)f->GetBuffer();
-		EXPECT_STREQ(content, buffer);
+		for(size_t i = 0 ; i < content.size() ; ++i) {
+			EXPECT_EQ(content[i], buffer[i]);
+		}
 	}
 
 	void RunSeekTest(ReadableFile *f)

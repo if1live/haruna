@@ -11,10 +11,15 @@
 #define lseek _lseek
 
 #include <filesystem>
+#include <unordered_map>
+
+#include "file.h"
+#include "zip_helper.h"
 
 namespace fs = std::tr2::sys;
 using std::string;
 using std::vector;
+using std::unique_ptr;
 
 #ifndef FS_LOGE
 #define FS_LOGE(...) { TAG_LOGE("FS", __VA_ARGS__) }
@@ -28,8 +33,10 @@ namespace io {
 	const char kPathSeparator = '/';
 #endif
 	
-	std::string g_app_root_path;
-	std::string g_doc_root_path;
+	std::string app_root_path;
+	std::string doc_root_path;
+	std::unordered_map<std::string, std::unique_ptr<ZipHelper>> zip_list;
+	std::unordered_map<std::string, ZipHelper*> zip_elem_dict;
 
 	bool FS_Init()
 	{
@@ -49,9 +56,9 @@ namespace io {
 #if SR_WIN
 		TCHAR path[MAX_PATH];
 		GetCurrentDirectory(MAX_PATH, path);
-		g_doc_root_path = path;
-		g_app_root_path = path;
-		_chdir(g_app_root_path.c_str());
+		doc_root_path = path;
+		app_root_path = path;
+		_chdir(app_root_path.c_str());
 #else
 #error "implement FS_Init"
 #endif
@@ -60,6 +67,8 @@ namespace io {
 
 	bool FS_Deinit()
 	{
+		zip_list.clear();
+		zip_elem_dict.clear();
 		return true;
 	}
 
@@ -78,11 +87,11 @@ namespace io {
 			}
 		}
 
-		char last_ch = g_app_root_path[g_app_root_path.size()-1];
+		char last_ch = app_root_path[app_root_path.size()-1];
 		if (last_ch == '/' || last_ch == '\\') {
-			return g_app_root_path + filename;
+			return app_root_path + filename;
 		} else {
-			return g_app_root_path + kPathSeparator + filename;
+			return app_root_path + kPathSeparator + filename;
 		}
 	}
 
@@ -127,5 +136,78 @@ namespace io {
 		return GetFileElemList<NullFilter>(root);
 	}
 
+	std::unique_ptr<ReadableFile> Filesystem::GetReadableFile(const std::string &file)
+	{
+		return GetCommonReadableFile<ReadableFile, ReadonlyCFile, SimpleMemoryFile>(file);
+	}
+	
+	std::unique_ptr<ReadableMemoryFile> Filesystem::GetReadableMemoryFile(const std::string &file)
+	{
+		return GetCommonReadableFile<ReadableMemoryFile, SimpleMemoryFile, SimpleMemoryFile>(file);
+	}
+
+	bool Filesystem::RegisterZip(const std::string &zipfile, const std::string &pw)
+	{
+		fs::path p(zipfile);
+		try {
+			if(fs::exists(p) == false) {
+				return false;
+			}
+			if(fs::is_regular_file(p) == false) {
+				return false;
+			}
+			unique_ptr<ZipHelper> zip(new ZipHelper());
+			bool retval = zip->Open(zipfile, pw);
+			if(retval == false) {
+				return false;
+			}
+
+			// zip안에 존재하는 파일 목록을 적절히 등록하자
+			// 이것을 가지고 있으면 검색을 빠르게 할수있다
+			vector<string> elem_list = zip->GetList();
+			for(const string &elem_name : elem_list) {
+				zip_elem_dict[elem_name] = zip.get();
+			}
+			zip_list[zipfile] = std::move(zip);
+			return true;
+
+		} catch(const fs::filesystem_error &ex) {
+			FS_LOGE(ex.what());
+			return false;
+		}
+		return false;
+	}
+
+	ZipHelper *Filesystem::GetZipHelperByElem(const std::string &file)
+	{
+		auto found = zip_elem_dict.find(file);
+		if(found == zip_elem_dict.end()) {
+			return nullptr;
+		}
+		return found->second;
+	}
+
+	ElemFileType Filesystem::GetFileType(const std::string &file)
+	{
+		//레알 파일이 우선권을 갖는다. 왜냐하면 레알 파일이 zip안의 파일 수정보다 편하니까
+		fs::path p(file);	
+		try {
+			if(fs::exists(p)) {
+				if(fs::is_regular_file(p)) {
+					return kElemFileRaw;
+				}
+			}
+
+		} catch(const fs::filesystem_error &ex) {
+			FS_LOGE(ex.what());
+			return kElemFileNone;
+		}
+
+		ZipHelper *zip_helper = Filesystem::GetZipHelperByElem(file);
+		if(zip_helper == nullptr) {
+			return kElemFileNone;
+		}
+		return kElemFileZip;
+	}
 }	// namespace io
 }	// namespace sora
