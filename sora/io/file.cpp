@@ -30,7 +30,7 @@ namespace io {
 	}
 
 	ReadonlyCFile::ReadonlyCFile(const std::string &file)
-		: file_(nullptr), buffer_(nullptr), filename_(file)
+		: file_(nullptr), filename_(file)
 	{
 	}
 	ReadonlyCFile::~ReadonlyCFile()
@@ -47,9 +47,8 @@ namespace io {
 	}
 	bool ReadonlyCFile::Close()
 	{
-		if (buffer_ != nullptr) {
-			free(buffer_);
-			buffer_ = nullptr;
+		if(buffer_.size() != 0) {
+			buffer_.resize(0);
 		}
 
 		CFileHelper<ReadonlyCFile> helper(this);
@@ -81,20 +80,20 @@ namespace io {
 
 	const void *ReadonlyCFile::GetBuffer()
 	{
-		if (buffer_ == nullptr) {
+		if (buffer_.size() == 0) {
 			int length = GetLength();
 			// 1바이트 더 할당해서 \0로 넣어놓자. 안정성 확보를 위한 목적
 			// 나중에 마지막 널을 넣는지 안넣는지는 옵션으로 빼는게 나을듯
-			buffer_ = malloc(length + 1);
+			buffer_.resize(length + 1);
 
 			long curr_pos = ftell(file_);
 			fseek(file_, 0, SEEK_SET);
-			fread(buffer_, length, 1, file_);
+			fread(buffer_.data(), length, 1, file_);
 			fseek(file_, curr_pos, SEEK_SET);
 
-			((char*)buffer_)[length] = '\0';
+			buffer_[length] = '\0';
 		}
-		return buffer_;
+		return buffer_.data();
 	}
 
 	int ReadonlyCFile::GetLength() const
@@ -162,36 +161,29 @@ namespace io {
 
 	///////////////////////////////////////
 
-	MemoryFile::MemoryFile(const std::string &file)
-		: start(nullptr),
-		end(nullptr),
-		curr(nullptr),
-		data(nullptr),
-		filename_(file)
+	SimpleMemoryFile::SimpleMemoryFile(const std::string &file)
+		: curr_(nullptr), filename_(file)
 	{
 	}
 
-	MemoryFile::~MemoryFile() 
+	SimpleMemoryFile::~SimpleMemoryFile() 
 	{
 		Close();
 	}
 
-	bool MemoryFile::Close() 
+	bool SimpleMemoryFile::Close() 
 	{
-		if(data != NULL) {
-			free(data);
-			start = nullptr;
-			curr = nullptr;
-			end = nullptr;
-			data = nullptr;
+		if(data_.size() != 0) {
+			curr_ = nullptr;
+			data_.resize(0);
 			return true;
 		}
 		return false;
 	}
 
-	int MemoryFile::Read(void *buf, int size) 
+	int SimpleMemoryFile::Read(void *buf, int size) 
 	{
-		int curr_pos = curr - start;
+		int curr_pos = curr_ - start();
 		int length = GetLength();
 		int remain = length - curr_pos;
 		if(remain <= 0) {
@@ -199,12 +191,12 @@ namespace io {
 		}
 		
 		int write_size = (remain < size) ? remain : size;
-		std::copy(curr, curr + write_size, (unsigned char*)buf);
-		curr += write_size;
+		std::copy(curr_, curr_ + write_size, (unsigned char*)buf);
+		curr_ += write_size;
 		return write_size;
 	}
 
-	bool MemoryFile::Open() 
+	bool SimpleMemoryFile::Open() 
 	{
 		int flag = O_RDONLY;
 #if SR_WIN
@@ -226,33 +218,31 @@ namespace io {
 		int length = tell(fd);
 		lseek(fd, curr_pos, SEEK_SET);
 
-		start = static_cast<unsigned char*>(malloc(length + 1)); 
-		data = start;
-		_read(fd, start, length);
+		data_.resize(length + 1);
+		_read(fd, data_.data(), length);
 
-		curr = start;
-		end = curr + length;
+		curr_ = start();
 		// 조금더 안전하게 하기 위한 용도
-		*end = '\0';
+		data_[data_.size()-1] = '\0';
 
 		_close(fd);
 		return true;
 	}
 
-	bool MemoryFile::Seek(int offset, SeekOriginType origin)
+	bool SimpleMemoryFile::Seek(int offset, SeekOriginType origin)
 	{
 		int remain_size = GetRemainLength();
 		int size = GetLength();
 
 		if(origin == kSeekCurr) {
-			int curr_pos = (curr - start);
+			int curr_pos = (curr_ - start());
 			if(offset < -curr_pos) {
 				return false;
 			}
 			if(offset > remain_size) {
 				return false;
 			}
-			curr = offset + curr;
+			curr_ = offset + curr_;
 			return true;
 
 		} else if(origin == kSeekStart) {
@@ -262,7 +252,7 @@ namespace io {
 			if(offset > size) {
 				return false;
 			}
-			curr = start + offset;
+			curr_ = start() + offset;
 			return true;
 
 		} else if(origin == kSeekEnd) {
@@ -272,7 +262,7 @@ namespace io {
 			if(offset > size) {
 				return false;
 			}
-			curr = end + offset;
+			curr_ = end() + offset;
 			return true;
 		} else {
 			SR_ASSERT(!"not valid seek origin type");
@@ -280,13 +270,13 @@ namespace io {
 		}
 	}
 
-	int MemoryFile::GetLength() const
+	int SimpleMemoryFile::GetLength() const
 	{
-		if(start == nullptr) {
+		if(data_.size() == 0) {
 			fs::path p(filename_);
 			return fs::file_size(p);
 		} else {
-			return end - start; 
+			return data_.size() - 1; 
 		}
 	}
 

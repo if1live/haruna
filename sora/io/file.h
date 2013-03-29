@@ -44,6 +44,18 @@ namespace io {
 		}
 	};
 
+	//ReadableFile에 추가 속성으로 붙을수 있는 인터페이스이다
+	//복잡하게 read/seek를 사용하지 않고 메모리를 다루듯이 접근하기 위해서 만들었다
+	//ReadableFile을 무조건 상속한 상태에서 이것도 상속하도록하자
+	class ReadableMemoryFile {
+	public:
+		virtual unsigned char *start() = 0;
+		virtual unsigned char *end() = 0;
+		virtual unsigned char *curr() = 0;
+		virtual void *data() = 0;
+		virtual void set_curr(unsigned char *curr) = 0;
+	};
+
 	class ReadonlyCFile : public ReadableFile {
 	public:
 		friend class CFileHelper<ReadonlyCFile>;
@@ -65,7 +77,7 @@ namespace io {
 	private:
 		FILE *file_;
 		std::string filename_;
-		void *buffer_;
+		std::vector<unsigned char> buffer_;
 	};
 
 	class WriteonlyCFile : public WritableFile {
@@ -86,29 +98,33 @@ namespace io {
 		std::string filename_;
 	};
 
-	class MemoryFile : public ReadableFile {
+	class SimpleMemoryFile : public ReadableFile, public ReadableMemoryFile {
 	public:
-		MemoryFile(const std::string &file);
-		~MemoryFile();
+		SimpleMemoryFile(const std::string &file);
+		~SimpleMemoryFile();
 
 		virtual bool Open();
 		virtual bool Close();
-		virtual bool IsOpened() const { return (data != nullptr); }
+		virtual bool IsOpened() const { return !data_.empty(); }
 		virtual int Read(void *buf, int size);
 		virtual bool Seek(int offset, SeekOriginType origin);
-		virtual const void *GetBuffer() { return start; }
+		virtual const void *GetBuffer() { return data_.data(); }
 		virtual int GetLength() const;
-		virtual int GetRemainLength() const { return end - curr; }
+		virtual int GetRemainLength() const { return data_.data() + data_.size() - 1 - curr_; }
 
 		virtual const std::string &filename() const { return filename_; }
 
+		virtual unsigned char *start() { return data_.data(); }
+		virtual unsigned char *end() { return data_.data() + data_.size() - 1; }
+		virtual unsigned char *curr() { return curr_; }
+		virtual void *data() { return data_.data(); }
+		virtual void set_curr(unsigned char *curr) { curr_ = curr; }
+
 	public:
-		// data
-		unsigned char *start;
-		unsigned char *end;
-		unsigned char *curr;
-		void *data;
+		unsigned char *curr_;
 		std::string filename_;
+		//data는 안전을(buffer-overflow) 위해서 1만큼 추가로 할당한다
+		std::vector<unsigned char> data_;
 	};
 
 	template<typename T> struct CFilePolicyHolder {};

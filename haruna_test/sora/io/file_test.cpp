@@ -5,7 +5,8 @@
 
 using sora::io::WriteonlyCFile;
 using sora::io::ReadonlyCFile;
-using sora::io::MemoryFile;
+using sora::io::ReadableMemoryFile;
+using sora::io::SimpleMemoryFile;
 using sora::io::FS_Init;
 using sora::io::FS_Deinit;
 using std::string;
@@ -25,8 +26,14 @@ protected:
 	void RunBasicTest(ReadableFile *f)
 	{
 		EXPECT_EQ(false, f->IsOpened());
-		ASSERT_EQ(true, f->Open());
 
+		ASSERT_EQ(true, f->Open());
+		EXPECT_EQ(true, f->IsOpened());
+
+		EXPECT_EQ(true, f->Close());
+		EXPECT_EQ(false, f->IsOpened());
+
+		ASSERT_EQ(true, f->Open());
 		EXPECT_EQ(28, f->GetLength());
 		const char *content = "this is line1.this is line2.";
 		const char *buffer = (const char *)f->GetBuffer();
@@ -105,7 +112,7 @@ TEST_F(FileTest, ReadonlyCFile_test)
 TEST_F(FileTest, MemoryFile_test) 
 {
 	string path1 = "low_level_c_file.txt";
-	MemoryFile file1(path1);
+	SimpleMemoryFile file1(path1);
 	RunBasicTest(&file1);
 }
 
@@ -185,7 +192,7 @@ TEST_F(FileTest, ReadonlyCFile_Seek)
 TEST_F(FileTest, MemoryFile_Seek)
 {
 	string path1 = "low_level_c_file.txt";
-	std::unique_ptr<ReadableFile> f(new MemoryFile(path1));
+	std::unique_ptr<ReadableFile> f(new SimpleMemoryFile(path1));
 	RunSeekTest(f.get());
 }
 
@@ -200,7 +207,7 @@ TEST_F(FileTest, ReadonlyCFile_Read)
 TEST_F(FileTest, MemoryFile_Read)
 {
 	string path1 = "low_level_c_file.txt";
-	std::unique_ptr<ReadableFile> f(new MemoryFile(path1));
+	std::unique_ptr<ReadableFile> f(new SimpleMemoryFile(path1));
 	RunReadTest(f.get());
 }
 
@@ -214,6 +221,7 @@ TEST_F(FileTest, ReadonlyCFile_GetLength)
 TEST_F(FileTest, MemoryFile_GetLength)
 {	
 	string file = "zlib127-dll.zip";
-	MemoryFile file1(file);
+	SimpleMemoryFile file1(file);
 	RunGetLengthTest(&file1);
 }
+
