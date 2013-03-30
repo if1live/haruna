@@ -17,8 +17,10 @@
 using std::string;
 using namespace OVR;
 
-const float kWidth = 640;
-const float kHeight = 480;
+//const float kWidth = 640;
+//const float kHeight = 480;
+const float kWidth = 1280;
+const float kHeight = 800;
 
 bool InitWindow(int width, int height) 
 {
@@ -44,8 +46,8 @@ bool InitWindow(int width, int height)
 	return true;
 }
 
-//int main()
-int WINAPI WinMain(HINSTANCE hinst, HINSTANCE, LPSTR inArgs, int)
+int main()
+//int WINAPI WinMain(HINSTANCE hinst, HINSTANCE, LPSTR inArgs, int)
 {
 	int exitCode = 0;
 

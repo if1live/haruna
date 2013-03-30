@@ -193,11 +193,12 @@ struct DebugDraw3D {
 	float duration;
 	bool depth_enable;
 
-	glm::mat4 proj_mat;
 	glm::mat4 view_mat;
 	glm::mat4 model_mat;
 
-	glm::mat4 GetMVPMatrix() const { return proj_mat * view_mat * model_mat; }
+	glm::mat4 GetModelViewMatrix() const;
+	glm::mat4 GetMVPMatrix() const;
+	glm::mat4 proj_mat() const;
 };
 
 struct DebugDraw3D_Line : public DebugDraw3D {

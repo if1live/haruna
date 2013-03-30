@@ -368,8 +368,9 @@ namespace gl {
 	void DebugDrawer3D::DrawElem(DebugDraw3D_Sphere *cmd) 
 	{
 		mat4 model_mat = cmd->model_mat;
+		model_mat = glm::translate(model_mat, cmd->pos);
 		model_mat = glm::scale(model_mat, vec3(cmd->radius, cmd->radius, cmd->radius));
-		mat4 mvp = cmd->proj_mat * cmd->view_mat * model_mat;
+		mat4 mvp = cmd->proj_mat() * cmd->view_mat * model_mat;
 		glUniformMatrix4fv(color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp));
 
 		SR_ASSERT(wire_sphere_mesh.size() == 1);
@@ -465,6 +466,7 @@ namespace gl {
 		glm::mat4 model_mat;
 		glm::mat4 view_mat;
 		glm::mat4 proj_mat = glm::ortho(0.0f, width, 0.0f, height);
+		//const glm::mat4 &proj_mat = render_state->proj_mat;
 
 		glm::mat4 mvp_mat = proj_mat * view_mat * model_mat;
 		glUniformMatrix4fv(color_shader->mvp_loc(), 1, GL_FALSE, glm::value_ptr(mvp_mat));

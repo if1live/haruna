@@ -40,13 +40,31 @@ bool DebugDrawManager_Deinit()
 //쉐이더 고정 단색 + 좌표정보만 잇는 버텍스를 처리할수 잇는 쉐이더. 이것은 선이나 뭐 그런거에 쓴다
 //텍스쳐 + 쉐이더 고정 단색 + 좌표정보 잇는 버텍스. 문자출력에 사용한다
 
+glm::mat4 DebugDraw3D::GetModelViewMatrix() const 
+{
+	return view_mat * model_mat; 
+}
+glm::mat4 DebugDraw3D::GetMVPMatrix() const 
+{
+	return proj_mat() * GetModelViewMatrix();
+}
+
+glm::mat4 DebugDraw3D::proj_mat() const
+{
+#if SR_USE_GL
+	using gl::RenderState;
+	RenderState *render_state = RenderState::Get();
+#endif
+	const mat4 &proj_mat = render_state->proj_mat;
+	return proj_mat;
+}
+
 DebugDraw3D::DebugDraw3D(DebugDraw3DType type)
 	: type(type),
 	duration(0),
 	depth_enable(true) 
 {
 	gl::RenderState *render_state = gl::RenderState::Get();
-	proj_mat = render_state->proj_mat;
 	view_mat = render_state->view_mat;
 	model_mat = render_state->model_mat;
 }
