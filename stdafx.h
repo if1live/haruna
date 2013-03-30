@@ -34,3 +34,5 @@
 #include "loki/Typelist.h"
 
 #include "zlib.h"
+
+#include "OVR.h"

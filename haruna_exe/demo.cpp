@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 #include <GL/glfw.h>
 
+#include "sora/logger.h"
 #include "haruna/debug_draw_manager.h"
 #include "haruna/gl/debug_draw.h"
 #include "haruna/gl/gl_env.h"
@@ -14,6 +15,8 @@ using haruna::gl::RenderState;
 using glm::vec2;
 using glm::vec3;
 using haruna::vec4ub;
+using std::string;
+using namespace OVR;
 
 haruna::DebugDrawManager debug_draw_mgr;
 haruna::gl::DebugDrawer2D debug_draw_2d;
@@ -26,10 +29,89 @@ Demo::Demo(float width, float height)
 
 Demo::~Demo()
 {
+	RemoveHandlerFromDevices();
+}
+
+bool Demo::InitOVR()
+{
+	int         detectionResult = IDCONTINUE;
+    const char* detectionMessage;
+
+	
+	manager_ = *DeviceManager::Create();
+	manager_->SetMessageHandler(this);
+	
+	HMDInfo hmd_info;
+
+	do {
+		// config ovr	
+		hmd_device_ = manager_->EnumerateDevices<OVR::HMDDevice>().CreateDevice();
+
+		if(hmd_device_) {
+			sensor_ = hmd_device_->GetSensor();
+
+			if(hmd_device_->GetDeviceInfo(&hmd_info)) {
+				/*
+				monitor_name = hmd_info.DisplayDeviceName;
+				eye_distance = hmd_info.InterpupillaryDistance;
+				for(int i = 0 ; i < 4 ; ++i) {
+					distortion_k[i] = hmd_info.DistortionK[i];
+				}
+				*/
+			}
+		} else {            
+			// If we didn't detect an HMD, try to create the sensor directly.
+			// This is useful for debugging sensor interaction; it is not needed in
+			// a shipping app.
+			sensor_ = *manager_->EnumerateDevices<OVR::SensorDevice>().CreateDevice();
+		}
+		
+
+		// If there was a problem detecting the Rift, display appropriate message.
+        detectionResult  = IDCONTINUE;        
+
+		if (!hmd_device_ && !sensor_) {
+            detectionMessage = "Oculus Rift not detected.";
+		} else if (!hmd_device_) {
+            detectionMessage = "Oculus Sensor detected; HMD Display not detected.";
+		} else if (!sensor_) {
+            detectionMessage = "Oculus HMD Display detected; Sensor not detected.";
+		} else if (hmd_info.DisplayDeviceName[0] == '\0') {
+            detectionMessage = "Oculus Sensor detected; HMD display EDID not detected.";
+		} else {
+            detectionMessage = 0;
+		}
+
+        if (detectionMessage) {
+            string messageText(detectionMessage);
+            messageText += "\n\n"
+                           "Press 'Try Again' to run retry detection.\n"
+                           "Press 'Continue' to run full-screen anyway.";
+
+            detectionResult = ::MessageBoxA(0, messageText.data(), "Oculus Rift Detection",
+                                            MB_CANCELTRYCONTINUE|MB_ICONWARNING);
+
+            if (detectionResult == IDCANCEL) {
+                return false;
+			}
+        }
+
+	} while (detectionResult != IDCONTINUE);
+
+	if(sensor_) {
+		sensor_fusion_.AttachToSensor(sensor_);
+		sensor_fusion_.SetDelegateMessageHandler(this);
+	}
+
+	return true;
 }
 
 bool Demo::Init()
 {
+	bool ovr_result = InitOVR();
+	if(ovr_result == false) {
+		return false;
+	}
 	return true;
 }
 bool Demo::Update(float dt)
@@ -74,4 +156,45 @@ void Demo::Draw()
 	debug_draw_2d.Draw(debug_draw_mgr);
 
 	haruna::gl::GLEnv::CheckError("End Frame");
+}
+
+// Initializes graphics, Rift input and creates world model.
+int Demo::OnStartup(const char* args)
+{
+	LOGE("on startup");
+	return 0;
+}
+// Called per frame to sample SensorFucion and render the world.
+void Demo::OnIdle()
+{
+	LOGE("on idle");
+}
+
+// Installed for Oculus device messages. Optional.
+void Demo::OnMessage(const OVR::Message& msg)
+{
+	if (msg.Type == OVR::Message_DeviceAdded && msg.pDevice == manager_) {
+		OVR::LogText("DeviceManager reported device added.\n");
+	} else if (msg.Type == OVR::Message_DeviceRemoved && msg.pDevice == manager_) {
+		OVR::LogText("DeviceManager reported device removed.\n");
+	} else if (msg.Type == OVR::Message_DeviceAdded && msg.pDevice == sensor_) {
+		OVR::LogText("Sensor reported device added.\n");
+	} else if (msg.Type == OVR::Message_DeviceRemoved && msg.pDevice == sensor_) {
+		OVR::LogText("Sensor reported device removed.\n");
+	}
+}
+
+// Handle input events for movement.
+void Demo::OnGamepad(float padLx, float padLY, float padRx, float padRy)
+{
+	LOGE("on gamepad");
+}
+void Demo::OnMouseMove(int x, int y, int modifiers)
+{
+	LOGE("on mouse move");
+}
+
+void Demo::OnKey(unsigned vk, bool down)
+{
+	LOGE("on key");
 }

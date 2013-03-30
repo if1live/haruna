@@ -14,6 +14,9 @@
 #include "haruna/gl/render_state.h"
 #include "sora/io/filesystem.h"
 
+using std::string;
+using namespace OVR;
+
 const float kWidth = 640;
 const float kHeight = 480;
 
@@ -41,19 +44,13 @@ bool InitWindow(int width, int height)
 	return true;
 }
 
-int main()
+//int main()
+int WINAPI WinMain(HINSTANCE hinst, HINSTANCE, LPSTR inArgs, int)
 {
-	//std::unique_ptr<AbstractLogic> logic = CreateLogicByMenu();
-	//std::unique_ptr<AbstractLogic> logic(new NormalMapping(kWidth, kHeight));
-	//std::unique_ptr<AbstractLogic> logic(new DiffuseSpecularMapping(kWidth, kHeight));
-	//std::unique_ptr<AbstractLogic> logic(new EnvironmentMapping(kWidth, kHeight));
-	//std::unique_ptr<AbstractLogic> logic(new UVAnimation(kWidth, kHeight));
-	//std::unique_ptr<AbstractLogic> logic(new ColorConversion(kWidth, kHeight));
-	//std::unique_ptr<AbstractLogic> logic(new EdgeDetection(kWidth, kHeight));
-	//std::unique_ptr<AbstractLogic> logic(new ShadowMapping(kWidth, kHeight));
-	std::unique_ptr<AbstractLogic> logic(new Demo(kWidth, kHeight));
+	int exitCode = 0;
 
 	InitWindow(static_cast<int>(kWidth), static_cast<int>(kHeight));
+	std::unique_ptr<AbstractLogic> logic(new Demo(kWidth, kHeight));
 
 	// engine initialize begin
 	{
@@ -68,16 +65,19 @@ int main()
 		SR_ASSERT(retval);
 		retval = RenderState_Init(kWidth, kHeight);
 		SR_ASSERT(retval);
+
+		// Initializes LibOVR. This LogMask_All enables maximum logging.
+		// Custom allocator can also be specified here.
+		OVR::System::Init(OVR::Log::ConfigureDefaultLog(OVR::LogMask_All));
 	}
 	// engine initialize end
-
+	
 	bool running = true;
 	bool init_result = logic->Init();
 	if(init_result == false) {
-		getchar();
+		//getchar();
 		running = false;
 	}
-
 	double old_time = glfwGetTime();
 	while(running) {
 		double current_time = glfwGetTime();
@@ -89,7 +89,6 @@ int main()
 		glfwSwapBuffers();
 		old_time = current_time;
 	}
-
 	logic.reset(NULL);
 
 	// engine deinitialize begin
@@ -107,7 +106,11 @@ int main()
 		SR_ASSERT(retval);
 	}
 	// engine deinitialize end
-
 	glfwTerminate();
-	return 0;	
+	
+    // No OVR functions involving memory are allowed after this.
+    OVR::System::Destroy();
+    OVR_DEBUG_STATEMENT(_CrtDumpMemoryLeaks());
+    return exitCode;
+
 }	

@@ -24,3 +24,5 @@
 #include <glm/glm.hpp>
 
 #include "loki/Typelist.h"
+
+#include "OVR.h"
