@@ -19,7 +19,16 @@ struct SID {
 
 	bool operator==(const SID &o) const
 	{
-		return (this->str == o.str) && (this->length == o.length);
+		if(this->length != o.length) {
+			return false;
+		}
+		if(this->str == o.str) {
+			return true;
+		}
+		if(this->Hash() == o.Hash()) {
+			return true;
+		}
+		return false;
 	}
 	bool operator!=(const SID &o) const
 	{

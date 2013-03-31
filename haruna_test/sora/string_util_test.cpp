@@ -14,6 +14,20 @@ TEST(SID, test)
 	sora::SID<> c;
 	//sora::SID<int> c;
 }
+
+TEST(SID, eq)
+{
+	const char str1[] = "asdf";
+	const char str2[] = "asdf";
+	const char str3[] = "asdffsdfesd";
+	sora::SID<char> a(str1, sizeof(str1));
+	sora::SID<char> b(str2, sizeof(str2));
+	sora::SID<char> c(str3, sizeof(str3));
+	EXPECT_EQ(true, a == a);
+	EXPECT_EQ(true, a == b);
+	EXPECT_EQ(true, a != c);
+}
+
 TEST(StringTable, Get)
 {
 	{
