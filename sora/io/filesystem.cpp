@@ -21,9 +21,6 @@ using std::string;
 using std::vector;
 using std::unique_ptr;
 
-#ifndef FS_LOGE
-#define FS_LOGE(...) { TAG_LOGE("FS", __VA_ARGS__) }
-#endif
 
 namespace sora {;
 namespace io {
@@ -62,6 +59,8 @@ namespace io {
 #else
 #error "implement FS_Init"
 #endif
+		//실행 디렉토리에 있는 zip파일 찾기. 해당 파일은 자동로딩하기
+
 		return true;
 	}
 

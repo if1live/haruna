@@ -121,6 +121,3 @@ namespace io {
 	}
 }
 }
-
-
-#undef FS_LOGE

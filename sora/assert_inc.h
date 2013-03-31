@@ -7,8 +7,8 @@
 
 #if SR_WIN
 //#define SR_ASSERT(EXPR) do { assert(EXPR); } while(0);
-#define SR_DEBUG_BREAK() { __asm{ int 3 }; }
-#define SR_ASSERT(EXPR) if(!(EXPR)) { SR_DEBUG_BREAK(); }
+#define SR_FAIL(EXPR) if(!(EXPR)) { { __asm{ int 3 }; } } 
+#define SR_ASSERT(EXPR) { assert(EXPR); }
 
 #elif SR_IOS
 #define SR_ASSERT(EXPR) do { assert(EXPR); } while(0);

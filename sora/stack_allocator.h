@@ -1,6 +1,12 @@
 ﻿// Ŭnicode please
 #pragma once
 
+#include "logger.h"
+
+#ifndef MEM_LOGE
+#define MEM_LOGE(...) { TAG_LOGE("Mem", __VA_ARGS__) }
+#endif
+
 namespace sora {;
 
 class StackAllocator {

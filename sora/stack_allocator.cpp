@@ -38,7 +38,7 @@ void *StackAllocator::Malloc(size_t x)
 	int curr_allocated_size = top_ - data_;
 	int avail_alloc_size = stack_size_ - curr_allocated_size;
 	if(avail_alloc_size < alloc_size) {
-		SR_ASSERT(!"cannot alloc, more big stack required");
+		MEM_LOGE("cannot alloc, more big stack required");
 		return NULL;
 	}
 
@@ -65,7 +65,8 @@ void StackAllocator::Free(void *ptr)
 	if(expected_alloc_size == alloc_size) {
 		top_ -= sizeof(StackAllocHeader) + alloc_size;
 	} else {
-		SR_ASSERT(!"stack break?");
+		// 스택이 꺠졋으면 무조건 정지
+		SR_FAIL(!"stack break?");
 	}
 
 }

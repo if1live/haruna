@@ -11,21 +11,25 @@ template<typename T=char>
 struct SID {
 	typedef T value_type;
 
-	SID() : hash(0), str(nullptr), length(0) {}
-	SID(unsigned int hash, const T *str, int len)
-		: hash(hash), str(str), length(len) {}
-	unsigned int hash;
+	SID() : str(nullptr), length(0) {}
+	SID(const T *str, int len) : str(str), length(len) {}
+
 	const T *str;
 	int length;
 
 	bool operator==(const SID &o) const
 	{
-		return this->hash == o.hash;
+		return (this->str == o.str) && (this->length == o.length);
 	}
 	bool operator!=(const SID &o) const
 	{
 		return !(*this == o);
 	}
+	unsigned int Hash() const
+	{
+		return StringTable<T>::HashFunc::Hash(str, length);
+	}
+
 
 	static_assert(std::is_same<char, T>::value == 1 || std::is_same<wchar_t, T>::value == 1, "not valid sid type");
 };
@@ -69,7 +73,7 @@ public:
 		// 모든걸 이쪽 클래스로 떠넘길수 있다.
 		// 여기에서 할당된 메모리는 소멸자에서 적절히 처리하면 메모리 누수는 없다
 		const elem_type *new_str = new elem_type[len];
-		SID<elem_type> *sid = new SID<elem_type>(hash, new_str, len);
+		SID<elem_type> *sid = new SID<elem_type>(new_str, len);
 		table_[hash] = sid;
 		return *sid;
 	}
