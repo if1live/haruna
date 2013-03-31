@@ -10,6 +10,8 @@ using sora::io::SimpleMemoryFile;
 using sora::io::FS_Init;
 using sora::io::FS_Deinit;
 using std::string;
+using std::vector;
+using std::array;
 using sora::io::ReadableFile;
 
 class FileTest : public ::testing::Test {
@@ -101,6 +103,22 @@ protected:
 		EXPECT_EQ(expected_size, f->GetLength());
 	}
 
+	void RunReadContainerTest(ReadableFile *f)
+	{
+		string content = "this is line1.this is line2.";
+		array<unsigned char, 4> data1;
+		EXPECT_EQ(4, f->ReadContainer(&data1));
+		EXPECT_EQ('t', data1[0]);
+		EXPECT_EQ('h', data1[1]);
+		EXPECT_EQ('i', data1[2]);
+		EXPECT_EQ('s', data1[3]);
+
+		vector<unsigned char> data2(3);
+		EXPECT_EQ(3, f->ReadContainer(&data2));
+		EXPECT_EQ(' ', data2[0]);
+		EXPECT_EQ('i', data2[1]);
+		EXPECT_EQ('s', data2[2]);
+	}
 };
 
 
@@ -148,8 +166,16 @@ TEST_F(FileTest, ReadonlyCFile_ReadContainer)
 	ReadonlyCFile file1(path1);
 	EXPECT_EQ(false, file1.IsOpened());
 	ASSERT_EQ(true, file1.Open());
+	RunReadContainerTest(&file1);
+}
 
-	//XXX
+TEST_F(FileTest, SimpleMemoryFile_ReadContainer)
+{
+	string path1 = "low_level_c_file.txt";
+	SimpleMemoryFile file1(path1);
+	EXPECT_EQ(false, file1.IsOpened());
+	ASSERT_EQ(true, file1.Open());
+	RunReadContainerTest(&file1);
 }
 
 TEST_F(FileTest, WriteonlyCFile_WriteContainer) 

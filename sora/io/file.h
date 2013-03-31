@@ -28,6 +28,15 @@ namespace io {
 		virtual int GetRemainLength() const = 0;
 
 		virtual const std::string &filename() const = 0;
+
+		template<typename Container>
+		int ReadContainer(Container *data)
+		{
+			typedef typename Container::value_type T;
+			T *ptr = data->data();
+			size_t size = data->size();
+			return Read(ptr, size * sizeof(T));
+		}
 	};
 
 	class WritableFile {

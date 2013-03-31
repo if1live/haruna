@@ -127,8 +127,7 @@ bool Demo::InitOVR()
 	// For 7" screen, fit to touch left side of the view, leaving a bit of invisible
 	// screen on the top (saves on rendering cost).
 	// For smaller screens (5.5"), fit to the top.
-	if (hmd_info.HScreenSize > 0.0f)
-	{
+	if (hmd_info.HScreenSize > 0.0f) {
 		if (hmd_info.HScreenSize > 0.140f) {
 			// 7"
 			stereo_config_.SetDistortionFitPointVP(-1.0f, 0.0f);
