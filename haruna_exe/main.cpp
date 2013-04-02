@@ -57,8 +57,8 @@ std::unique_ptr<AbstractLogic> CreateLogicByMenu()
 	printf("7. Environment Mapping\n");
 	printf("8. UV Animation\n");
 	printf("9. Shadow Mapping\n");
-	printf("10. Color Conversion\n");
-	printf("11. Edge Detection\n");
+	printf("10. Color Conversion(Press 1/2/3 after running)\n");
+	printf("11. Edge Detection(Press 1/2/3 after running)\n");
 	int select = 0;
 	scanf("%d", &select);
 

@@ -1,6 +1,7 @@
 ﻿// Ŭnicode please 
 #include "stdafx.h"
 #include "primitive_mesh.h"
+#include "sora/math_helper.h"
 
 using glm::vec3;
 using glm::vec2;
@@ -225,8 +226,8 @@ std::vector<DrawCmdData<Vertex_1P1N1UV>> SolidSphereFactory::CreateNormalMesh()
 {
 	bool normals = true;
 	float nsign = 1.0f;
-	float drho = static_cast<float>(M_PI / stacks_);
-	float dtheta = static_cast<float>(2.0f * M_PI / slices_);
+	float drho = static_cast<float>(sora::kPi / stacks_);
+	float dtheta = static_cast<float>(2.0f * sora::kPi / slices_);
 
 	float ds = 1.0f / slices_;
 	float dt = 1.0f / stacks_;

@@ -7,10 +7,10 @@
 #include <cmath>
 
 namespace sora {;
-const float kPi = static_cast<float>(M_PI);
-const float kPiOver2 = static_cast<float>(M_PI_2);
-const float kPiOver4 = static_cast<float>(M_PI_4);
-const float kTwoPi = static_cast<float>(M_PI * 2);
+const float kPi = static_cast<float>(3.14159265358979323846);
+const float kPiOver2 = kPi / 2.0f;
+const float kPiOver4 = kPi / 4.0f;
+const float kTwoPi = kPi * 2.0f;
 
 template<typename T>
 bool IsNaN(T value) 
