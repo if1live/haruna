@@ -36,7 +36,7 @@ struct SID {
 	}
 	unsigned int Hash() const
 	{
-		return StringTable<T>::HashFunc::Hash(str, length);
+		return StringTable<T>::HashFunc::GetHash(str, length);
 	}
 
 
@@ -59,7 +59,8 @@ class StringTable {
 public:
 	typedef typename T elem_type;
 	typedef typename StringHolder<T>::value_type string_type;
-	typedef CRC32 HashFunc;
+	//CRC32는 crc table이 필요하지만 RSHash는 없어도 되서 더 간단+쓰레드 안전
+	typedef RSHash<T> HashFunc;
 	typedef std::unordered_map<unsigned int, SID<elem_type>* > TableType;
 
 	static_assert(std::is_same<char, T>::value == 1
@@ -72,7 +73,7 @@ public:
 
 	SID<elem_type> Get(const elem_type *str, int len)
 	{
-		unsigned int hash = HashFunc::Hash(str, len);
+		unsigned int hash = HashFunc::GetHash(str, len);
 		auto found = table_.find(hash);
 		if(found != table_.end()) {
 			SID<elem_type> sid = *found->second;
