@@ -119,13 +119,13 @@ public:
 	//get instance쓰기 귀찮으니까 static으로 때려박기
 public:
 	static LoggerType &GetLogger(const char *name);
-	static void AllDisable() { SetAllState(false); }
-	static void AllEnable() { SetAllState(true); }
-	static void Disable(const char *name) { SetState(name, false); }
-	static void Enable(const char *name) { SetState(name, true); }
+	void AllDisable() { SetAllState(false); }
+	void AllEnable() { SetAllState(true); }
+	void Disable(const std::string &name) { SetState(name, false); }
+	void Enable(const std::string &name) { SetState(name, true); }
 
-	static void SetAllState(bool state);
-	static void SetState(const char *name, bool state);
+	void SetAllState(bool state);
+	void SetState(const std::string &name, bool state);
 private:
 	LoggerListType logger_list_;
 };

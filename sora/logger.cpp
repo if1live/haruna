@@ -29,13 +29,14 @@ sora::Logger<ConsoleLogStream> &SharedConsoleLogger()
 	return logger;
 }
 
+template<typename T>
 struct LoggerNameFinder {
-	LoggerNameFinder(const char *name) : name(name) {}
+	LoggerNameFinder(T &name) : name(name) {}
 	bool operator()(const AutoGenLoggerList::LoggerType &logger) 
 	{
 		return logger.name() == name;
 	};
-	const char *name;
+	T &name;
 };
 
 AutoGenLoggerList::AutoGenLoggerList() 
@@ -47,7 +48,7 @@ AutoGenLoggerList::~AutoGenLoggerList()
 AutoGenLoggerList::LoggerType &AutoGenLoggerList::GetLogger(const char *name) 
 {
 	LoggerListType &logger_list = GetInstance().logger_list_;
-	auto found = find_if(logger_list.begin(), logger_list.end(), LoggerNameFinder(name));
+	auto found = find_if(logger_list.begin(), logger_list.end(), LoggerNameFinder<const char*>(name));
 	if(found != logger_list.end()) {
 		return *found;
 	} else {
@@ -60,20 +61,17 @@ AutoGenLoggerList::LoggerType &AutoGenLoggerList::GetLogger(const char *name)
 void AutoGenLoggerList::SetAllState(bool state) 
 {
 	//지금까지 생성된 로그에 대해서만 처리가 가능
-	LoggerListType &logger_list = GetInstance().logger_list_;
-	auto it = logger_list.begin();
-	auto endit = logger_list.end();
+	auto it = logger_list_.begin();
+	auto endit = logger_list_.end();
 	for( ; it != endit ; it++) {
 		it->enable = state;
 	}
 }
-void AutoGenLoggerList::SetState(const char *name, bool state) 
+void AutoGenLoggerList::SetState(const std::string &name, bool state) 
 {
-	GetLogger(name);        //빈로그 미리 생성해야 이후에 확실히 적용
-
-	LoggerListType &logger_list = GetInstance().logger_list_;
-	auto found = find_if(logger_list.begin(), logger_list.end(), LoggerNameFinder(name));
-	if(found != logger_list.end()) {
+	GetLogger(name.c_str());        //빈로그 미리 생성해야 이후에 확실히 적용
+	auto found = find_if(logger_list_.begin(), logger_list_.end(), LoggerNameFinder<const std::string>(name));
+	if(found != logger_list_.end()) {
 		found->enable = state;
 	}
 }
