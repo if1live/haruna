@@ -2,9 +2,9 @@
 #include "stdafx.h"
 #include "debug_draw_manager.h"
 
+#include "render_device.h"
 #if SR_USE_GL
 #include "gl/debug_draw.h"
-#include "gl/render_state.h"
 #endif
 
 using namespace std;
@@ -51,10 +51,7 @@ glm::mat4 DebugDraw3D::GetMVPMatrix() const
 
 glm::mat4 DebugDraw3D::proj_mat() const
 {
-#if SR_USE_GL
-	using gl::RenderState;
-	RenderState *render_state = RenderState::Get();
-#endif
+	RenderDevice *render_state = RenderDevice::Get();
 	const mat4 &proj_mat = render_state->proj_mat;
 	return proj_mat;
 }
@@ -64,7 +61,7 @@ DebugDraw3D::DebugDraw3D(DebugDraw3DType type)
 	duration(0),
 	depth_enable(true) 
 {
-	gl::RenderState *render_state = gl::RenderState::Get();
+	RenderDevice *render_state = RenderDevice::Get();
 	view_mat = render_state->view_mat;
 	model_mat = render_state->model_mat;
 }

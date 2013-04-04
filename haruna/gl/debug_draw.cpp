@@ -12,7 +12,7 @@
 #include "gl_env.h"
 #include "sys_font.h"
 
-#include "render_state.h"
+#include "haruna/render_device.h"
 
 using glm::vec4;
 using glm::vec3;
@@ -261,7 +261,7 @@ namespace gl {
 
 	void DebugDrawer3D::Draw(const DebugDrawManager &mgr) 
 	{
-		RenderState::Get()->Set3D();		
+		RenderDevice::Get()->Set3D();		
 
 		// 깊이씹고 렌더링하는것과 깊이고려 렌더링을 분리해서 그리자
 		// 굳이 순서대로 그릴 이유가 없겟더라
@@ -394,7 +394,7 @@ namespace gl {
 
 	void DebugDrawer3D::DrawElem(DebugDraw3D_String *cmd) 
 	{
-		RenderState *render_state = RenderState::Get();
+		RenderDevice *render_state = RenderDevice::Get();
 		mat4 mvp = cmd->GetMVPMatrix();
 		
 		//billboard 같은 느낌으로 글자 쓰기
@@ -459,7 +459,7 @@ namespace gl {
 
 	void DebugDrawer2D::DrawElem(DebugDraw2D_Line *cmd) 
 	{
-		RenderState *render_state = RenderState::Get();
+		RenderDevice *render_state = RenderDevice::Get();
 		float width = static_cast<float>(render_state->win_width());
 		float height = static_cast<float>(render_state->win_height());
 
@@ -485,7 +485,7 @@ namespace gl {
 	}
 	void DebugDrawer2D::DrawElem(DebugDraw2D_Cross *cmd) 
 	{
-		RenderState *render_state = RenderState::Get();
+		RenderDevice *render_state = RenderDevice::Get();
 		float width = static_cast<float>(render_state->win_width());
 		float height = static_cast<float>(render_state->win_height());
 
@@ -506,7 +506,7 @@ namespace gl {
 
 	void DebugDrawer2D::DrawElem(DebugDraw2D_Circle *cmd) 
 	{
-		RenderState *render_state = RenderState::Get();
+		RenderDevice *render_state = RenderDevice::Get();
 		float width = static_cast<float>(render_state->win_width());
 		float height = static_cast<float>(render_state->win_height());
 
@@ -541,7 +541,7 @@ namespace gl {
 
 	void DebugDrawer2D::DrawElem(DebugDraw2D_String *cmd) 
 	{
-		RenderState *render_state = RenderState::Get();
+		RenderDevice *render_state = RenderDevice::Get();
 		float width = static_cast<float>(render_state->win_width());
 		float height = static_cast<float>(render_state->win_height());
 
@@ -590,7 +590,7 @@ namespace gl {
 		}
 
 		//2차원 환경에서의 렌더링 기본 설정
-		RenderState::Get()->Set2D();
+		RenderDevice::Get()->Set2D();
 
 		color_shader->prog()->Use();
 		glEnableVertexAttribArray(color_shader->pos_loc());

@@ -9,9 +9,9 @@
 #include "haruna/debug_draw_manager.h"
 #include "haruna/gl/debug_draw.h"
 #include "haruna/gl/gl_env.h"
-#include "haruna/gl/render_state.h"
+#include "haruna/gl/render_device.h"
 
-using haruna::gl::RenderState;
+using haruna::gl::RenderDevice;
 using glm::vec2;
 using glm::vec3;
 using haruna::vec4ub;
@@ -166,7 +166,7 @@ bool Demo::Update(float dt)
 
 	//3d 환경 세팅
 	
-	RenderState *render_state = RenderState::Get();
+	RenderDevice *render_state = RenderDevice::Get();
 	/*
 	float aspect = width() / height();
 	render_state->proj_mat = glm::perspective(60.0f, aspect, 0.1f, 100.0f);
@@ -193,7 +193,7 @@ void Demo::ApplyStereoParams3D(const OVR::Util::Render::StereoEyeParams &stereo)
 	glViewport(vp.x, vp.y, vp.w, vp.h);
 
 	//gl좌표계와 oculus vr은 반대
-	RenderState *render_state = RenderState::Get();
+	RenderDevice *render_state = RenderDevice::Get();
 	Matrix4f proj_mat = stereo.Projection.Transposed();
 	float *m = (float*)proj_mat.M;
 	render_state->proj_mat = glm::mat4(m[0], m[1], m[2], m[3], 
@@ -212,7 +212,7 @@ void Demo::ApplyStereoParams2D(const OVR::Util::Render::StereoEyeParams &stereo)
 	glViewport(vp.x, vp.y, vp.w, vp.h);
 
 	//gl좌표계와 oculus vr은 반대
-	RenderState *render_state = RenderState::Get();
+	RenderDevice *render_state = RenderDevice::Get();
 	Matrix4f proj_mat = stereo.OrthoProjection.Transposed();
 	float *m = (float*)proj_mat.M;
 	render_state->proj_mat = glm::mat4(m[0], m[1], m[2], m[3], 

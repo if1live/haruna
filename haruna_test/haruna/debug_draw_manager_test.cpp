@@ -1,7 +1,7 @@
 ﻿// Ŭnicode please
 #include "test_stdafx.h"
 #include "haruna/debug_draw_manager.h"
-#include "haruna/gl/render_state.h"
+#include "haruna/render_device.h"
 #include "sora/io/filesystem.h"
 
 using namespace glm;
@@ -9,11 +9,11 @@ using namespace std;
 using namespace haruna;
 
 using haruna::DebugDrawManager_Init;
-using haruna::gl::RenderState_Init;
+using haruna::RenderDevice_Init;
 using sora::io::FS_Init;
 
 using haruna::DebugDrawManager_Deinit;
-using haruna::gl::RenderState_Deinit;
+using haruna::RenderDevice_Deinit;
 using sora::io::FS_Deinit;
 
 
@@ -23,11 +23,11 @@ protected:
 	{
 		FS_Init();
 		DebugDrawManager_Init();
-		RenderState_Init(640, 480);
+		RenderDevice_Init(haruna::kRendererGL, 640, 480);
 	}
 	virtual void TearDown()
 	{
-		RenderState_Deinit();
+		RenderDevice_Deinit();
 		DebugDrawManager_Deinit();
 		FS_Deinit();
 	}
