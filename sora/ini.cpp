@@ -197,10 +197,7 @@ int ini_parse_str(const char *str, int length,
     int error = 0;
 
 	//라인단위로 나누기
-	std::string content;
-	content.resize(length);
-	std::copy(str, str + length, const_cast<char*>(content.data()));
-
+	std::string content(str, length);
 	std::vector<std::string> result;
 	sora::StringUtil::Split(content, '\n', &result);
 

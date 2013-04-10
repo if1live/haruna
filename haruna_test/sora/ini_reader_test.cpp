@@ -11,10 +11,9 @@ TEST(INIReader, run)
 	ReadonlyCFile file("test.ini");
 	file.Open();
 	
-	std::string content;
-	content.resize(file.GetLength());
 	const char *data = static_cast<const char*>(file.GetBuffer());
-	std::copy(data, data + file.GetLength(), const_cast<char*>(content.data()));
+	std::string content(data, file.GetLength());
+
 	INIReader reader(content);
 
 	EXPECT_EQ(0, reader.ParseError());
