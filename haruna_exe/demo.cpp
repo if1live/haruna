@@ -7,11 +7,11 @@
 
 #include "sora/logger.h"
 #include "haruna/debug_draw_manager.h"
+#include "haruna/render_device.h"
 #include "haruna/gl/debug_draw.h"
 #include "haruna/gl/gl_env.h"
-#include "haruna/gl/render_device.h"
 
-using haruna::gl::RenderDevice;
+using haruna::RenderDevice;
 using glm::vec2;
 using glm::vec3;
 using haruna::vec4ub;

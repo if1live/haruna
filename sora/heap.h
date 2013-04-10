@@ -43,7 +43,7 @@ private:
 	static int next_id_;
 };
 
-struct HeapAllocHeader {
+class HeapAllocHeader {
 public:
 	explicit HeapAllocHeader()
 		: signature(kAllocatedMemorySignature),

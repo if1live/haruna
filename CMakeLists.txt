@@ -26,6 +26,10 @@ endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_LIST_DIR}" )
 
+# disable some warning
+# http://www.cmake.org/pipermail/cmake/2008-October/024476.html
+ADD_DEFINITIONS( "/wd4996 /wd4819" )
+
 # GLEW
 INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_LIST_DIR}/glew/include" )
 LINK_DIRECTORIES( "${CMAKE_CURRENT_LIST_DIR}/glew/lib" )

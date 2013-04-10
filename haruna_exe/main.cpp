@@ -11,7 +11,7 @@
 #include "demo.h"
 
 #include "haruna/debug_draw_manager.h"
-#include "haruna/gl/render_device.h"
+#include "haruna/render_device.h"
 #include "sora/io/filesystem.h"
 
 using std::string;
@@ -57,7 +57,7 @@ int main()
 	// engine initialize begin
 	{
 		using haruna::DebugDrawManager_Init;
-		using haruna::gl::RenderDevice_Init;
+		using haruna::RenderDevice_Init;
 		using sora::io::FS_Init;
 
 		bool retval = false;
@@ -65,7 +65,7 @@ int main()
 		SR_ASSERT(retval);
 		retval = DebugDrawManager_Init();
 		SR_ASSERT(retval);
-		retval = RenderDevice_Init(kWidth, kHeight);
+		retval = RenderDevice_Init(haruna::kRendererGL, kWidth, kHeight);
 		SR_ASSERT(retval);
 
 		// Initializes LibOVR. This LogMask_All enables maximum logging.
@@ -96,7 +96,7 @@ int main()
 	// engine deinitialize begin
 	{
 		using haruna::DebugDrawManager_Deinit;
-		using haruna::gl::RenderDevice_Deinit;
+		using haruna::RenderDevice_Deinit;
 		using sora::io::FS_Deinit;
 
 		bool retval = false;
