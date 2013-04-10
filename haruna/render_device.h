@@ -18,9 +18,9 @@ public:
 	virtual void Set2D() = 0;
 	virtual void Set3D() = 0;
 
-	void SetWinSize(int w, int h) { win_width_ = w; win_height_ = h; }
-	int win_width() const { return win_width_; }
-	int win_height() const { return win_height_; }
+	void SetWinSize(float w, float h) { win_width_ = w; win_height_ = h; }
+	float win_width() const { return win_width_; }
+	float win_height() const { return win_height_; }
 
 	static RenderDevice *Get();
 
@@ -30,7 +30,7 @@ public:
 	glm::mat4 proj_mat;
 
 private:
-	int win_width_;
-	int win_height_;
+	float win_width_;
+	float win_height_;
 };
 }	// namespace haruna

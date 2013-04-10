@@ -460,8 +460,8 @@ namespace gl {
 	void DebugDrawer2D::DrawElem(DebugDraw2D_Line *cmd) 
 	{
 		RenderDevice *render_state = RenderDevice::Get();
-		float width = static_cast<float>(render_state->win_width());
-		float height = static_cast<float>(render_state->win_height());
+		float width = render_state->win_width();
+		float height = render_state->win_height();
 
 		glm::mat4 model_mat;
 		glm::mat4 view_mat;
@@ -486,8 +486,8 @@ namespace gl {
 	void DebugDrawer2D::DrawElem(DebugDraw2D_Cross *cmd) 
 	{
 		RenderDevice *render_state = RenderDevice::Get();
-		float width = static_cast<float>(render_state->win_width());
-		float height = static_cast<float>(render_state->win_height());
+		float width = render_state->win_width();
+		float height = render_state->win_height();
 
 		glm::mat4 model_mat;
 		glm::mat4 view_mat;
@@ -507,8 +507,8 @@ namespace gl {
 	void DebugDrawer2D::DrawElem(DebugDraw2D_Circle *cmd) 
 	{
 		RenderDevice *render_state = RenderDevice::Get();
-		float width = static_cast<float>(render_state->win_width());
-		float height = static_cast<float>(render_state->win_height());
+		float width = render_state->win_width();
+		float height = render_state->win_height();
 
 		glm::mat4 model_mat;
 		model_mat = glm::translate(model_mat, vec3(cmd->pos.x, cmd->pos.y, 0));
@@ -542,8 +542,8 @@ namespace gl {
 	void DebugDrawer2D::DrawElem(DebugDraw2D_String *cmd) 
 	{
 		RenderDevice *render_state = RenderDevice::Get();
-		float width = static_cast<float>(render_state->win_width());
-		float height = static_cast<float>(render_state->win_height());
+		float width = render_state->win_width();
+		float height = render_state->win_height();
 
 		//폰트의 왼쪽위를 원점으로 사용하기 위해서 약간 올린다
 		float base_line = SysFont::kFontSize * cmd->scale;
